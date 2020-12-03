@@ -153,7 +153,7 @@ namespace cxutil
         // better if in order instead of reversed
         if (!in_order() && other.in_order())
         {
-            return true;
+            return false;   // fix _STL_VERIFY "invalid comparator"
         }
 
         // better if lower Terminus::Index for terminus_0
