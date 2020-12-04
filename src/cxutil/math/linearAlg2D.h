@@ -357,5 +357,6 @@ namespace cxutil
         }
     };
 
+    coord_t interpolate(const coord_t x, const coord_t x0, const coord_t x1, const coord_t y0, const coord_t y1);
 }//namespace cura
 #endif//UTILS_LINEAR_ALG_2D_H

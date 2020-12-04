@@ -17,7 +17,7 @@
 #include <map>
 #include <unordered_map>
 #include <sstream>
-
+#include <memory>
 #include "cxutil/slicer/ExtruderTrain.h"
 
 namespace cxutil

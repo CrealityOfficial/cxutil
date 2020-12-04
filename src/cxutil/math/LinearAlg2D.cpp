@@ -208,4 +208,12 @@ namespace cxutil
         const coord_t px_size2 = std::max(coord_t(0), ap_size2 - ax_size2);
         return px_size2;
     }
+
+    coord_t interpolate(const coord_t x, const coord_t x0, const coord_t x1, const coord_t y0, const coord_t y1)
+    {
+        const coord_t dx_01 = x1 - x0;
+        coord_t num = (y1 - y0) * (x - x0);
+        num += num > 0 ? dx_01 / 2 : -dx_01 / 2; // add in offset to round result
+        return y0 + num / dx_01;
+    }
 } // namespace cura
