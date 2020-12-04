@@ -28,6 +28,9 @@ namespace cxutil
         : year(-1)
         , month(-1)
         , day(-1)
+		,hour(-1)
+		, min(-1)
+		, sec(-1)
     {
     }
 
@@ -46,4 +49,29 @@ namespace cxutil
         ret.month++; // humans count Jan as month 1, not zero
         return ret;
     }
-} // namespace cura
+	std::string Date::getDateTimeStr()
+	{
+		Date ret;
+		const char* build_date = __DATE__;
+		const char* build_time = __TIME__;
+
+		char s_month[5];
+		static const char month_names[] = "JanFebMarAprMayJunJulAugSepOctNovDec";
+
+		std::sscanf(build_date, "%s %d %d", s_month, &ret.day, &ret.year);
+		std::sscanf(build_time, "%d:%d:%d", &ret.hour, &ret.min, &ret.sec);
+
+		ret.month = (strstr(month_names, s_month) - month_names) / 3;
+
+		ret.month++; // humans count Jan as month 1, not zero
+
+		std::ostringstream str;
+		str << std::setfill('0') << std::setw(4) << ret.year << "-"
+			<< std::setfill('0') << std::setw(2) << ret.month << "-"
+			<< std::setfill('0') << std::setw(2) << ret.day << " "
+			<< std::setfill('0') << std::setw(2) << ret.hour << ":"
+			<< std::setfill('0') << std::setw(2) << ret.min << ":"
+			<< std::setfill('0') << std::setw(2) << ret.sec;
+		return std::move(str.str());
+	}
+} // namespace cxutil

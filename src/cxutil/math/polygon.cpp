@@ -6,6 +6,10 @@
 #include "linearAlg2D.h" // pointLiesOnTheRightOfLine
 #include "ListPolyIt.h"
 
+#include <fstream>
+#include <sstream>
+#include <iomanip>
+
 namespace cxutil
 {
     size_t ConstPolygonRef::size() const
@@ -1268,4 +1272,74 @@ namespace cxutil
         }
     }
 
-}//namespace cura
+	bool Polygons::saveToLocalFile(const char* filename, double scale)
+	{
+
+		std::ofstream of(filename);
+		if (!of.is_open()) return false;
+		of << paths.size() << "\n";
+		for (ClipperLib::Paths::size_type i = 0; i < paths.size(); ++i)
+		{
+			of << paths[i].size() << "\n";
+			if (scale > 1.01 || scale < 0.99)
+				of << std::fixed << std::setprecision(6);
+			for (ClipperLib::Paths::size_type j = 0; j < paths[i].size(); ++j)
+				of << (double)paths[i][j].X / scale << ", " << (double)paths[i][j].Y / scale << ",\n";
+		}
+		of.close();
+		return true;
+	}
+
+
+	bool  Polygons::loadFromLocalFile(const char* filename, double scale)
+	{
+		//file format assumes: 
+		//  1. path coordinates (x,y) are comma separated (+/- spaces) and 
+		//  each coordinate is on a separate line
+		//  2. each path is separated by one or more blank lines
+		paths.clear();
+		std::ifstream ifs(filename);
+		if (!ifs) return false;
+		std::string line;
+		ClipperLib::Path pg;
+		int pathNum = 0;  //?¡¤??¨ºy¨¢?
+		std::getline(ifs, line);
+		std::stringstream ss(line);
+		if (!(ss >> pathNum) || pathNum <= 0)
+		{
+			return false;
+		}
+		for (int i = 0; i < pathNum; i++)
+		{
+			int pathPoint = 0;
+			std::getline(ifs, line);///??¨¨?pathPoint
+			std::stringstream ss(line);
+			if (!(ss >> pathPoint) || pathPoint <= 0)
+			{
+				continue;
+			}
+			for (int i = 0; i < pathPoint; i++)
+			{
+				std::getline(ifs, line);
+				std::stringstream ss(line);
+				double X = 0.0, Y = 0.0;
+				if (!(ss >> X))
+				{
+					//ie blank lines => flag start of next polygon 
+					if (pg.size() > 0) paths.push_back(pg);
+					pg.clear();
+					continue;
+				}
+				char c = ss.peek();
+				while (c == ' ') { ss.read(&c, 1); c = ss.peek(); } //gobble spaces before comma
+				if (c == ',') { ss.read(&c, 1); c = ss.peek(); } //gobble comma
+				while (c == ' ') { ss.read(&c, 1); c = ss.peek(); } //gobble spaces after comma
+				if (!(ss >> Y)) break; //oops!
+				pg.push_back(ClipperLib::IntPoint((ClipperLib::cInt)(X * scale), (ClipperLib::cInt)(Y * scale)));
+			}
+			if (pg.size() > 0) paths.push_back(pg);
+		}
+		ifs.close();
+		return true;
+	}
+}//namespace cxutil
