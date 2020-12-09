@@ -6,7 +6,7 @@
 #include <rapidjson/error/en.h> //Loading JSON documents to get settings from them.
 #include <rapidjson/filereadstream.h>
 
-#include "cxutil/settings/settings.h"
+#include "cxutil/settings/Settings.h"
 namespace cxutil
 {
     void loadJSONValue(const rapidjson::Value& element, Settings& settings)

@@ -1,6 +1,6 @@
 #ifndef CX_EXTRUDERINPUT_1600399850073_H
 #define CX_EXTRUDERINPUT_1600399850073_H
-#include "cxutil/settings/settings.h"
+#include "cxutil/settings/Settings.h"
 #include "cxutil/input/param.h"
 
 namespace cxutil
