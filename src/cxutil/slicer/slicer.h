@@ -1,8 +1,8 @@
 //Copyright (c) 2018 Ultimaker B.V.
 //CuraEngine is released under the terms of the AGPLv3 or higher.
 
-#ifndef SLICER_H
-#define SLICER_H
+#ifndef CX_SLICER_H
+#define CX_SLICER_H
 
 #include <queue>
 #include <unordered_map>
@@ -11,26 +11,13 @@
 #include "cxutil/slicer/MeshGroup.h"
 #include "cxutil/slicer/mesh.h"
 #include "cxutil/settings/AdaptiveLayerHeights.h"
-
+#include "cxutil/math/vertex.h"
 /*
     The Slicer creates layers of polygons from an optimized 3D model.
     The result of the Slicer is a list of polygons without any order or structure.
 */
 namespace cxutil
 {
-    class SlicerSegment
-    {
-    public:
-        Point start, end;
-        int faceIndex = -1;
-        // The index of the other face connected via the edge that created end
-        int endOtherFaceIdx = -1;
-        // If end corresponds to a vertex of the mesh, then this is populated
-        // with the vertex that it ended on.
-        const MeshVertex* endVertex = nullptr;
-        bool addedToPolygon = false;
-    };
-
     class ClosePolygonResult
     {   //The result of trying to find a point on a closed polygon line. This gives back the point index, the polygon index, and the point of the connection.
         //The line on which the point lays is between pointIdx-1 and pointIdx
@@ -65,7 +52,6 @@ namespace cxutil
          */
         void makePolygons(const Mesh* mesh);
 
-    protected:
         /*!
          * Connect the segments into loops which correctly form polygons (don't perform stitching here)
          *
@@ -561,4 +547,4 @@ namespace cxutil
     };
 }//namespace cura
 
-#endif//SLICER_H
+#endif//CX_SLICER_H

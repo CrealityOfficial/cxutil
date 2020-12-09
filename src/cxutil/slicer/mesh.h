@@ -1,58 +1,14 @@
 //Copyright (c) 2018 Ultimaker B.V.
 //CuraEngine is released under the terms of the AGPLv3 or higher.
 
-#ifndef MESH_H
-#define MESH_H
-
-#include "cxutil/math/AABB3D.h"
+#ifndef CX_MESH_H
+#define CX_MESH_H
 #include <unordered_map>
+#include "cxutil/math/vertex.h"
 
 namespace cxutil
 {
     class Settings;
-    /*!
-    Vertex type to be used in a Mesh.
-
-    Keeps track of which faces connect to it.
-    */
-    class MeshVertex
-    {
-    public:
-        Point3 p; //!< location of the vertex
-        std::vector<uint32_t> connected_faces; //!< list of the indices of connected faces
-
-        MeshVertex(Point3 p) : p(p) { connected_faces.reserve(8); } //!< doesn't set connected_faces
-    };
-
-    /*! A MeshFace is a 3 dimensional model triangle with 3 points. These points are already converted to integers
-
-    A face has 3 connected faces, corresponding to its 3 edges.
-
-    Note that a correct model may have more than 2 faces connected via a single edge!
-    In such a case the face_index stored in connected_face_index is the one connected via the outside; see ASCII art below:
-
-    : horizontal slice through vertical edge connected to four faces :
-
-    \verbatim
-    [inside] x|
-             x| <--+--- faces which contain each other in their connected_face_index fiels
-       xxxxxxx|   \|/
-       -------+-------
-          ^   |xxxxxxx
-          +-->|x
-          |   |x [inside]
-          |
-        faces which contain each other in their connected_face_index fiels
-    \endverbatim
-    */
-    class MeshFace
-    {
-    public:
-        int vertex_index[3] = { -1 }; //!< counter-clockwise ordering
-        int connected_face_index[3]; //!< same ordering as vertex_index (connected_face 0 is connected via vertex 0 and 1, etc.)
-    };
-
-
     /*!
     A Mesh is the most basic representation of a 3D model. It contains all the faces as MeshFaces.
 
@@ -114,5 +70,5 @@ namespace cxutil
     };
 
 }//namespace cxutil
-#endif//MESH_H
+#endif//CX_MESH_H
 

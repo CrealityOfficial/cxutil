@@ -944,11 +944,18 @@ namespace cxutil
          */
         Polygons getEmptyHoles() const;
 
-        /*!
-         * Split up the polygons into groups according to the even-odd rule.
-         * Each PolygonsPart in the result has an outline as first polygon, whereas the rest are holes.
-         */
-        std::vector<PolygonsPart> splitIntoParts(bool unionAll = false) const;
+		/*!
+	 *   Save the path of the Polygons to File.
+	 */
+		bool saveToLocalFile(const char* filename, double scale);
+
+		bool  loadFromLocalFile(const char* filename, double scale);
+
+		/*!
+		 * Split up the polygons into groups according to the even-odd rule.
+		 * Each PolygonsPart in the result has an outline as first polygon, whereas the rest are holes.
+		 */
+		std::vector<PolygonsPart> splitIntoParts(bool unionAll = false) const;
 
         ClipperLib::PolyTree* splitIntoPolyTree(bool unionAll = false) const;
 

@@ -14,8 +14,8 @@ namespace cxutil
     public:
         struct Datum
         {
-            const double flow; //!< The flow in mm^3/s
-            const Temperature temp; //!< The temperature in *C
+            double flow; //!< The flow in mm^3/s
+            Temperature temp; //!< The temperature in *C
             Datum(const double flow, const Temperature temp)
                 : flow(flow)
                 , temp(temp)

@@ -1,0 +1,38 @@
+#ifndef _CXSW_DLPDATA_1593762618888_H
+#define _CXSW_DLPDATA_1593762618888_H
+#include <clipper/clipper.hpp>
+
+namespace cxutil
+{
+	struct DLPLayer
+	{
+		ClipperLib::cInt printZ;     //!< The height at which this layer needs to be printed. Can differ from sliceZ due to the raft.
+		std::vector< ClipperLib::PolyTree*> parts;
+	};
+
+	struct DLPmesh
+	{
+		std::vector<DLPLayer> layers;
+		std::string mesh_name;
+	};
+
+	struct DLPmeshs
+	{
+		std::vector<DLPmesh> dlpmeshs;
+	};
+
+	struct DLPmeshsgroup
+	{
+		std::vector<DLPmeshs> dlpmeshsgroup;
+	};
+
+
+	class DLPData
+	{
+	public:
+		DLPData();
+		virtual ~DLPData();
+		DLPmeshsgroup m_dlpmeshsgroup;
+	};
+}
+#endif // _CXSW_DLPDATA_1593762618888_H
