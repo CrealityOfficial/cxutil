@@ -4,15 +4,6 @@
 #ifndef CX_SETTINGS_SETTINGS_H
 #define CX_SETTINGS_SETTINGS_H
 
-#ifndef VERSION
-#define VERSION "DEV"
-#endif
-
-#define MAX_EXTRUDERS 16
-
-//Maximum number of infill layers that can be combined into a single infill extrusion area.
-#define MAX_INFILL_COMBINE 8
-
 #include <vector>
 #include <map>
 #include <unordered_map>
