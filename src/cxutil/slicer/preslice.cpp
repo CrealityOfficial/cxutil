@@ -2,7 +2,7 @@
 #include "cxutil/input/groupinput.h"
 #include "cxutil/input/dlpinput.h"
 
-#include "cxutil/settings/adaptivelayerheights.h"
+#include "cxutil/settings/AdaptiveLayerHeights.h"
 namespace cxutil
 {
 	void buildSliceInfos(GroupInput* meshGroup, std::vector<int>& z, std::vector<coord_t>& printZ, std::vector<coord_t>& thicknesses)

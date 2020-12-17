@@ -1,6 +1,6 @@
 #ifndef CX_MESHBUILDER_1600070448786_H
 #define CX_MESHBUILDER_1600070448786_H
-#include "cxutil/math/point3.h"
+#include "cxutil/math/Point3.h"
 #include "cxutil/math/floatpoint.h"
 #include <vector>
 

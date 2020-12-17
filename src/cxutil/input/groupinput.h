@@ -1,7 +1,7 @@
 #ifndef CX_GROUPINPUT_1600053607518_H
 #define CX_GROUPINPUT_1600053607518_H
 #include "cxutil/input/meshinput.h"
-#include "cxutil/settings/settings.h"
+#include "cxutil/settings/Settings.h"
 
 #include <vector>
 

@@ -1,7 +1,7 @@
 #ifndef CX_MESHINPUT_1600053607519_H
 #define CX_MESHINPUT_1600053607519_H
 #include "cxutil/input/meshobject.h"
-#include "cxutil/settings/settings.h"
+#include "cxutil/settings/Settings.h"
 #include "cxutil/input/param.h"
 
 namespace cxutil

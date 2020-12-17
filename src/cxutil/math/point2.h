@@ -1,6 +1,6 @@
 #ifndef SLICE_POINT2_1598707819216_H
 #define SLICE_POINT2_1598707819216_H
-#include "cxutil/math/coord_t.h"
+#include "cxutil/math/Coord_t.h"
 
 namespace cxutil
 {

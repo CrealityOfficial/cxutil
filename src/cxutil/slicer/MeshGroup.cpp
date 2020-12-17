@@ -86,6 +86,11 @@ namespace cxutil
     {
         //If the machine settings have been supplied, offset the given position vertices to the center of vertices (0,0,0) is at the bed center.
         Point3 meshgroup_offset(0, 0, 0);
+        if (!settings->get<bool>("machine_center_is_zero"))
+        {
+            meshgroup_offset.x = settings->get<coord_t>("machine_width") / 2;
+            meshgroup_offset.y = settings->get<coord_t>("machine_depth") / 2;
+        }
         // If a mesh position was given, put the mesh at this position in 3D space. 
         for (Mesh* mesh : meshes)
         {

@@ -1,6 +1,6 @@
 #ifndef GLOBALPARAM_1600139246992_H
 #define GLOBALPARAM_1600139246992_H
-#include "cxutil/math/coord_t.h"
+#include "cxutil/math/Coord_t.h"
 
 namespace cxutil
 {
