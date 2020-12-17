@@ -2,8 +2,7 @@
 #ifndef CX_UTILS_MATH_H
 #define CX_UTILS_MATH_H
 
-#include <cmath>
-
+#include "cxdef/base/base.h"
 
 //c++11 no longer defines M_PI, so add our own constant.
 #ifndef M_PI

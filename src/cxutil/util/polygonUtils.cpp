@@ -9,6 +9,7 @@
 #include "polygonUtils.h"
 
 #include "cxutil/math/linearAlg2D.h"
+#include "cxutil/util/logoutput.h"
 //#include "cxutil/util/SparsePointGridInclusive.h"
 
 #ifdef DEBUG
