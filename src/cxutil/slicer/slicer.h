@@ -13,9 +13,6 @@
 #include "cxutil/settings/AdaptiveLayerHeights.h"
 #include "cxutil/math/vertex.h"
 
-#if( (defined CXX_CHECK_MEMORY_LEAKS) && (defined _DEBUG) && (_MSC_VER))
-#include "vld.h"
-#endif
 /*
     The Slicer creates layers of polygons from an optimized 3D model.
     The result of the Slicer is a list of polygons without any order or structure.
