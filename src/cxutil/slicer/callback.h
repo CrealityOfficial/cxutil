@@ -4,17 +4,20 @@
 
 namespace cxutil
 {
+	class Mesh;
 	class SliceCallback
 	{
 	public:
 		virtual ~SliceCallback() {}
 
 		virtual void onSceneBox(const AABB3D& box3) = 0;
-		
 		virtual void onLayerCount(int layer) = 0;
-
 		virtual void onFilamentLen(double len) = 0;
 		virtual void onPrintTime(int time) = 0;
+
+		virtual void onLayerPart(int meshIdx, int layerIdx, int partIdx, float z, float thickness, ClipperLib::Path& path) = 0;
+		virtual void onSupport(int layerIdx, int partIdx, float thickness, ClipperLib::Path& path) = 0;
+		virtual void onCxutilMesh(Mesh* mesh) = 0;
 	};
 }
 
