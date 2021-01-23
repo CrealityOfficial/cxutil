@@ -16,7 +16,7 @@ namespace cxutil
      * One MeshGroup is a whole which is printed at once.
      * Generally there is one single MeshGroup, though when using one-at-a-time printing, multiple MeshGroups are processed consecutively.
      */
-    class MeshGroup : public NoCopy
+    class MeshGroup
     {
     public:
         std::vector<Mesh*> meshes;
@@ -27,6 +27,7 @@ namespace cxutil
 
         MeshGroup();
         ~MeshGroup();
+
         void clear();
 
         void finalize();
