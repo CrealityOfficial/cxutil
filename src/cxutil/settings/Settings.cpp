@@ -623,5 +623,15 @@ namespace cxutil
         }
     }
 
+    void Settings::write(std::fstream& out)
+    {
+        std::unordered_map<std::string, std::string>::iterator it = settings.begin();
+        while (it != settings.end())
+        {
+            out << (*it).first << "=" << (*it).second << std::endl;
+            ++it;
+        }
+    }
+
 }//namespace cura
 

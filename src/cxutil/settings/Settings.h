@@ -8,6 +8,7 @@
 #include <map>
 #include <unordered_map>
 #include <sstream>
+#include <fstream>
 #include <memory>
 #include "cxutil/slicer/ExtruderTrain.h"
 
@@ -91,6 +92,8 @@ namespace cxutil
         void setParent(Settings* new_parent);
 
         std::unordered_map<std::string, std::string>& enumDic();
+
+        void write(std::fstream& out);
     private:
         /*!
          * Optionally, a parent setting container to ask for the value of a setting
