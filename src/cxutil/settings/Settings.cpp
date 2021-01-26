@@ -360,6 +360,10 @@ namespace cxutil
         {
             return EPlatformAdhesion::NONE;
         }
+		else if (value == "lace")
+		{
+			return EPlatformAdhesion::LACE;
+		}
         else //Default.
         {
             return EPlatformAdhesion::SKIRT;
