@@ -603,6 +603,16 @@ namespace cxutil
             return paths.size();
         }
 
+		ClipperLib::Paths getPaths()
+		{
+			return paths;
+		}
+
+		void setPaths(ClipperLib::Paths _paths)
+		{
+			paths = _paths;
+		}
+
         /*!
          * Convenience function to check if the polygon has no points.
          *
