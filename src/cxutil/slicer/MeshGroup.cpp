@@ -20,6 +20,12 @@ namespace cxutil
 
     }
 
+    MeshGroup::MeshGroup(const MeshGroup& group)
+        : settings(new Settings())
+    {
+
+    }
+
     MeshGroup::~MeshGroup()
     {
         clear();

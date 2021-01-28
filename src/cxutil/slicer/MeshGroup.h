@@ -26,6 +26,7 @@ namespace cxutil
         Point3 max() const; //! maximal corner of bounding box
 
         MeshGroup();
+        MeshGroup(const MeshGroup& group);
         ~MeshGroup();
 
         void clear();
