@@ -370,6 +370,33 @@ namespace cxutil
         }
     }
 
+
+	template<> ColorChangeType Settings::get<ColorChangeType>(const std::string& key) const
+	{
+		const std::string& value = get<std::string>(key);
+		if (value == "two_color_print")
+		{
+			return ColorChangeType::TWO;
+		}
+		else if (value == "three_color_printing")
+		{
+			return ColorChangeType::THREE;
+		}
+		else if (value == "four_color_printing")
+		{
+			return ColorChangeType::FOUR;
+		}
+		else if (value == "five_color_printing")
+		{
+			return ColorChangeType::FIVE;
+		}
+		else //Default.
+		{
+			return ColorChangeType::BACKLIST;
+		}
+	}
+
+
     template<> ESupportType Settings::get<ESupportType>(const std::string& key) const
     {
         const std::string& value = get<std::string>(key);
