@@ -15,6 +15,7 @@ namespace cxutil
          * inherits everything from the global settings.
          */
         ExtruderTrain(const size_t extruder_nr, Settings* parent_settings);
+        ExtruderTrain(const ExtruderTrain& train);
         ~ExtruderTrain();
         /*
          * \brief The settings that this extruder overwrites.

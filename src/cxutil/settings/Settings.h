@@ -90,6 +90,7 @@ namespace cxutil
          * If this set of settings has no value for a setting, the parent is asked.
          */
         void setParent(Settings* new_parent);
+        Settings* parentSettings();
 
         std::unordered_map<std::string, std::string>& enumDic();
 

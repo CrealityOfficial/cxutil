@@ -10,6 +10,12 @@ namespace cxutil
         settings = new Settings(parent_settings);
     }
 
+    ExtruderTrain::ExtruderTrain(const ExtruderTrain& train)
+        :extruder_nr(train.extruder_nr)
+    {
+        settings = new Settings(train.settings->parentSettings());
+    }
+
     ExtruderTrain::~ExtruderTrain()
     {
         delete settings;

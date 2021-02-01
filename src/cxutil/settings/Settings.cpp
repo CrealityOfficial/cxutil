@@ -605,6 +605,11 @@ namespace cxutil
         parent = new_parent;
     }
 
+    Settings* Settings::parentSettings()
+    {
+        return parent;
+    }
+
     std::unordered_map<std::string, std::string>& Settings::enumDic()
     {
         return settings;
