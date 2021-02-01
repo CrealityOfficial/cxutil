@@ -43,6 +43,18 @@ namespace cxutil
     };
 
     /*!
+ * Color Change Type.
+ */
+    enum class ColorChangeType
+    {
+        BACKLIST,
+        TWO,
+        THREE,
+        FOUR,
+        FIVE
+    };
+
+    /*!
      * Type of support material to generate
      */
     enum class ESupportType
