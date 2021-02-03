@@ -1,8 +1,8 @@
 //Copyright (c) 2018 Ultimaker B.V.
 //CuraEngine is released under the terms of the AGPLv3 or higher.
 
-#ifndef DURATION_H
-#define DURATION_H
+#ifndef CXUTIL_DURATION_H
+#define CXUTIL_DURATION_H
 
 namespace cxutil
 {
@@ -67,4 +67,4 @@ namespace cxutil
 
 }
 
-#endif //DURATION_H
+#endif //CXUTIL_DURATION_H

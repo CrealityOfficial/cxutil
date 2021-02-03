@@ -1,8 +1,8 @@
 //Copyright (c) 2018 Ultimaker B.V.
 //CuraEngine is released under the terms of the AGPLv3 or higher.
 
-#ifndef UTILS_OPTIONAL_H
-#define UTILS_OPTIONAL_H
+#ifndef CXUTIL_UTILS_OPTIONAL_H
+#define CXUTIL_UTILS_OPTIONAL_H
 
 #include <algorithm> // swap
 #include <type_traits> // enable_if  is_same
@@ -173,5 +173,5 @@ namespace cxutil
     };
 
 }//namespace std
-#endif//UTILS_OPTIONAL_H
+#endif//CXUTIL_UTILS_OPTIONAL_H
 

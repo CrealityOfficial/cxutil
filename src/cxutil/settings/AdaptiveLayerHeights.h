@@ -1,8 +1,8 @@
 //Copyright (C) 2018 Ultimaker B.V.
 //CuraEngine is released under the terms of the AGPLv3 or higher.
 
-#ifndef ADAPTIVELAYERHEIGHTS_H
-#define ADAPTIVELAYERHEIGHTS_H
+#ifndef CXUTIL_ADAPTIVELAYERHEIGHTS_H
+#define CXUTIL_ADAPTIVELAYERHEIGHTS_H
 
 #include "cxutil/math/Coord_t.h"
 #include "cxutil/slicer/MeshGroup.h"
@@ -124,4 +124,4 @@ namespace cxutil
     };
 }
 
-#endif //ADAPTIVELAYERHEIGHTS_H
+#endif //CXUTIL_ADAPTIVELAYERHEIGHTS_H

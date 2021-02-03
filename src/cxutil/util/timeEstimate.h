@@ -1,5 +1,5 @@
-#ifndef TIME_ESTIMATE_H
-#define TIME_ESTIMATE_H
+#ifndef CXUTIL_TIME_ESTIMATE_H
+#define CXUTIL_TIME_ESTIMATE_H
 #include <stdint.h>
 #include <vector>
 #include "cxutil/settings/Duration.h"
@@ -119,4 +119,4 @@ namespace cxutil
     };
 
 }//namespace cxutil
-#endif//TIME_ESTIMATE_H
+#endif//CXUTIL_TIME_ESTIMATE_H

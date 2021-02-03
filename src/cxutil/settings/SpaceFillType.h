@@ -1,5 +1,5 @@
-#ifndef SPACE_FILL_TYPE
-#define SPACE_FILL_TYPE
+#ifndef CXUTIL_SPACE_FILL_TYPE
+#define CXUTIL_SPACE_FILL_TYPE
 
 namespace cxutil
 {
@@ -20,4 +20,4 @@ namespace cxutil
 
 } // namespace cxutil
 
-#endif // SPACE_FILL_TYPE
+#endif // CXUTIL_SPACE_FILL_TYPE

@@ -1,8 +1,8 @@
 //Copyright (c) 2018 Ultimaker B.V.
 //CuraEngine is released under the terms of the AGPLv3 or higher.
 
-#ifndef RETRACTION_CONFIG_H
-#define RETRACTION_CONFIG_H
+#ifndef CXUTIL_RETRACTION_CONFIG_H
+#define CXUTIL_RETRACTION_CONFIG_H
 
 #include "cxutil/settings/Velocity.h"
 
@@ -25,4 +25,4 @@ namespace cxutil
     };
 }//namespace cxutil
 
-#endif // RETRACTION_CONFIG_H
+#endif // CXUTIL_RETRACTION_CONFIG_H

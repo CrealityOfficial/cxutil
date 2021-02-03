@@ -1,8 +1,8 @@
 //Copyright (c) 2018 Ultimaker B.V.
 //CuraEngine is released under the terms of the AGPLv3 or higher.
 
-#ifndef TEMPERATURE_H
-#define TEMPERATURE_H
+#ifndef CXUTIL_TEMPERATURE_H
+#define CXUTIL_TEMPERATURE_H
 
 namespace cxutil
 {
@@ -62,4 +62,4 @@ namespace cxutil
 
 }
 
-#endif //TEMPERATURE_H
+#endif //CXUTIL_TEMPERATURE_H

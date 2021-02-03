@@ -1,8 +1,8 @@
 //Copyright (c) 2018 Ultimaker B.V.
 //CuraEngine is released under the terms of the AGPLv3 or higher.
 
-#ifndef FAN_SPEED_LAYER_TIME_H
-#define FAN_SPEED_LAYER_TIME_H
+#ifndef CXUTIL_FAN_SPEED_LAYER_TIME_H
+#define CXUTIL_FAN_SPEED_LAYER_TIME_H
 
 #include "cxutil/settings/LayerIndex.h"
 #include "cxutil/settings/Velocity.h"
@@ -25,4 +25,4 @@ namespace cxutil
 
 } // namespace cxutil
 
-#endif // FAN_SPEED_LAYER_TIME_H
+#endif // CXUTIL_FAN_SPEED_LAYER_TIME_H

@@ -1,8 +1,8 @@
 //Copyright (c) 2018 Ultimaker B.V.
 //CuraEngine is released under the terms of the AGPLv3 or higher.
 
-#ifndef VELOCITY_H
-#define VELOCITY_H
+#ifndef CXUTIL_VELOCITY_H
+#define CXUTIL_VELOCITY_H
 
 namespace cxutil
 {
@@ -82,4 +82,4 @@ namespace cxutil
 
 }
 
-#endif //VELOCITY_H
+#endif //CXUTIL_VELOCITY_H

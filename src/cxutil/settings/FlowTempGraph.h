@@ -1,5 +1,5 @@
-#ifndef FLOW_TEMP_GRAPH
-#define FLOW_TEMP_GRAPH
+#ifndef CXUTIL_FLOW_TEMP_GRAPH
+#define CXUTIL_FLOW_TEMP_GRAPH
 #include <vector>
 #include "cxutil/settings/Temperature.h"
 
@@ -39,4 +39,4 @@ namespace cxutil
 
 } // namespace cxutil
 
-#endif // FLOW_TEMP_GRAPH
+#endif // CXUTIL_FLOW_TEMP_GRAPH

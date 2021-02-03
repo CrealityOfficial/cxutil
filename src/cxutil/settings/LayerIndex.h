@@ -1,8 +1,8 @@
 //Copyright (c) 2019 Ultimaker B.V.
 //CuraEngine is released under the terms of the AGPLv3 or higher.
 
-#ifndef LAYERINDEX_H
-#define LAYERINDEX_H
+#ifndef CXUTIL_LAYERINDEX_H
+#define CXUTIL_LAYERINDEX_H
 
 #include <functional>
 
@@ -123,4 +123,4 @@ namespace std
     };
 }
 
-#endif //LAYERINDEX_H
+#endif //CXUTIL_LAYERINDEX_H

@@ -1,5 +1,5 @@
-#ifndef PRINT_FEATURE
-#define PRINT_FEATURE
+#ifndef CXUTIL_PRINT_FEATURE
+#define CXUTIL_PRINT_FEATURE
 
 namespace cxutil
 {
@@ -24,4 +24,4 @@ namespace cxutil
     };
 } // namespace cxutil
 
-#endif // PRINT_FEATURE
+#endif // CXUTIL_PRINT_FEATURE

@@ -1,5 +1,5 @@
-#ifndef WIPE_SCRIPT_CONFIG_H
-#define WIPE_SCRIPT_CONFIG_H
+#ifndef CXUTIL_WIPE_SCRIPT_CONFIG_H
+#define CXUTIL_WIPE_SCRIPT_CONFIG_H
 
 #include "cxutil/math/Coord_t.h"
 #include "cxutil/settings/RetractionConfig.h"
@@ -27,4 +27,4 @@ namespace cxutil
     };
 }//namespace cxutil
 
-#endif // WIPE_SCRIPT_CONFIG_H
+#endif // CXUTIL_WIPE_SCRIPT_CONFIG_H
