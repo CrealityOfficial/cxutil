@@ -9,6 +9,7 @@ namespace cxutil
 	class MeshObject;
 	MeshObject* meshFromTriangleSoup(const std::vector<Point3>& soup);
 	MeshObject* meshFromTriangleSoup(float* vertex, int vertexNum);
+	MeshObject* meshFromTrimesh(float* vertex, int faceNum, int* faceIndex);
 	MeshObject* loadSTLBinaryMesh(const char* fileName);
 
 	void loadSTLBinarySoup(const char* fileName, std::vector<Point3>& soups);

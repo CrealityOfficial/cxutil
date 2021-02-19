@@ -16,7 +16,7 @@
 namespace cxutil
 {
 
-    static constexpr float sqrt2 = 1.41421356237;
+    static constexpr float sqrt2 = 1.41421356237f;
 
     template<typename T> inline T square(const T& a) { return a * a; }
 
