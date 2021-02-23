@@ -32,6 +32,9 @@ namespace cxutil
 	public:
 		DLPData();
 		virtual ~DLPData();
+		std::vector<ClipperLib::PolyTree*> trait(int layer);
+		int layers();
+
 		DLPmeshsgroup m_dlpmeshsgroup;
 	};
 }
