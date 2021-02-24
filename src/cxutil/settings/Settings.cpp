@@ -429,6 +429,10 @@ namespace cxutil
         {
             return EZSeamType::SHARPEST_CORNER;
         }
+        else if (value == "user_specified")
+        {
+            return EZSeamType::USER_SPECIFIED;
+        }
         else //Default.
         {
             return EZSeamType::SHORTEST;
