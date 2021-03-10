@@ -45,9 +45,10 @@ namespace cxutil
 
         for (size_t i = 0; i < faceNum; ++i)
         {
-            float* v1 = vertex + 3 * (3 * i);
-            float* v2 = vertex + 3 * (3 * i + 1);
-            float* v3 = vertex + 3 * (3 * i + 2);
+            int* face = faceIndex + 3 * i;
+            float* v1 = vertex + 3 * *(face);
+            float* v2 = vertex + 3 * *(face + 1);
+            float* v3 = vertex + 3 * *(face + 2);
             Point3 p1 = Point3(MM2INT(1.0 * *v1), MM2INT(1.0 * *(v1 + 1)), MM2INT(1.0 * *(v1 + 2)));
             Point3 p2 = Point3(MM2INT(1.0 * *v2), MM2INT(1.0 * *(v2 + 1)), MM2INT(1.0 * *(v2 + 2)));
             Point3 p3 = Point3(MM2INT(1.0 * *v3), MM2INT(1.0 * *(v3 + 1)), MM2INT(1.0 * *(v3 + 2)));
