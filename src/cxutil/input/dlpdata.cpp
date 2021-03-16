@@ -19,7 +19,44 @@ namespace cxutil
 					}
 				}
 			}
+		}	
+	}
+
+	std::vector<ClipperLib::PolyTree*> DLPData::trait(int layer)
+	{
+		std::vector<cxutil::DLPmeshs>& meshGroup = m_dlpmeshsgroup.dlpmeshsgroup;
+		std::vector<ClipperLib::PolyTree*> trees;
+		for (cxutil::DLPmeshs& group : meshGroup)
+		{
+			std::vector<cxutil::DLPmesh>& meshes = group.dlpmeshs;
+
+			for (cxutil::DLPmesh& mesh : meshes)
+			{
+				if (layer < (int)mesh.layers.size())
+				{
+					for (ClipperLib::PolyTree* tree : mesh.layers.at(layer).parts)
+						trees.push_back(tree);
+				}
+			}
 		}
-		
+		return trees;
+	}
+
+	int DLPData::layers()
+	{
+		int layer = 0;
+		std::vector<cxutil::DLPmeshs>& meshGroup = m_dlpmeshsgroup.dlpmeshsgroup;
+		for (cxutil::DLPmeshs& group : meshGroup)
+		{
+			std::vector<cxutil::DLPmesh>& meshes = group.dlpmeshs;
+
+			for (cxutil::DLPmesh& mesh : meshes)
+			{
+				std::vector<cxutil::DLPLayer>& layers = mesh.layers;
+				if (layers.size() > 0 && layer < layers.size())
+					layer = (int)layers.size();
+			}
+		}
+		return layer;
 	}
 }
