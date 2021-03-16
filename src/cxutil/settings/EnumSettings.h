@@ -55,6 +55,17 @@ namespace cxutil
     };
 
     /*!
+* Color Positon Type.
+*/
+    enum class ColorPositonType
+    {
+        INNER,
+        OUTER,
+        ORIGIN,
+        UserSpecified
+    };
+
+    /*!
      * Type of support material to generate
      */
     enum class ESupportType
