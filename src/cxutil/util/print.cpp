@@ -18,7 +18,7 @@ namespace cxutil
         logError("Command called:\n");
         for (size_t argument_index = 0; argument_index < args.size(); argument_index++)
         {
-            logError("%s ", args[argument_index]);
+            logError("%s ", args[argument_index].c_str());
         }
         logError("\n");
     }

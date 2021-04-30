@@ -1,5 +1,5 @@
 #include "cxutil/util/cmdparsor.h"
-#include <string.h>
+#include <string>
 
 namespace cxutil
 {
@@ -16,7 +16,7 @@ namespace cxutil
 
 	void CmdParsor::registerFunc(const char* cmd, processFunc func)
 	{
-		if(func) m_funcs.insert(std::unordered_map<std::string, processFunc>::value_type(cmd, func));
+        if(func) m_funcs.insert(std::map<std::string, processFunc>::value_type(cmd, func));
 	}
 
 	void CmdParsor::process()
@@ -39,7 +39,7 @@ namespace cxutil
 				cmd = argv;
 			}
 
-			std::unordered_map<std::string, processFunc>::iterator it = m_funcs.find(cmd);
+            std::map<std::string, processFunc>::iterator it = m_funcs.find(cmd);
 			if (it != m_funcs.end())
 			{
 				(*it).second(param);
