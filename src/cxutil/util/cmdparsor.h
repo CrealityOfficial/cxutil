@@ -1,6 +1,7 @@
 #ifndef CX_CMDPARSOR_1600066272729_H
 #define CX_CMDPARSOR_1600066272729_H
 #include <functional>
+#include <string>
 #include <map>
 
 namespace cxutil
