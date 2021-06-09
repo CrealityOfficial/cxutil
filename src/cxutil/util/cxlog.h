@@ -1,8 +1,7 @@
 #ifndef _CXLOG_H
 #define _CXLOG_H
-#include<string>
 #include<memory>
-
+#include<string>
 namespace spdlog
 {
 	class logger;

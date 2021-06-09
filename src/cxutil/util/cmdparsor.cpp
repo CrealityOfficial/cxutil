@@ -1,6 +1,5 @@
 #include "cxutil/util/cmdparsor.h"
-#include <string>
-
+#include<string.h>
 namespace cxutil
 {
 	CmdParsor::CmdParsor(int argc, char* argv[])
