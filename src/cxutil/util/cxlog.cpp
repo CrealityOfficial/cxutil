@@ -19,7 +19,7 @@ namespace cxutil {
 		//设置日志为滚动日志
 		mp_logger_ =spdlog::rotating_logger_mt("cxlog", file_name,maxSize,maxFiles);
 		//当遇到错误级别以上的马上刷新到日志
-		mp_logger_->flush_on(spdlog::level::err);
+		mp_logger_->flush_on(spdlog::level::info);
 		//每三秒刷新一次
 		spdlog::flush_every(std::chrono::seconds(3));
 		hasInitLog = true;
@@ -67,7 +67,6 @@ namespace cxutil {
 	{
 		spdlog::shutdown();
 	}
-
 	void CXLog::SetLevel(int level)
 	{
 		spdlog::set_level(static_cast<spdlog::level::level_enum>(level));
