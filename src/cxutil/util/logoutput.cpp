@@ -2,9 +2,11 @@
 
 #include <stdio.h>
 #include <stdarg.h>
+#include<string>
 
 #ifdef _OPENMP
 #include <omp.h>
+#include"cxutil/util/cxlog.h"
 #endif // _OPENMP
 
 namespace cxutil
@@ -24,8 +26,11 @@ namespace cxutil
 
     void logError(const char* fmt, ...)
     {
+        char buf[MAX_LOG_LEN] = { 0 };
         va_list args;
         va_start(args, fmt);
+        vsprintf(buf, fmt, args);
+        CXLogError(buf);
 #pragma omp critical
         {
             fprintf(stderr, "[ERROR] ");
@@ -39,9 +44,11 @@ namespace cxutil
     {
         if (verbose_level < 1)
             return;
-
+        char buf[MAX_LOG_LEN] = { 0 };
         va_list args;
         va_start(args, fmt);
+        vsprintf(buf, fmt, args);
+        CXLogWarn(buf);
 #pragma omp critical
         {
             fprintf(stderr, "[WARNING] ");
@@ -86,6 +93,9 @@ namespace cxutil
             return;
         }
         va_start(args, fmt);
+        char buf[MAX_LOG_LEN] = { 0 };
+        vsprintf(buf, fmt, args);
+        CXLogDebug(buf);
 #pragma omp critical
         {
             fprintf(stderr, "[DEBUG] ");
