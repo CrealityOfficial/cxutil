@@ -6,7 +6,7 @@
 
 #ifdef _OPENMP
 #include <omp.h>
-#include"cxutil/util/cxlog.h"
+#include"cxlog.h"
 #endif // _OPENMP
 
 namespace cxutil
