@@ -45,7 +45,7 @@ namespace cxutil
         {
             Polygon ret;
             logError("Different density sierpinski fill for different layers is not implemented yet!\n");
-            std::exit(-1);
+            //std::exit(-1);
             return ret;
         }
     }

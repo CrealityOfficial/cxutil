@@ -1,5 +1,6 @@
 #include "getpath.h"
 #include <iostream>
+#include"cxutil/util/cxlog.h"
 
 #ifdef _WIN32
 #include <windows.h> // GetFullPathNameA
@@ -18,8 +19,9 @@ namespace cxutil
         DWORD path_size = GetFullPathNameA(filePath.c_str(), static_cast<DWORD>(MAX_PATH), buffer, &file_name_start);
         if (path_size == 0)
         {
-            std::cerr << "Failed to get full path for [" << filePath.c_str() << "]" << std::endl;
-            exit(1);
+            CXLogError("Failed to get full path for [%s]" ,  filePath.c_str());
+            return std::string("");
+           // exit(1);
         }
         // Only take the directory part of
         DWORD dir_path_size = path_size - (path_size - (file_name_start - buffer));

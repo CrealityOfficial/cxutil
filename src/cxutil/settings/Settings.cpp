@@ -64,9 +64,9 @@ namespace cxutil
         {
             return parent->get<std::string>(key);
         }
-
         logError("Trying to retrieve setting with no value given: '%s'\n", key.c_str());
-        std::exit(2);
+        //std::exit(2);
+        return std::string("");
     }
 
     template<> double Settings::get<double>(const std::string& key) const
@@ -659,7 +659,8 @@ namespace cxutil
         else
         {
             logError("Trying to retrieve setting with no value given: '%s'\n", key.c_str());
-            std::exit(2);
+            //std::exit(2);
+            return std::string("");
         }
     }
 
