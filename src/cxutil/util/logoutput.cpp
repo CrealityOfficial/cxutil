@@ -2,12 +2,13 @@
 
 #include <stdio.h>
 #include <stdarg.h>
-#include<string>
+#include <string>
 
 #ifdef _OPENMP
 #include <omp.h>
-#include"cxlog.h"
 #endif // _OPENMP
+
+#include "spdlog/cxlog.h"
 
 namespace cxutil
 {
