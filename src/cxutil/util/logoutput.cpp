@@ -32,30 +32,28 @@ namespace cxutil
         va_start(args, fmt);
         vsprintf(buf, fmt, args);
         CXLogError(buf);
-#pragma omp critical
-        {
-            fprintf(stderr, "[ERROR] ");
-            vfprintf(stderr, fmt, args);
-            fflush(stderr);
-        }
+//#pragma omp critical
+//        {
+//            fprintf(stderr, "[ERROR] ");
+//            vfprintf(stderr, fmt, args);
+//            fflush(stderr);
+//        }
         va_end(args);
     }
 
     void logWarning(const char* fmt, ...)
     {
-        if (verbose_level < 1)
-            return;
         char buf[MAX_LOG_LEN] = { 0 };
         va_list args;
         va_start(args, fmt);
         vsprintf(buf, fmt, args);
         CXLogWarn(buf);
-#pragma omp critical
-        {
-            fprintf(stderr, "[WARNING] ");
-            vfprintf(stderr, fmt, args);
-            fflush(stderr);
-        }
+//#pragma omp critical
+//        {
+//            fprintf(stderr, "[WARNING] ");
+//            vfprintf(stderr, fmt, args);
+//            fflush(stderr);
+//        }
         va_end(args);
     }
 
@@ -63,11 +61,11 @@ namespace cxutil
     {
         va_list args;
         va_start(args, fmt);
-#pragma omp critical
-        {
-            vfprintf(stderr, fmt, args);
-            fflush(stderr);
-        }
+//#pragma omp critical
+//        {
+//            vfprintf(stderr, fmt, args);
+//            fflush(stderr);
+//        }
         va_end(args);
     }
 
@@ -78,11 +76,11 @@ namespace cxutil
             return;
 
         va_start(args, fmt);
-#pragma omp critical
-        {
-            vfprintf(stderr, fmt, args);
-            fflush(stderr);
-        }
+//#pragma omp critical
+//        {
+//            vfprintf(stderr, fmt, args);
+//            fflush(stderr);
+//        }
         va_end(args);
     }
 
@@ -97,12 +95,12 @@ namespace cxutil
         char buf[MAX_LOG_LEN] = { 0 };
         vsprintf(buf, fmt, args);
         CXLogDebug(buf);
-#pragma omp critical
-        {
-            fprintf(stderr, "[DEBUG] ");
-            vfprintf(stderr, fmt, args);
-            fflush(stderr);
-        }
+//#pragma omp critical
+//        {
+//            fprintf(stderr, "[DEBUG] ");
+//            vfprintf(stderr, fmt, args);
+//            fflush(stderr);
+//        }
         va_end(args);
     }
 
@@ -111,11 +109,11 @@ namespace cxutil
         if (!progressLogging)
             return;
 
-#pragma omp critical
-        {
-            fprintf(stderr, "Progress:%s:%i:%i \t%f%%\n", type, value, maxValue, percent);
-            fflush(stderr);
-        }
+//#pragma omp critical
+//        {
+//            fprintf(stderr, "Progress:%s:%i:%i \t%f%%\n", type, value, maxValue, percent);
+//            fflush(stderr);
+//        }
     }
 
 }
