@@ -9,6 +9,9 @@
 #endif // _OPENMP
 
 #include "spdlog/cxlog.h"
+#include"Application.h"
+#include"Slice.h"
+
 
 namespace cxutil
 {
@@ -41,6 +44,23 @@ namespace cxutil
         va_end(args);
     }
 
+    void logError(const long long logSortId,const char* fmt, ...)
+    {
+        char buf[MAX_LOG_LEN] = { 0 };
+        va_list args;
+        va_start(args, fmt);
+        vsprintf(buf, fmt, args);
+        if (logSortId > 0)
+        {
+            std::stringstream ss;
+            ss << "[" << logSortId << "] ";
+            ss << buf;
+            strncpy(buf, ss.str().c_str(), ss.str().length());
+        }
+        CXLogError(buf);
+        va_end(args);
+    }
+
     void logWarning(const char* fmt, ...)
     {
         char buf[MAX_LOG_LEN] = { 0 };
@@ -54,6 +74,23 @@ namespace cxutil
 //            vfprintf(stderr, fmt, args);
 //            fflush(stderr);
 //        }
+        va_end(args);
+    }
+
+    void logWarning(const long long logSortId, const char* fmt, ...)
+    {
+        char buf[MAX_LOG_LEN] = { 0 };
+        va_list args;
+        va_start(args, fmt);
+        vsprintf(buf, fmt, args);
+        if (logSortId > 0)
+        {
+            std::stringstream ss;
+            ss << "[" << logSortId << "] ";
+            ss << buf;
+            strncpy(buf, ss.str().c_str(), ss.str().length());
+        }
+        CXLogWarn(buf);
         va_end(args);
     }
 

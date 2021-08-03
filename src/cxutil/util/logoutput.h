@@ -7,6 +7,7 @@ namespace cxutil
      * \brief Increase verbosity level by 1.
      */
     void increaseVerboseLevel();
+    void setLogSliceId(const long long logSliceId);
 
     /*
      * \brief Enable logging the current slicing progress to the log.
@@ -19,13 +20,14 @@ namespace cxutil
      * This is always reported, regardless of verbosity level.
      */
     void logError(const char* fmt, ...);
-
+    void logError(const long long logSortId, const char* fmt, ...);
     /*
      * \brief Report a warning message.
      *
      * Always reported, regardless of verbosity level.
      */
     void logWarning(const char* fmt, ...);
+    void logWarning(const long long logSortId, const char* fmt, ...);
 
     /*
      * \brief Report a message if the verbosity level is 1 or higher.

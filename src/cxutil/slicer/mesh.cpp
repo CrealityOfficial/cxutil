@@ -166,7 +166,8 @@ namespace cxutil
             logDebug("Couldn't find face connected to face %i.\n", notFaceIdx);
             if (!has_disconnected_faces)
             {
-                logWarning("Mesh has disconnected faces!\n");
+                long long sortId = atoll(settings->get<std::string>("slice_log_sort").c_str());
+                logWarning(sortId,"Mesh has disconnected faces!\n");
             }
             has_disconnected_faces = true;
             return -1;
@@ -179,7 +180,8 @@ namespace cxutil
             logDebug("Warning! Edge with uneven number of faces connecting it!(%i)\n", candidateFaces.size() + 1);
             if (!has_disconnected_faces)
             {
-                logWarning("Mesh has disconnected faces!\n");
+                long long sortId = atoll(settings->get<std::string>("slice_log_sort").c_str());
+                logWarning(sortId,"Mesh has disconnected faces!\n");
             }
             has_disconnected_faces = true;
         }
@@ -236,7 +238,8 @@ namespace cxutil
             logDebug("Couldn't find face connected to face %i.\n", notFaceIdx);
             if (!has_disconnected_faces)
             {
-                logWarning("Mesh has disconnected faces!\n");
+                long long sortId = atoll(settings->get<std::string>("slice_log_sort").c_str());
+                logWarning(sortId,"Mesh has disconnected faces!\n");
             }
             has_disconnected_faces = true;
         }
