@@ -1,6 +1,6 @@
 #include "getpath.h"
 #include <iostream>
-#include "spdlog/cxlog.h"
+#include "spdlog/cxlog_macro.h"
 
 #ifdef _WIN32
 #include <windows.h> // GetFullPathNameA

@@ -8,7 +8,7 @@
 #include <omp.h>
 #endif // _OPENMP
 
-#include "spdlog/cxlog.h"
+#include "spdlog/cxlog_macro.h"
 #include"Application.h"
 #include"Slice.h"
 
