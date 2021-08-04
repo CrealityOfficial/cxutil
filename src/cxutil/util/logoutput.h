@@ -7,7 +7,6 @@ namespace cxutil
      * \brief Increase verbosity level by 1.
      */
     void increaseVerboseLevel();
-    void setLogSliceId(const long long logSliceId);
 
     /*
      * \brief Enable logging the current slicing progress to the log.
