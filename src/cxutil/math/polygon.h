@@ -750,6 +750,24 @@ namespace cxutil
             clipper.Execute(ClipperLib::ctUnion, ret.paths, ClipperLib::pftNonZero, ClipperLib::pftNonZero);
             return ret;
         }
+        void optimize(const int maxPath)
+        {
+            size_t size = paths.size();
+            if (size > maxPath)
+            {
+                ClipperLib::Clipper clipper(clipper_init);
+
+                for (size_t i = 0; i < size; ++i)
+                {
+                    if (i == 0)
+                        clipper.AddPath(paths.at(i), ClipperLib::ptClip, true);
+                    else
+                        clipper.AddPath(paths.at(i), ClipperLib::ptSubject, true);
+                }
+                clipper.Execute(ClipperLib::ctUnion, paths, ClipperLib::pftNonZero, ClipperLib::pftNonZero);
+            }
+        }
+
         /*!
          * Union all polygons with each other (When polygons.add(polygon) has been called for overlapping polygons)
          */
