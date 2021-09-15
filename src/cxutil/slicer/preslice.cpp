@@ -113,6 +113,7 @@ namespace cxutil
 
     void buildSliceInfos(DLPInput* input, std::vector<int>& z)
     {
+        if (!input) return;
         std::vector<MeshObjectPtr>& meshes = input->meshes();
         AABB3D box = input->box();
 
