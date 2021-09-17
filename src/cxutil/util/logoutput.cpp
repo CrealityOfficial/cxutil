@@ -12,7 +12,7 @@
 #include"Application.h"
 #include"Slice.h"
 
-#define MAX_LOG_LEN 128
+#define MAX_LOG_LEN 256
 namespace cxutil
 {
     static int verbose_level;
