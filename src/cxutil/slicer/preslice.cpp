@@ -1,6 +1,7 @@
 #include "preslice.h"
 #include "cxutil/input/groupinput.h"
 #include "cxutil/input/dlpinput.h"
+#include "trimesh2/TriMesh.h"
 
 #include "cxutil/settings/AdaptiveLayerHeights.h"
 namespace cxutil
@@ -111,6 +112,19 @@ namespace cxutil
         }
 	}
 
+    coord_t getMaxZ(DLPInput* input)
+    {
+        float maxZ = DBL_MIN, minZ = DBL_MAX;
+        std::vector<trimesh::TriMesh*> trimeshesSrc = input->getMeshesSrc();
+        for (trimesh::TriMesh* meshesSrc : trimeshesSrc)
+        {
+            maxZ = std::max(meshesSrc->bbox.max.z, maxZ);
+            minZ = std::min(meshesSrc->bbox.min.z, minZ);
+        }
+        coord_t Zdiff = MM2INT(maxZ - minZ);
+        return Zdiff;
+    }
+
     void buildSliceInfos(DLPInput* input, std::vector<int>& z)
     {
         if (!input) return;
@@ -123,7 +137,12 @@ namespace cxutil
         const coord_t initial_layer_thickness = param.initial_layer_thickness;
         const coord_t layer_thickness = param.layer_thickness;
 
+#ifndef USE_TRIMESH_SLICE
+        AABB3D box = input->box();
         slice_layer_count = (box.max.z - initial_layer_thickness) / layer_thickness + 1;
+#else
+        slice_layer_count = (getMaxZ(input) - initial_layer_thickness) / layer_thickness + 1;
+#endif 
 
         if (slice_layer_count > 0)
         {

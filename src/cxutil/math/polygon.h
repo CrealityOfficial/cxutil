@@ -673,6 +673,10 @@ namespace cxutil
         {
             paths.clear();
         }
+        void deletePaths()
+        {
+            paths.swap(ClipperLib::Paths());
+        }
         void add(ConstPolygonRef& poly)
         {
             paths.push_back(*poly.path);

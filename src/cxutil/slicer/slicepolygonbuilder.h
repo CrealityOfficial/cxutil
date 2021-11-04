@@ -8,12 +8,18 @@
 
 namespace cxutil
 {
+	class SliceHelper;
+}
+
+namespace cxutil
+{
 	class SlicePolygonBuilder
 	{
 	public:
 		SlicePolygonBuilder();
 		~SlicePolygonBuilder();
 
+		void sliceOneLayer_dst(cxutil::SliceHelper* helper, int z, Polygons* polygons, Polygons* openPolygons);
 		void makePolygon(Polygons* polygons, Polygons* openPolygons);
 
 		std::vector<SlicerSegment> segments;

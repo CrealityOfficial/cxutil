@@ -1,4 +1,5 @@
 #include "cxutil/input/dlpinput.h"
+#include "trimesh2/TriMesh.h"
 
 namespace cxutil
 {
@@ -14,6 +15,16 @@ namespace cxutil
 	void DLPInput::addMeshObject(MeshObjectPtr object)
 	{
 		m_meshes.push_back(object);
+	}
+
+	void DLPInput::addTriMesh(trimesh::TriMesh* Mesh)
+	{
+		m_meshesSrc.push_back(Mesh);
+	}
+
+	std::vector<trimesh::TriMesh*>& DLPInput::getMeshesSrc()
+	{
+		return m_meshesSrc;
 	}
 
 	const std::vector< MeshObjectPtr>& DLPInput::meshes() const

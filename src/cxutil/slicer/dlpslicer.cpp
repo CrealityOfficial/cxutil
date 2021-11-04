@@ -7,6 +7,7 @@
 
 #include "cxutil/processor/openpolygonprocessor.h"
 #include "cxutil/util/slicetracer.h"
+#include "trimesh2/TriMesh.h"
 
 #include <assert.h>
 
@@ -30,11 +31,12 @@ namespace cxutil
 	{
 		if (!input)
 			return nullptr;
-
+#ifndef USE_TRIMESH_SLICE
 		std::vector<MeshObjectPtr>& meshptres = input->meshes();
 		size_t meshCount = meshptres.size();
 		if (meshCount == 0)
 			return nullptr;
+#endif
 
 		std::vector<int> z;
 		buildSliceInfos(input, z);
@@ -56,6 +58,7 @@ namespace cxutil
 #ifdef _OPENMP
 		omp_set_num_threads(omp_get_num_procs());
 #endif
+#ifndef USE_TRIMESH_SLICE
 		std::vector<MeshObject*> meshes;
 		for (size_t i = 0; i < meshCount; ++i)
 		{
@@ -63,6 +66,12 @@ namespace cxutil
 		}
 		std::vector<SlicedMesh> slicedMeshes(meshCount);
 		sliceMeshes(meshes, slicedMeshes, z);
+#else
+		std::vector<trimesh::TriMesh*> meshes_src = input->getMeshesSrc();
+		size_t meshCount = meshes_src.size();
+		std::vector<SlicedMesh> slicedMeshes(meshCount);
+		sliceMeshes_src(meshes_src, slicedMeshes, z);
+#endif
 
 		if (tracer)
 		{
@@ -187,8 +196,8 @@ namespace cxutil
 
 				DLPLayer& dlpplayer = meshData.layers.at(layer_nr);
 				dlpplayer.printZ = z.at(layer_nr);
-
 				dlpplayer.parts.push_back((layer.polygons.splitIntoPolyTree(true)));
+				layer.polygons.deletePaths();
 			}
 		}
 
