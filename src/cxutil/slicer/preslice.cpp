@@ -129,7 +129,6 @@ namespace cxutil
     {
         if (!input) return;
         std::vector<MeshObjectPtr>& meshes = input->meshes();
-        AABB3D box = input->box();
 
         DLPParam& param = input->param();
 
