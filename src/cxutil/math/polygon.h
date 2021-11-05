@@ -302,7 +302,7 @@ namespace cxutil
          */
         static void smooth_corner_simple(const Point p0, const Point p1, const Point p2, const ListPolyIt p0_it, const ListPolyIt p1_it, const ListPolyIt p2_it, const Point v10, const Point v12, const Point v02, const int64_t shortcut_length, float cos_angle);
 
-        /*!
+	 /*!
          * Smooth out a complex corner where the shortcut bypasses more than two line segments
          * 
          * Auxiliary function for \ref smooth_outward
@@ -675,7 +675,8 @@ namespace cxutil
         }
         void deletePaths()
         {
-            paths.swap(ClipperLib::Paths());
+	    ClipperLib::Paths paths;	
+            paths.swap(paths);
         }
         void add(ConstPolygonRef& poly)
         {

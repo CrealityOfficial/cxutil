@@ -2,7 +2,7 @@
 #include "cxutil/input/groupinput.h"
 #include "cxutil/input/dlpinput.h"
 #include "trimesh2/TriMesh.h"
-
+#include <float.h>
 #include "cxutil/settings/AdaptiveLayerHeights.h"
 namespace cxutil
 {
