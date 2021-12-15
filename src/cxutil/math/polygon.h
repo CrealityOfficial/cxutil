@@ -613,6 +613,11 @@ namespace cxutil
 			paths = _paths;
 		}
 
+        void CleanPaths()
+        {
+            ClipperLib::CleanPolygons(paths);
+        }
+
         /*!
          * Convenience function to check if the polygon has no points.
          *
