@@ -15,7 +15,7 @@ namespace cxutil
 				{
 					for (std::vector< ClipperLib::PolyTree*>::iterator it4=it3->parts.begin();it4!=it3->parts.end();it4++)
 					{
-						if (*it4 != nullptr)
+						if (*it4 )
 						{
 							delete* it4;
 							*it4 = nullptr;
@@ -36,7 +36,7 @@ namespace cxutil
 				{
 					for (std::vector< ClipperLib::PolyTree*>::iterator it4 = it3.parts.begin(); it4 != it3.parts.end(); it4++)
 					{
-						if (*it4!=nullptr)
+						if (*it4)
 						{
 							delete* it4;
 							*it4 = nullptr;
