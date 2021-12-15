@@ -34,8 +34,8 @@ namespace cxutil
 		virtual ~DLPData();
 		std::vector<ClipperLib::PolyTree*> trait(int layer);
 		int layers();
-
 		DLPmeshsgroup m_dlpmeshsgroup;
+		void clearLayer(int layer);
 	};
 }
 #endif // _CXSW_DLPDATA_1593762618888_H

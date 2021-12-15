@@ -15,13 +15,37 @@ namespace cxutil
 				{
 					for (std::vector< ClipperLib::PolyTree*>::iterator it4=it3->parts.begin();it4!=it3->parts.end();it4++)
 					{
-						delete *it4;
+						if (*it4 != nullptr)
+						{
+							delete* it4;
+							*it4 = nullptr;
+						}
 					}
 				}
 			}
 		}	
 	}
 
+	void DLPData::clearLayer(int layer)
+	{
+		for (std::vector<DLPmeshs>::iterator it = m_dlpmeshsgroup.dlpmeshsgroup.begin(); it != m_dlpmeshsgroup.dlpmeshsgroup.end(); it++)
+		{
+			for (std::vector<DLPmesh>::iterator it2 = it->dlpmeshs.begin(); it2 != it->dlpmeshs.end(); it2++)
+			{
+				auto& it3 = it2->layers.at(layer);
+				{
+					for (std::vector< ClipperLib::PolyTree*>::iterator it4 = it3.parts.begin(); it4 != it3.parts.end(); it4++)
+					{
+						if (*it4!=nullptr)
+						{
+							delete* it4;
+							*it4 = nullptr;
+						}
+					}
+				}
+			}
+		}
+	}
 	std::vector<ClipperLib::PolyTree*> DLPData::trait(int layer)
 	{
 		std::vector<cxutil::DLPmeshs>& meshGroup = m_dlpmeshsgroup.dlpmeshsgroup;
