@@ -21,7 +21,11 @@ namespace cxutil
 							*it4 = nullptr;
 						}
 					}
+					std::vector< ClipperLib::PolyTree*> tmp;
+					it3->parts.swap(tmp);
 				}
+				std::vector<DLPLayer> dlplayer;
+				it2->layers.swap(dlplayer);
 			}
 		}	
 	}
@@ -42,6 +46,8 @@ namespace cxutil
 							*it4 = nullptr;
 						}
 					}
+					std::vector< ClipperLib::PolyTree*> ptree;		
+					it3.parts.swap(ptree);
 				}
 			}
 		}
