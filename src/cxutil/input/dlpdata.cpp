@@ -47,7 +47,7 @@ namespace cxutil
 						}
 					}
 					std::vector< ClipperLib::PolyTree*> ptree;		
-					it3.parts.swap(ptree);
+					it3.parts=ptree;
 				}
 			}
 		}
