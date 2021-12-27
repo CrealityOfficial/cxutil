@@ -595,7 +595,7 @@ namespace cxutil
         friend class Polygon;
         friend class PolygonRef;
         friend class ConstPolygonRef;
-    protected:
+    public:
         ClipperLib::Paths paths;
     public:
         unsigned int size() const

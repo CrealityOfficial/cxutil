@@ -9,8 +9,6 @@
 #endif // _OPENMP
 
 #include "spdlog/cxlog_macro.h"
-#include"Application.h"
-#include"Slice.h"
 
 #define MAX_LOG_LEN 256
 namespace cxutil
