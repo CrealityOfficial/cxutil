@@ -1,6 +1,6 @@
 #ifndef _CXSW_DLPDATA_1593762618888_H
 #define _CXSW_DLPDATA_1593762618888_H
-#include <clipper/clipper.hpp>
+#include <clipperxy/clipper/clipper.hpp>
 
 namespace cxutil
 {
