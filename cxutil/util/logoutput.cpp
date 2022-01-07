@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdarg.h>
 #include <string>
+#include <sstream>
 
 #ifdef _OPENMP
 #include <omp.h>
