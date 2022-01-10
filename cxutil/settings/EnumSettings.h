@@ -80,7 +80,8 @@ namespace cxutil
         RANDOM,
         SHORTEST,
         USER_SPECIFIED,
-        SHARPEST_CORNER
+        SHARPEST_CORNER,
+        EXPERIMENTAL
     };
 
     enum class EZSeamCornerPrefType
