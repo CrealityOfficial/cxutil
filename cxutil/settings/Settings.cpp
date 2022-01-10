@@ -356,6 +356,10 @@ namespace cxutil
         {
             return EPlatformAdhesion::RAFT;
         }
+        else if (value == "simpleraft")
+        {
+            return EPlatformAdhesion::SIMPLERAFT;
+        }
         else if (value == "none")
         {
             return EPlatformAdhesion::NONE;

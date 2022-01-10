@@ -38,6 +38,7 @@ namespace cxutil
         SKIRT,
         BRIM,
         RAFT,
+        SIMPLERAFT,
         LACE,
         NONE
     };
