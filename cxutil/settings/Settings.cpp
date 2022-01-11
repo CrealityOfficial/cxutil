@@ -437,6 +437,10 @@ namespace cxutil
         {
             return EZSeamType::USER_SPECIFIED;
         }
+        else if (value == "experimental")
+        {
+            return EZSeamType::EXPERIMENTAL;
+        }
         else //Default.
         {
             return EZSeamType::SHORTEST;
