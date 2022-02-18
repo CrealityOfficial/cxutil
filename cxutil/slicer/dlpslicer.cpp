@@ -165,6 +165,14 @@ namespace cxutil
 				const coord_t line_segment_deviation = param.line_segment_deviation;
 				layer.polygons.simplify(line_segment_resolution, line_segment_deviation);
 				layer.polygons.removeDegenerateVerts(); // remove verts connected to overlapping line segments
+
+				float xy_offset = input->param().xy_offset;
+				bool enable_xy_offset = input->param().enable_xy_offset;
+
+				if (enable_xy_offset && abs(xy_offset) > 0.000001)
+				{
+					layer.polygons = layer.polygons.offset((int)(xy_offset * 1000));
+				}
 			}
 		}
 
