@@ -48,9 +48,11 @@ namespace cxutil
         }
         debugCheck(true);
 
+#ifndef _DEBUG
         settleErrors();
 
         diffuseError();
+#endif
     }
 
     SierpinskiFill::~SierpinskiFill()
@@ -150,8 +152,30 @@ namespace cxutil
         }
     }
 
+    void SierpinskiFill::getChildren(SierpinskiTriangle _root)
+    {
+        if (!_root.children.empty())
+        {
+            for (SierpinskiTriangle max_level_it : _root.children)
+            {
+                getChildren(max_level_it);
+            }
+        }
+        else
+        {
+            _sequence.push_back(_root);
+        }
+    }
+
     void SierpinskiFill::createLowerBoundSequence()
     {
+#if _DEBUG
+        getChildren(root);
+        for (int i = 0; i < _sequence.size(); i++)
+        {
+            sequence.emplace_back(&_sequence[i]);
+        }
+#else
         sequence.emplace_front(&root);
 
         if (deep_debug_checking) debugCheck();
@@ -173,12 +197,13 @@ namespace cxutil
                 break;
             }
         }
+#endif
     }
 
     std::vector<std::vector<std::list<SierpinskiFill::SierpinskiTriangle*>::iterator>> SierpinskiFill::getDepthOrdered()
     {
         std::vector<std::vector<std::list<SierpinskiTriangle*>::iterator>> depth_ordered(max_depth + 1);
-        depth_ordered.resize(max_depth);
+        depth_ordered.resize(max_depth + 1);
         for (std::list<SierpinskiTriangle*>::iterator it = sequence.begin(); it != sequence.end(); ++it)
         {
             SierpinskiTriangle* node = *it;
@@ -194,9 +219,6 @@ namespace cxutil
         bool change = false;
         for (std::vector<std::list<SierpinskiTriangle*>::iterator>& depth_nodes : depth_ordered)
         {
-            if (depth_nodes.size() <= 1)
-                continue;
-
             for (std::list<SierpinskiTriangle*>::iterator it : depth_nodes)
             {
                 SierpinskiTriangle* node = *it;
@@ -256,8 +278,6 @@ namespace cxutil
         for (int depth = max_depth - 1; depth >= 0; depth--)
         {
             std::vector<std::list<SierpinskiTriangle*>::iterator>& depth_nodes = depth_ordered[depth];
-            if (depth_nodes.size() <= 1)
-                continue;
 
             for (std::list<SierpinskiTriangle*>::iterator it : depth_nodes)
             {
@@ -520,9 +540,6 @@ namespace cxutil
 
         for (std::vector<std::list<SierpinskiTriangle*>::iterator>& depth_nodes : depth_ordered)
         {
-            if (depth_nodes.size() <= 1)
-                continue;
-
             for (std::list<SierpinskiTriangle*>::iterator it : depth_nodes)
             {
                 redistributeLeftoverErrors(it, std::next(it), false);
@@ -532,9 +549,6 @@ namespace cxutil
 
     void SierpinskiFill::diffuseError()
     {
-        if (sequence.size() <= 1)
-            return;
-
         int pair_constrained_nodes = 0;
         int constrained_nodes = 0;
         int unconstrained_nodes = 0;
