@@ -27,6 +27,8 @@ namespace cxutil
         CROSS,
         CROSS_3D,
         GYROID,
+        ONEWALL,
+        HONEYCOMB,
         NONE  // NOTE: Should remain last! (May be used in testing to enumarate the enum.)
     };
 

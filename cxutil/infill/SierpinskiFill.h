@@ -333,6 +333,7 @@ namespace cxutil
          * This sequence is created by \ref createLowerBoundSequence and updated by \ref diffuseError
          */
         std::list<SierpinskiTriangle*> sequence;
+        std::vector<SierpinskiTriangle> _sequence;
 
 
         /*!
@@ -353,6 +354,7 @@ namespace cxutil
          */
         void createTreeRequestedLengths(SierpinskiTriangle& sub_root);
 
+        void getChildren(SierpinskiTriangle _root);
 
         /*!
          * Create the sequence of triangles which have a density just below the requested density,

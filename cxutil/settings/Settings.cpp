@@ -323,6 +323,14 @@ namespace cxutil
         {
             return EFillMethod::CONCENTRIC;
         }
+        else if (value == "honeycomb")
+        {
+            return EFillMethod::HONEYCOMB;
+        }
+        else if (value == "onewall")
+        {
+            return EFillMethod::ONEWALL;
+        }
         else if (value == "zigzag")
         {
             return EFillMethod::ZIG_ZAG;
