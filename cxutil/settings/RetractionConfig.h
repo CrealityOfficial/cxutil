@@ -22,6 +22,11 @@ namespace cxutil
         coord_t retraction_min_travel_distance; //!< Minimal distance traversed to even consider retracting (in micron)
         double retraction_extrusion_window; //!< Window of mm extruded filament in which to limit the amount of retractions
         size_t retraction_count_max; //!< The maximum amount of retractions allowed to occur in the RetractionConfig::retraction_extrusion_window
+        
+		bool travelFlowEnable;//whether the machine size is a super big,then set retraction min travel Flow
+		coord_t travelFlow_distance;
+		bool advanceEnable;//
+        coord_t length_flow_advance; //!< the amount with which to lift the head during a retraction-travel
     };
 }//namespace cxutil
 

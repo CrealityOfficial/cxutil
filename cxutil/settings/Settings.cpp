@@ -268,6 +268,10 @@ namespace cxutil
         {
             return EGCodeFlavor::MACH3;
         }
+        else if (value == "MACH3(Creality)")
+        {
+            return EGCodeFlavor::MACH3_CREALITY;
+        }
         else if (value == "RepRap (Volumetric)")
         {
             return EGCodeFlavor::MARLIN_VOLUMATRIC;

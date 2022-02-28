@@ -218,6 +218,8 @@ namespace cxutil
                * Real RepRap GCode suitable for printers using RepRap firmware (e.g. Duet controllers)
                **/
                REPRAP = 8,
+               //G25 GCode
+               MACH3_CREALITY = 9,
     };
 
 } //Cura namespace.
