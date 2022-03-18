@@ -90,6 +90,13 @@ namespace cxutil
     {
         return aabb;
     }
+
+	void Mesh::calculateBox()
+	{
+		for (MeshVertex& v : vertices)
+			aabb.include(v.p);
+	}
+
     void Mesh::expandXY(int64_t offset)
     {
         if (offset)

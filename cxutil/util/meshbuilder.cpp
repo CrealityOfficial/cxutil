@@ -60,6 +60,35 @@ namespace cxutil
         return mesh;
     }
 
+	Mesh* meshFromTrimesh2(int vertexNum, float* vertex, int faceNum, int* faceIndex)
+	{
+		HashMeshBuilder builder;
+
+		for (size_t i = 0; i < faceNum; ++i)
+		{
+			int* face = faceIndex + 3 * i;
+			int index1 = *(face);
+			int index2 = *(face + 1);
+			int index3 = *(face + 2);
+			if (index1 >= 0 && index1 < vertexNum && index2 >= 0 && index2 < vertexNum
+				&& index3 >= 0 && index3 < vertexNum)
+			{
+				float* v1 = vertex + 3 * index1;
+				float* v2 = vertex + 3 * index2;
+				float* v3 = vertex + 3 * index3;
+				Point3 p1 = Point3(MM2INT(1.0 * *v1), MM2INT(1.0 * *(v1 + 1)), MM2INT(1.0 * *(v1 + 2)));
+				Point3 p2 = Point3(MM2INT(1.0 * *v2), MM2INT(1.0 * *(v2 + 1)), MM2INT(1.0 * *(v2 + 2)));
+				Point3 p3 = Point3(MM2INT(1.0 * *v3), MM2INT(1.0 * *(v3 + 1)), MM2INT(1.0 * *(v3 + 2)));
+				builder.addFace(p1, p2, p3);
+			}
+		}
+
+		Mesh* mesh = builder.buildMesh();
+		if (mesh)
+			mesh->calculateBox();
+		return mesh;
+	}
+
 	MeshObject* loadSTLBinaryMesh(const char* fileName)
 	{
 		std::vector<Point3> soups;

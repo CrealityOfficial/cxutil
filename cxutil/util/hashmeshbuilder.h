@@ -1,6 +1,7 @@
 #ifndef CX_HASHMESHBUILDER_1600071100235_H
 #define CX_HASHMESHBUILDER_1600071100235_H
 #include "cxutil/input/meshobject.h"
+#include "cxutil/slicer/mesh.h"
 #include <unordered_map>
 
 namespace cxutil
@@ -13,6 +14,7 @@ namespace cxutil
 
 		void addFace(const Point3& v0, const Point3& v1, const Point3& v2);
 		MeshObject* build(bool swap = true);
+		Mesh* buildMesh(bool swap = true);
 	protected:
 		int findIndexOfVertex(const Point3& v);
 		int getFaceIdxWithPoints(int idx0, int idx1, int notFaceIdx, int notFaceVertexIdx) const;

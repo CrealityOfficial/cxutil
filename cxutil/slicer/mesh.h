@@ -36,6 +36,8 @@ namespace cxutil
         Point3 min() const; //!< min (in x,y and z) vertex of the bounding box
         Point3 max() const; //!< max (in x,y and z) vertex of the bounding box
         AABB3D getAABB() const; //!< Get the axis aligned bounding box
+		void calculateBox();
+
         void expandXY(int64_t offset); //!< Register applied horizontal expansion in the AABB
 
         /*!

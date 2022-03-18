@@ -55,6 +55,36 @@ namespace cxutil
         return nullptr;
     }
 
+	Mesh* HashMeshBuilder::buildMesh(bool swap)
+	{
+		for (unsigned int i = 0; i < faces.size(); i++)
+		{
+			MeshFace& face = faces[i];
+			// faces are connected via the outside
+			face.connected_face_index[0] = getFaceIdxWithPoints(face.vertex_index[0], face.vertex_index[1], i, face.vertex_index[2]);
+			face.connected_face_index[1] = getFaceIdxWithPoints(face.vertex_index[1], face.vertex_index[2], i, face.vertex_index[0]);
+			face.connected_face_index[2] = getFaceIdxWithPoints(face.vertex_index[2], face.vertex_index[0], i, face.vertex_index[1]);
+		}
+
+		if (vertices.size() > 0 && faces.size() > 0)
+		{
+			Mesh* mesh = new Mesh();
+			if (swap)
+			{
+				std::swap(mesh->vertices, vertices);
+				std::swap(mesh->faces, faces);
+			}
+			else
+			{
+				mesh->vertices = vertices;
+				mesh->faces = faces;
+			}
+
+			return mesh;
+		}
+		return nullptr;
+	}
+
     void HashMeshBuilder::addFace(const Point3& v0, const Point3& v1, const Point3& v2)
     {
         int vi0 = findIndexOfVertex(v0);
