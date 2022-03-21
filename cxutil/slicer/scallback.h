@@ -11,6 +11,7 @@ namespace cxutil
 
 		virtual void onWrite(int x, int y, int z, double velocity, PrintFeatureType type) = 0;
 		virtual void onLayerStart(int layer, float thickness) = 0;
+		virtual void onExtruderChanged(int extruder) = 0;
 	};
 }
 
