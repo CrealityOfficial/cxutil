@@ -54,7 +54,41 @@ namespace cxutil
                 logError("JSON setting %s is not an object!\n", name.c_str());
                 continue;
             }
-
+#if 1
+            if (setting_object.HasMember("default_value"))
+            {
+                const rapidjson::Value& default_value = setting_object["default_value"];
+                std::string value_string;
+                if (default_value.IsString())
+                {
+                    value_string = default_value.GetString();
+                }
+                else if (default_value.IsTrue())
+                {
+                    value_string = "true";
+                }
+                else if (default_value.IsFalse())
+                {
+                    value_string = "false";
+                }
+                else if (default_value.IsNumber())
+                {
+                    std::ostringstream ss;
+                    ss << default_value.GetDouble();
+                    value_string = ss.str();
+                }
+                else
+                {
+                    logWarning("Unrecognized data type in JSON setting %s\n", name.c_str());
+                    continue;
+                }
+               settings->add(name, value_string);
+            }
+            if (setting_object.HasMember("children"))
+            {
+                loadJSONValue(setting_object["children"], settings);
+            }
+#elif 
             if (setting_object.HasMember("children"))
             {
                 loadJSONValue(setting_object["children"], settings);
@@ -93,7 +127,9 @@ namespace cxutil
                 }
                 settings->add(name, value_string);
             }
+#endif
         }
+
     }
     /*
     * \brief Load a JSON document and store the settings inside it.
