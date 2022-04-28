@@ -1,7 +1,6 @@
 __files_group(${CMAKE_CURRENT_SOURCE_DIR}/cxutil SRC)
 
 __assert_target(clipper)
-__assert_target(spdlog)
 __assert_parameter(RAPIDJSON_INCLUDE_DIRS)
 
 set(LIBS clipper spdlog trimesh2 stringutil)
