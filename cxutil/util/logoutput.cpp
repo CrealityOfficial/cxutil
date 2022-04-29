@@ -27,38 +27,38 @@ namespace cxutil
         progressLogging = true;
     }
 
-    void logError(const char* fmt, ...)
-    {
-        char buf[MAX_LOG_LEN] = { 0 };
-        va_list args;
-        va_start(args, fmt);
-        vsprintf(buf, fmt, args);
-        CXLogError(buf);
-//#pragma omp critical
-//        {
-//            fprintf(stderr, "[ERROR] ");
-//            vfprintf(stderr, fmt, args);
-//            fflush(stderr);
-//        }
-        va_end(args);
-    }
-
-    void logError(const long long logSortId,const char* fmt, ...)
-    {
-        char buf[MAX_LOG_LEN] = { 0 };
-        va_list args;
-        va_start(args, fmt);
-        vsprintf(buf, fmt, args);
-        if (logSortId > 0)
-        {
-            std::stringstream ss;
-            ss << "[" << logSortId << "] ";
-            ss << buf;
-            strncpy(buf, ss.str().c_str(), ss.str().length());
-        }
-        CXLogError(buf);
-        va_end(args);
-    }
+//   void logError(const char* fmt, ...)
+//   {
+//       char buf[MAX_LOG_LEN] = { 0 };
+//       va_list args;
+//       va_start(args, fmt);
+//       vsprintf(buf, fmt, args);
+//       CXLogError(buf);
+///#pragma omp critical
+///        {
+///            fprintf(stderr, "[ERROR] ");
+///            vfprintf(stderr, fmt, args);
+///            fflush(stderr);
+///        }
+//       va_end(args);
+//   }
+//
+//   void logError(const long long logSortId,const char* fmt, ...)
+//   {
+//       char buf[MAX_LOG_LEN] = { 0 };
+//       va_list args;
+//       va_start(args, fmt);
+//       vsprintf(buf, fmt, args);
+//       if (logSortId > 0)
+//       {
+//           std::stringstream ss;
+//           ss << "[" << logSortId << "] ";
+//           ss << buf;
+//           strncpy(buf, ss.str().c_str(), ss.str().length());
+//       }
+//       CXLogError(buf);
+//       va_end(args);
+//   }
 
     void logWarning(const char* fmt, ...)
     {

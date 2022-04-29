@@ -1,6 +1,8 @@
 #ifndef CXUTIL_LOGOUTPUT_1606213492619_H
 #define CXUTIL_LOGOUTPUT_1606213492619_H
+#include "ccglobal/log.h"
 
+#define logError(...) LOGE(__VA_ARGS__)
 namespace cxutil
 {
     /*
@@ -13,13 +15,13 @@ namespace cxutil
      */
     void enableProgressLogging();
 
-    /*
-     * \brief Report an error message.
-     *
-     * This is always reported, regardless of verbosity level.
-     */
-    void logError(const char* fmt, ...);
-    void logError(const long long logSortId, const char* fmt, ...);
+    ///*
+    // * \brief Report an error message.
+    // *
+    // * This is always reported, regardless of verbosity level.
+    // */
+    //void logError(const char* fmt, ...);
+    //void logError(const long long logSortId, const char* fmt, ...);
     /*
      * \brief Report a warning message.
      *
