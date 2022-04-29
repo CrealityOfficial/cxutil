@@ -1,6 +1,7 @@
 #include "getpath.h"
 #include <iostream>
-#include "spdlog/cxlog_macro.h"
+#include"ccglobal/log.h"
+//#include "spdlog/cxlog_macro.h"
 
 #ifdef _WIN32
 #include <windows.h> // GetFullPathNameA
@@ -19,7 +20,7 @@ namespace cxutil
         DWORD path_size = GetFullPathNameA(filePath.c_str(), static_cast<DWORD>(MAX_PATH), buffer, &file_name_start);
         if (path_size == 0)
         {
-            CXLogError("Failed to get full path for [%s]" ,  filePath.c_str());
+            LOGE("Failed to get full path for [%s]" ,  filePath.c_str());
             return std::string("");
            // exit(1);
         }

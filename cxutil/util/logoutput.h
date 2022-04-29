@@ -3,6 +3,13 @@
 #include "ccglobal/log.h"
 
 #define logError(...) LOGE(__VA_ARGS__)
+#define logError(logsortId,...) LOGE(logsortId,##__VA_ARGS__)
+#define logWarning(...) LOGW(__VA_ARGS__)
+#define logWarning(logsortId,...) LOGW(logsortId,##__VA_ARGS__)
+#define logDebug(...) LOGD(__VA_ARGS__)
+#define logDebug(logsortId,...) LOGD(logsortId,##__VA_ARGS__)
+
+
 namespace cxutil
 {
     /*
@@ -27,8 +34,8 @@ namespace cxutil
      *
      * Always reported, regardless of verbosity level.
      */
-    void logWarning(const char* fmt, ...);
-    void logWarning(const long long logSortId, const char* fmt, ...);
+    //void logWarning(const char* fmt, ...);
+    //void logWarning(const long long logSortId, const char* fmt, ...);
 
     /*
      * \brief Report a message if the verbosity level is 1 or higher.
@@ -45,7 +52,7 @@ namespace cxutil
      *
      * The message is only logged if the verbosity level is 2 or higher.
      */
-    void logDebug(const char* fmt, ...);
+    //void logDebug(const char* fmt, ...);
 
     /*
      * \brief Report the progress in the log.

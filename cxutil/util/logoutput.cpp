@@ -8,8 +8,8 @@
 #ifdef _OPENMP
 #include <omp.h>
 #endif // _OPENMP
-
-#include "spdlog/cxlog_macro.h"
+#include"ccglobal/log.h"
+//#include "spdlog/cxlog_macro.h"
 
 #define MAX_LOG_LEN 256
 namespace cxutil
@@ -60,38 +60,38 @@ namespace cxutil
 //       va_end(args);
 //   }
 
-    void logWarning(const char* fmt, ...)
-    {
-        char buf[MAX_LOG_LEN] = { 0 };
-        va_list args;
-        va_start(args, fmt);
-        vsprintf(buf, fmt, args);
-        CXLogWarn(buf);
-//#pragma omp critical
+//    void logWarning(const char* fmt, ...)
+//    {
+//        char buf[MAX_LOG_LEN] = { 0 };
+//        va_list args;
+//        va_start(args, fmt);
+//        vsprintf(buf, fmt, args);
+//        CXLogWarn(buf);
+////#pragma omp critical
+////        {
+////            fprintf(stderr, "[WARNING] ");
+////            vfprintf(stderr, fmt, args);
+////            fflush(stderr);
+////        }
+//        va_end(args);
+//    }
+//
+//    void logWarning(const long long logSortId, const char* fmt, ...)
+//    {
+//        char buf[MAX_LOG_LEN] = { 0 };
+//        va_list args;
+//        va_start(args, fmt);
+//        vsprintf(buf, fmt, args);
+//        if (logSortId > 0)
 //        {
-//            fprintf(stderr, "[WARNING] ");
-//            vfprintf(stderr, fmt, args);
-//            fflush(stderr);
+//            std::stringstream ss;
+//            ss << "[" << logSortId << "] ";
+//            ss << buf;
+//            strncpy(buf, ss.str().c_str(), ss.str().length());
 //        }
-        va_end(args);
-    }
-
-    void logWarning(const long long logSortId, const char* fmt, ...)
-    {
-        char buf[MAX_LOG_LEN] = { 0 };
-        va_list args;
-        va_start(args, fmt);
-        vsprintf(buf, fmt, args);
-        if (logSortId > 0)
-        {
-            std::stringstream ss;
-            ss << "[" << logSortId << "] ";
-            ss << buf;
-            strncpy(buf, ss.str().c_str(), ss.str().length());
-        }
-        CXLogWarn(buf);
-        va_end(args);
-    }
+//        CXLogWarn(buf);
+//        va_end(args);
+//    }
 
     void logAlways(const char* fmt, ...)
     {
@@ -120,25 +120,25 @@ namespace cxutil
         va_end(args);
     }
 
-    void logDebug(const char* fmt, ...)
-    {
-        va_list args;
-        if (verbose_level < 2)
-        {
-            return;
-        }
-        va_start(args, fmt);
-        char buf[MAX_LOG_LEN] = { 0 };
-        vsprintf(buf, fmt, args);
-        CXLogDebug(buf);
+    //void logDebug(const char* fmt, ...)
+    //{
+    //    va_list args;
+    //    if (verbose_level < 2)
+    //    {
+    //        return;
+    //    }
+    //    va_start(args, fmt);
+    //    char buf[MAX_LOG_LEN] = { 0 };
+    //    vsprintf(buf, fmt, args);
+    //    CXLogDebug(buf);
 //#pragma omp critical
 //        {
 //            fprintf(stderr, "[DEBUG] ");
 //            vfprintf(stderr, fmt, args);
 //            fflush(stderr);
 //        }
-        va_end(args);
-    }
+    //    va_end(args);
+    //}
 
     void logProgress(const char* type, int value, int maxValue, float percent)
     {
