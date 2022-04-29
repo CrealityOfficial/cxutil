@@ -3,11 +3,13 @@
 #include "ccglobal/log.h"
 
 #define logError(...) LOGE(__VA_ARGS__)
-#define logError(logsortId,...) LOGE(logsortId,##__VA_ARGS__)
+#define logError(logSortId,...) LOGE(logSortId,##__VA_ARGS__)
+
 #define logWarning(...) LOGW(__VA_ARGS__)
-#define logWarning(logsortId,...) LOGW(logsortId,##__VA_ARGS__)
+#define logWarning(logSortId,...) LOGW(logSortId,##__VA_ARGS__)
+
 #define logDebug(...) LOGD(__VA_ARGS__)
-#define logDebug(logsortId,...) LOGD(logsortId,##__VA_ARGS__)
+#define logDebug(logSortId,...) LOGD(logSortId,##__VA_ARGS__)
 
 
 namespace cxutil
