@@ -97,7 +97,7 @@ namespace cxutil
         }
         if (reported_face_count != face_count)
         {
-            logWarning("Face count reported by file (%s) is not equal to actual face count (%s). File could be corrupt!\n", std::to_string(reported_face_count).c_str(), std::to_string(face_count).c_str());
+            LOGW("Face count reported by file (%s) is not equal to actual face count (%s). File could be corrupt!\n", std::to_string(reported_face_count).c_str(), std::to_string(face_count).c_str());
         }
 
         //For each face read:

@@ -68,7 +68,7 @@ namespace cxutil
         {
             return parent->get<std::string>(key);
         }
-        logError("Trying to retrieve setting with no value given: '%s'\n", key.c_str());
+        LOGE("Trying to retrieve setting with no value given: '%s'\n", key.c_str());
         //std::exit(2);
         return std::string("");
     }
@@ -202,7 +202,7 @@ namespace cxutil
             }
             catch (const std::invalid_argument& e)
             {
-                logError("Couldn't read 2D graph element [%s,%s] in setting '%s'. Ignored.\n", first_substring.c_str(), second_substring.c_str(), key.c_str());
+                LOGE("Couldn't read 2D graph element [%s,%s] in setting '%s'. Ignored.\n", first_substring.c_str(), second_substring.c_str(), key.c_str());
             }
         }
 
@@ -230,7 +230,7 @@ namespace cxutil
         std::regex_match(value_string.c_str(), sub_matches, point_matrix_regex);
         if (sub_matches.size() != 10) //One match for the whole string, nine for the cells.
         {
-            logWarning("Mesh transformation matrix could not be parsed!\n\tFormat should be [[f,f,f], [f,f,f], [f,f,f]] allowing whitespace anywhere in between.\n\tWhile what was given was \"%s\".\n", value_string.c_str());
+            LOGW("Mesh transformation matrix could not be parsed!\n\tFormat should be [[f,f,f], [f,f,f], [f,f,f]] allowing whitespace anywhere in between.\n\tWhile what was given was \"%s\".\n", value_string.c_str());
             return result; //Standard matrix ([[1,0,0], [0,1,0], [0,0,1]]).
         }
 
@@ -609,7 +609,7 @@ namespace cxutil
                 }
                 catch (const std::invalid_argument& e)
                 {
-                    logError("Couldn't read floating point value (%s) in setting '%s'. Ignored.\n", value.c_str(), key.c_str());
+                    LOGE("Couldn't read floating point value (%s) in setting '%s'. Ignored.\n", value.c_str(), key.c_str());
                 }
             }
         }
@@ -678,7 +678,7 @@ namespace cxutil
         }
         else
         {
-            logError("Trying to retrieve setting with no value given: '%s'\n", key.c_str());
+            LOGE("Trying to retrieve setting with no value given: '%s'\n", key.c_str());
             //std::exit(2);
             return std::string("");
         }

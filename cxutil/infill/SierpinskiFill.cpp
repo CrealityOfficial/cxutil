@@ -42,7 +42,7 @@ namespace cxutil
         {
             if (node->getValueError() < -allowed_length_error)
             {
-                logError("Node is subdivided without the appropriate value! value_error: %f from base %f el: %f er: %f, while the realized_length = %f\n", node->getValueError(), node->requested_length, node->error_left, node->error_right, node->realized_length);
+                LOGE("Node is subdivided without the appropriate value! value_error: %f from base %f el: %f er: %f, while the realized_length = %f\n", node->getValueError(), node->requested_length, node->error_left, node->error_right, node->realized_length);
                 assert(false);
             }
         }
@@ -193,7 +193,7 @@ namespace cxutil
 
             if (!change)
             {
-                logDebug("Finished after %i iterations, with a max depth of %i.\n", iteration + 1, max_depth);
+                LOGD("Finished after %i iterations, with a max depth of %i.\n", iteration + 1, max_depth);
                 break;
             }
         }
@@ -385,7 +385,7 @@ namespace cxutil
             SierpinskiTriangle* next = *std::next(it);
             if (std::abs(node->error_right + next->error_left) > allowed_length_error)
             {
-                logWarning("Nodes aren't balanced! er: %f next el: %f\n", node->error_right, next->error_left);
+                LOGW("Nodes aren't balanced! er: %f next el: %f\n", node->error_right, next->error_left);
                 assert(false);
             }
             float exchange = node->error_right;
@@ -407,7 +407,7 @@ namespace cxutil
         { // there is no significant left-over error
             if (distribute_subdivision_errors && total_superfluous_error < -allowed_length_error)
             {
-                logWarning("redistributeLeftoverErrors shouldn't be called if the node isn't to be subdivided. Total error: %f\n", total_superfluous_error);
+                LOGW("redistributeLeftoverErrors shouldn't be called if the node isn't to be subdivided. Total error: %f\n", total_superfluous_error);
                 assert(false);
             }
             return;
@@ -498,7 +498,7 @@ namespace cxutil
 
         if (total_remaining_value_error < added - allowed_length_error)
         {
-            logWarning("total_remaining: %f should be > %f\n", total_remaining_value_error, added);
+            LOGW("total_remaining: %f should be > %f\n", total_remaining_value_error, added);
             assert(false);
         }
 
@@ -520,7 +520,7 @@ namespace cxutil
         }
         if (std::abs(subtracted - added) > allowed_length_error)
         {
-            logWarning("Redistribution didn't distribute well!! added %f subtracted %f\n", added, subtracted);
+            LOGW("Redistribution didn't distribute well!! added %f subtracted %f\n", added, subtracted);
             assert(false);
         }
 
@@ -611,7 +611,7 @@ namespace cxutil
                     error += nodal_value - triangle.realized_length;
             }
         }
-        logDebug("pair_constrained_nodes: %i, constrained_nodes: %i, unconstrained_nodes: %i, subdivided_nodes: %i\n", pair_constrained_nodes, constrained_nodes, unconstrained_nodes, subdivided_nodes);
+        LOGD("pair_constrained_nodes: %i, constrained_nodes: %i, unconstrained_nodes: %i, subdivided_nodes: %i\n", pair_constrained_nodes, constrained_nodes, unconstrained_nodes, subdivided_nodes);
     }
 
     bool SierpinskiFill::isConstrainedBackward(std::list<SierpinskiTriangle*>::iterator it)
@@ -751,7 +751,7 @@ namespace cxutil
         float realized_length = INT2MM(ret.polygonLength());
         float requested_length = root.requested_length;
         float error = (realized_length - requested_length) / requested_length;
-        logDebug("realized_length: %f, requested_length: %f  :: %f% error\n", realized_length, requested_length, .01 * static_cast<int>(10000 * error));
+        LOGD("realized_length: %f, requested_length: %f  :: %f% error\n", realized_length, requested_length, .01 * static_cast<int>(10000 * error));
         return ret;
     }
 
@@ -834,12 +834,12 @@ namespace cxutil
     {
         if (std::abs(sequence.front()->error_left) > allowed_length_error)
         {
-            logWarning("First node has error left!\n");
+            LOGW("First node has error left!\n");
             assert(false);
         }
         if (std::abs(sequence.back()->error_right) > allowed_length_error)
         {
-            logWarning("Last node has error right!\n");
+            LOGW("Last node has error right!\n");
             assert(false);
         }
 
@@ -854,12 +854,12 @@ namespace cxutil
 
             if (std::abs(node->error_right + next->error_left) > allowed_length_error)
             {
-                logWarning("Consecutive nodes in fractal don't have the same error! er: %f , nel: %f\n", node->error_right, next->error_left);
+                LOGW("Consecutive nodes in fractal don't have the same error! er: %f , nel: %f\n", node->error_right, next->error_left);
                 assert(false);
             }
             if (check_subdivision && node->getValueError() < -allowed_length_error)
             {
-                logWarning("Fractal node shouldn't have been subdivided!\n");
+                LOGW("Fractal node shouldn't have been subdivided!\n");
                 assert(false);
             }
         }

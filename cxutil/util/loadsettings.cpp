@@ -32,7 +32,7 @@ namespace cxutil
                 return candidate;
             }
         }
-        logError("Couldn't find definition file with ID: %s\n", definition_id.c_str());
+        LOGE("Couldn't find definition file with ID: %s\n", definition_id.c_str());
         return std::string("");
     }
 
@@ -51,7 +51,7 @@ namespace cxutil
             const rapidjson::Value& setting_object = setting->value;
             if (!setting_object.IsObject())
             {
-                logError("JSON setting %s is not an object!\n", name.c_str());
+                LOGE("JSON setting %s is not an object!\n", name.c_str());
                 continue;
             }
 #if 1
@@ -79,7 +79,7 @@ namespace cxutil
                 }
                 else
                 {
-                    logWarning("Unrecognized data type in JSON setting %s\n", name.c_str());
+                    LOGW("Unrecognized data type in JSON setting %s\n", name.c_str());
                     continue;
                 }
                settings->add(name, value_string);
@@ -97,7 +97,7 @@ namespace cxutil
             {
                 if (!setting_object.HasMember("default_value"))
                 {
-                    logWarning("JSON setting %s has no default_value!\n", name.c_str());
+                    LOGW("JSON setting %s has no default_value!\n", name.c_str());
                     continue;
                 }
                 const rapidjson::Value& default_value = setting_object["default_value"];
@@ -122,7 +122,7 @@ namespace cxutil
                 }
                 else
                 {
-                    logWarning("Unrecognized data type in JSON setting %s\n", name.c_str());
+                    LOGW("Unrecognized data type in JSON setting %s\n", name.c_str());
                     continue;
                 }
                 settings->add(name, value_string);
@@ -147,7 +147,7 @@ namespace cxutil
             std::string parent_file = findDefinitionFile(document["inherits"].GetString(), search_directories);
             if (parent_file == "")
             {
-                logError("Inherited JSON file \"%s\" not found.\n", document["inherits"].GetString());
+                LOGE("Inherited JSON file \"%s\" not found.\n", document["inherits"].GetString());
                 return 1;
             }
             int error_code = loadSettingsJSON(parent_file, settings, extruders, extruderParent); //Head-recursively load the settings file that we inherit from.
@@ -208,7 +208,7 @@ namespace cxutil
         FILE* file = fopen(json_filename.c_str(), "rb");
         if (!file)
         {
-            logError("Couldn't open JSON file: %s\n", json_filename.c_str());
+            LOGE("Couldn't open JSON file: %s\n", json_filename.c_str());
             return 1;
         }
 
@@ -219,7 +219,7 @@ namespace cxutil
         fclose(file);
         if (json_document.HasParseError())
         {
-            logError("Error parsing JSON (offset %u): %s\n", static_cast<unsigned int>(json_document.GetErrorOffset()), GetParseError_En(json_document.GetParseError()));
+            LOGE("Error parsing JSON (offset %u): %s\n", static_cast<unsigned int>(json_document.GetErrorOffset()), GetParseError_En(json_document.GetParseError()));
             return 2;
         }
 
@@ -240,7 +240,7 @@ namespace cxutil
 		json_document.Parse((char*)buffer);
 		if (json_document.HasParseError())
 		{
-			logError("Error parsing JSON (offset %u): %s\n", static_cast<unsigned int>(json_document.GetErrorOffset()), GetParseError_En(json_document.GetParseError()));
+			LOGE("Error parsing JSON (offset %u): %s\n", static_cast<unsigned int>(json_document.GetErrorOffset()), GetParseError_En(json_document.GetParseError()));
 			return 2;
 		}
 

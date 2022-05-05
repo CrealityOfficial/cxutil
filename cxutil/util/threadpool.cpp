@@ -1,6 +1,6 @@
 #include "threadpool.h"
 #include <iostream>
-#include "spdlog/cxlog_macro.h"
+#include "ccglobal/log.h"
 
 using namespace std;
 
@@ -10,20 +10,20 @@ namespace cxutil
     {
         unique_lock<mutex> lock(mux_);
         this->thread_num_ = num;
-        CXLogInfo("Thread pool Init %d ",num);
+        LOGI("Thread pool Init %d ",num);
     }
     void CXThreadPool::start()
     {
         unique_lock<mutex> lock(mux_);
         if (thread_num_ <= 0)
         {
-            CXLogError("Please Init XThreadPool");
+            LOGE("Please Init XThreadPool");
             return;
         }
         if (!threads_.empty())
         {
             //cerr << "Thread pool has start!" << endl;
-            CXLogError("Thread pool has start!");
+            LOGE("Thread pool has start!");
             return;
         }
         //Æô¶¯Ïß³Ì
@@ -48,7 +48,7 @@ namespace cxutil
     void CXThreadPool::run()
     {
         //cout << "begin XThreadPool Run " << this_thread::get_id() << endl;
-        CXLogInfo("begin XThreadPool Run %d ", this_thread::get_id());
+        LOGI("begin XThreadPool Run %d ", this_thread::get_id());
         while (!is_exit())
         {
             auto task = getTask();
@@ -67,7 +67,7 @@ namespace cxutil
         }
 
        // cout << "end XThreadPool Run " << this_thread::get_id() << endl;
-        CXLogInfo("end XThreadPool Run %d ", this_thread::get_id());
+        LOGI("end XThreadPool Run %d ", this_thread::get_id());
     }
     void CXThreadPool::addTask(std::shared_ptr<CXTask> task)
     {

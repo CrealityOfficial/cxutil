@@ -832,9 +832,9 @@ namespace cxutil
 		    out.close();
 	    }
     #endif
-        log("slice of mesh took %.3f seconds\n", slice_timer.restart());
+        LOGI("slice of mesh took %.3f seconds\n", slice_timer.restart());
         makePolygons(*i_mesh, slicing_tolerance, layers);
-        log("slice make polygons took %.3f seconds\n", slice_timer.restart());
+        LOGI("slice make polygons took %.3f seconds\n", slice_timer.restart());
 
     #if 0
 	    {

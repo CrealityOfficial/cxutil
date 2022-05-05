@@ -29,7 +29,7 @@ namespace cxutil
         //    {
         //        reason = stbi_failure_reason();
         //    }
-        //    logError("Cannot load image %s: '%s'.\n", filename.c_str(), reason);
+        //    LOGE("Cannot load image %s: '%s'.\n", filename.c_str(), reason);
         //    std::exit(-1);
         //}
         //{ // compute aabb

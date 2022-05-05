@@ -18,7 +18,7 @@ namespace cxutil
         }
         if (flow < data.front().flow)
         {
-            logWarning("Warning! Flow too low!\n"); // TODO
+            LOGW("Warning! Flow too low!\n"); // TODO
             return data.front().temp;
         }
         const Datum* last_datum = &data.front();
@@ -32,7 +32,7 @@ namespace cxutil
             last_datum = &datum;
         }
 
-        logWarning("Warning! Flow too high!\n"); // TODO
+        LOGW("Warning! Flow too high!\n"); // TODO
         return data.back().temp;
     };
 

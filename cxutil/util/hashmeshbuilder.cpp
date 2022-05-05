@@ -140,7 +140,7 @@ namespace cxutil
         {
             if (!has_disconnected_faces)
             {
-                //cura::logWarning("Mesh has disconnected faces!\n");
+                //cura::LOGW("Mesh has disconnected faces!\n");
             }
             has_disconnected_faces = true;
             return -1;
@@ -150,10 +150,10 @@ namespace cxutil
 
         if (candidateFaces.size() % 2 == 0)
         {
-            //cura::logDebug("Warning! Edge with uneven number of faces connecting it!(%i)\n", candidateFaces.size() + 1);
+            //cura::LOGD("Warning! Edge with uneven number of faces connecting it!(%i)\n", candidateFaces.size() + 1);
             if (!has_disconnected_faces)
             {
-                //cura::logWarning("Mesh has disconnected faces!\n");
+                //cura::LOGW("Mesh has disconnected faces!\n");
             }
             has_disconnected_faces = true;
         }
@@ -167,7 +167,7 @@ namespace cxutil
 
         if (n0.vSize() <= 0)
         {
-            //cura::logDebug("Face %i has zero area!", notFaceIdx);
+            //cura::LOGD("Face %i has zero area!", notFaceIdx);
         }
 
         double smallestAngle = 1000; // more then 2 PI (impossible angle)
@@ -192,10 +192,10 @@ namespace cxutil
 
             if (angle == 0)
             {
-                //cura::logDebug("Overlapping faces: face %i and face %i.\n", notFaceIdx, candidateFace);
+                //cura::LOGD("Overlapping faces: face %i and face %i.\n", notFaceIdx, candidateFace);
                 if (!has_overlapping_faces)
                 {
-                    //cura::logWarning("Mesh has overlapping faces!\n");
+                    //cura::LOGW("Mesh has overlapping faces!\n");
                 }
                 has_overlapping_faces = true;
             }
@@ -207,10 +207,10 @@ namespace cxutil
         }
         if (bestIdx < 0)
         {
-            //cura::logDebug("Couldn't find face connected to face %i.\n", notFaceIdx);
+            //cura::LOGD("Couldn't find face connected to face %i.\n", notFaceIdx);
             if (!has_disconnected_faces)
             {
-                //cura::logWarning("Mesh has disconnected faces!\n");
+                //cura::LOGW("Mesh has disconnected faces!\n");
             }
             has_disconnected_faces = true;
         }

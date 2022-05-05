@@ -170,11 +170,11 @@ namespace cxutil
 
         if (candidateFaces.size() == 0)
         {
-            logDebug("Couldn't find face connected to face %i.\n", notFaceIdx);
+            LOGD("Couldn't find face connected to face %i.\n", notFaceIdx);
             if (!has_disconnected_faces)
             {
                 long long sortId = atoll(settings->get<std::string>("slice_log_sort").c_str());
-                logWarning(sortId,"Mesh has disconnected faces!\n");
+                LOGWID(sortId,"Mesh has disconnected faces!\n");
             }
             has_disconnected_faces = true;
             return -1;
@@ -184,11 +184,11 @@ namespace cxutil
 
         if (candidateFaces.size() % 2 == 0)
         {
-            logDebug("Warning! Edge with uneven number of faces connecting it!(%i)\n", candidateFaces.size() + 1);
+            LOGD("Warning! Edge with uneven number of faces connecting it!(%i)\n", candidateFaces.size() + 1);
             if (!has_disconnected_faces)
             {
                 long long sortId = atoll(settings->get<std::string>("slice_log_sort").c_str());
-                logWarning(sortId,"Mesh has disconnected faces!\n");
+                LOGWID(sortId,"Mesh has disconnected faces!\n");
             }
             has_disconnected_faces = true;
         }
@@ -202,7 +202,7 @@ namespace cxutil
 
         if (n0.vSize() <= 0)
         {
-            logDebug("Face %i has zero area!", notFaceIdx);
+            LOGD("Face %i has zero area!", notFaceIdx);
         }
 
         double smallestAngle = 1000; // more then 2 PI (impossible angle)
@@ -227,10 +227,10 @@ namespace cxutil
 
             if (angle == 0)
             {
-                logDebug("Overlapping faces: face %i and face %i.\n", notFaceIdx, candidateFace);
+                LOGD("Overlapping faces: face %i and face %i.\n", notFaceIdx, candidateFace);
                 if (!has_overlapping_faces)
                 {
-                    logWarning("Mesh has overlapping faces!\n");
+                    LOGW("Mesh has overlapping faces!\n");
                 }
                 has_overlapping_faces = true;
             }
@@ -242,11 +242,11 @@ namespace cxutil
         }
         if (bestIdx < 0)
         {
-            logDebug("Couldn't find face connected to face %i.\n", notFaceIdx);
+            LOGD("Couldn't find face connected to face %i.\n", notFaceIdx);
             if (!has_disconnected_faces)
             {
                 long long sortId = atoll(settings->get<std::string>("slice_log_sort").c_str());
-                logWarning(sortId,"Mesh has disconnected faces!\n");
+                LOGWID(sortId,"Mesh has disconnected faces!\n");
             }
             has_disconnected_faces = true;
         }

@@ -63,7 +63,7 @@ namespace cxutil
         out = fopen(filename.c_str(), "w");
         if (!out)
         {
-            logError("The file %s could not be opened for writing.", filename.c_str());
+            LOGE("The file %s could not be opened for writing.", filename.c_str());
         }
         if (output_is_html)
         {
