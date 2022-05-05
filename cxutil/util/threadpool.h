@@ -17,7 +17,7 @@ namespace cxutil
         std::string taskName;
         virtual int run() = 0;
         std::function<bool()> is_exit = nullptr;
-        auto getReturn()
+        cxutil::TaskResult* getReturn()
         {
             return p_.get_future().get();
         }
