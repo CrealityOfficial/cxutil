@@ -207,7 +207,10 @@ namespace cxutil
         for (std::list<SierpinskiTriangle*>::iterator it = sequence.begin(); it != sequence.end(); ++it)
         {
             SierpinskiTriangle* node = *it;
-            depth_ordered[node->depth].emplace_back(it);
+            if (node)
+            {
+                depth_ordered[node->depth].emplace_back(it);
+            }
         }
         return depth_ordered;
     }
@@ -222,6 +225,7 @@ namespace cxutil
             for (std::list<SierpinskiTriangle*>::iterator it : depth_nodes)
             {
                 SierpinskiTriangle* node = *it;
+                if (!node) continue;
                 SierpinskiTriangle& triangle = *node;
 
                 // The range of consecutive triangles to consider for subdivision simultaneously.
