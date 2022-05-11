@@ -68,7 +68,7 @@ namespace cxutil
         {
             return parent->get<std::string>(key);
         }
-        LOGE("Trying to retrieve setting with no value given: '%s'\n", key.c_str());
+        //LOGE("Trying to retrieve setting with no value given: '%s'\n", key.c_str());
         //std::exit(2);
         return std::string("");
     }
@@ -678,7 +678,7 @@ namespace cxutil
         }
         else
         {
-            LOGE("Trying to retrieve setting with no value given: '%s'\n", key.c_str());
+            //LOGE("Trying to retrieve setting with no value given: '%s'\n", key.c_str());
             //std::exit(2);
             return std::string("");
         }
