@@ -639,7 +639,7 @@ namespace cxutil
             const Point p0_2 = p0_2_it.p();
             const Point v02_2 = p0_2 - p2_2;
             const int64_t v02_2_size = vSize(v02_2);
-            float progress = std::min(1.0, INT2MM(shortcut_length - v02_size) / INT2MM(v02_2_size - v02_size)); // account for rounding error when v02_2_size is approx equal to v02_size
+            float progress = std::min(1.0f, INT2MM(shortcut_length - v02_size) / INT2MM(v02_2_size - v02_size)); // account for rounding error when v02_2_size is approx equal to v02_size
             assert(progress >= 0.0f && progress <= 1.0f && "shortcut length must be between last length and new length");
             const Point new_p0 = p0_it.p() + (p0_2 - p0_it.p()) * progress;
             p0_it = ListPolyIt::insertPointNonDuplicate(p0_2_it, p0_it, new_p0);
@@ -1302,7 +1302,7 @@ namespace cxutil
 		if (!ifs) return false;
 		std::string line;
 		ClipperLib::Path pg;
-		int pathNum = 0;  //?¡¤??¨ºy¨¢?
+		int pathNum = 0;  //?ï¿½ï¿½??ï¿½ï¿½yï¿½ï¿½?
 		std::getline(ifs, line);
 		std::stringstream ss(line);
 		if (!(ss >> pathNum) || pathNum <= 0)
@@ -1312,7 +1312,7 @@ namespace cxutil
 		for (int i = 0; i < pathNum; i++)
 		{
 			int pathPoint = 0;
-			std::getline(ifs, line);///??¨¨?pathPoint
+			std::getline(ifs, line);///??ï¿½ï¿½?pathPoint
 			std::stringstream ss(line);
 			if (!(ss >> pathPoint) || pathPoint <= 0)
 			{

@@ -13,7 +13,6 @@ namespace cxutil
 	using coord_t = ClipperLib::cInt;
 } // namespace cura
 
-#define INT2MM(n) (double(n) / 1000.0)
 #define INT2MM2(n) (double(n) / 1000000.0)
 #define MM2INT(n) (cxutil::coord_t((n) * 1000 + 0.5 * (((n) > 0) - ((n) < 0))))
 #define MM2_2INT(n) (cxutil::coord_t((n) * 1000000 + 0.5 * (((n) > 0) - ((n) < 0))))
