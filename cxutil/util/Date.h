@@ -15,7 +15,8 @@ namespace cxutil
     public:
         Date(int year, int month, int day); //!< Simple constructor
         static Date getDate(); //!< Get the current date (compile time)
-		static std::string getDateTimeStr();
+		static std::string getBuildDateTimeStr();
+        static std::string getCurrentSystemTime();
         std::string toStringDashed(); //!< Get a formatted string: yyyy-mm-dd
     protected:
         int year; //!< Year, e.g. 2016
