@@ -371,8 +371,8 @@ namespace cxutil
             //h^2 = (L / b)^2     [square it]
             //h^2 = L^2 / b^2     [factor the divisor]
             const coord_t height_2 = area_removed_so_far * area_removed_so_far / base_length_2;
-            if ((height_2 <= 25 //Almost exactly colinear (barring rounding errors).
-                && LinearAlg2D::getDist2FromLine(current, previous, next) <= 25) // make sure that height_2 is not small because of cancellation of positive and negative areas
+            if ((height_2 <= 400 //Almost exactly colinear (barring rounding errors).
+                && LinearAlg2D::getDist2FromLine(current, previous, next) <= 400) // make sure that height_2 is not small because of cancellation of positive and negative areas
                 || (length2 < smallest_line_segment_squared
                     && next_length2 < smallest_line_segment_squared // Segments are small
                     && height_2 <= allowed_error_distance_squared) // removing the vertex doesn't introduce too much error.
