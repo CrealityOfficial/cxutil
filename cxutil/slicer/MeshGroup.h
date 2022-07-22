@@ -20,7 +20,7 @@ namespace cxutil
     {
     public:
         std::vector<Mesh*> meshes;
-        std::vector<float*> m_offset;
+        Point3 m_offset;
         Settings* settings;
 
         Point3 min() const; //! minimal corner of bounding box
