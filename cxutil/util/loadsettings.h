@@ -4,6 +4,7 @@
 #include "cxutil/slicer/ExtruderTrain.h"
 #include "cxutil/settings/Settings.h"
 #include <vector>
+#include<unordered_map>
 
 namespace cxutil
 {
@@ -22,6 +23,9 @@ namespace cxutil
 		std::vector<ExtruderTrain>& extruders, Settings* extruderParent);
 
     void modifySettings(Settings* settings, std::vector<std::pair<std::string, std::string>>& kvs);
+
+
+    bool loadProfileJSON(const std::string& json_filename, std::unordered_map<std::string, std::unordered_map<std::string, std::string>>& proflieKVS);
 }
 
 #endif // CURA_LOADSETTINGS_1605061398960_H

@@ -15,6 +15,26 @@
 
 namespace cxutil
 {
+    //profile 参数分类
+    std::unordered_map<std::string, std::string> defaultProfileCategoryMap
+    {
+        { "machine_settings", "Machine" },
+        { "resolution", "Quality" },
+        { "shell", "Shell" },
+        { "infill", "Infill" },
+        { "material", "Material" },
+        { "speed", "Speed" },
+        { "travel", "Travel" },
+        { "cooling", "Cooling" },
+        { "support", "Support" },
+        { "platform_adhesion", "Build Plate Adhesion" },
+        { "dual", "Dual Extrusion" },
+        { "meshfix", "Mesh Fixes" },
+        { "blackmagic", "Special Modes" },
+        { "experimental", "Experimental" },
+        { "special", "Special Machine Type" }
+    };
+
     /*
     * \brief Find a definition file in the search directories.
     * \param definition_id The ID of the definition to look for.
@@ -131,6 +151,77 @@ namespace cxutil
         }
 
     }
+    void loadCategoryValue(const rapidjson::Value& element, std::unordered_map<std::string, std::string>& kvs)
+    {
+        for (rapidjson::Value::ConstMemberIterator setting = element.MemberBegin(); setting != element.MemberEnd(); setting++)
+        {
+            const std::string name = setting->name.GetString();
+
+            const rapidjson::Value& setting_object = setting->value;
+            if (!setting_object.IsObject())
+            {
+                LOGE("JSON setting %s is not an object!\n", name.c_str());
+                continue;
+            }
+            if (setting_object.HasMember("default_value"))
+            {
+                const rapidjson::Value& default_value = setting_object["default_value"];
+                std::string value_string;
+                if (default_value.IsString())
+                {
+                    value_string = default_value.GetString();
+                }
+                else if (default_value.IsTrue())
+                {
+                    value_string = "true";
+                }
+                else if (default_value.IsFalse())
+                {
+                    value_string = "false";
+                }
+                else if (default_value.IsNumber())
+                {
+                    std::ostringstream ss;
+                    ss << default_value.GetDouble();
+                    value_string = ss.str();
+                }
+                else
+                {
+                    LOGW("Unrecognized data type in JSON setting %s\n", name.c_str());
+                    continue;
+                }
+                kvs.insert(std::make_pair(name, value_string));
+            }
+            if (setting_object.HasMember("children"))
+            {
+                loadCategoryValue(setting_object["children"], kvs);
+            }
+        }
+
+    }
+
+    bool loadJSONValue(const rapidjson::Value& element, std::unordered_map<std::string, std::unordered_map<std::string, std::string>>& proflieKVS)
+    {
+        for (rapidjson::Value::ConstMemberIterator setting = element.MemberBegin(); setting != element.MemberEnd(); setting++)
+        {
+            const std::string name = setting->name.GetString();
+            const rapidjson::Value& setting_object = setting->value;
+            if (!setting_object.IsObject())
+            {
+                LOGE("JSON setting %s is not an object!\n", name.c_str());
+                continue;
+            }
+            if (defaultProfileCategoryMap.find(name) != defaultProfileCategoryMap.end())
+            {
+                std::unordered_map<std::string, std::string> kvs;
+                loadCategoryValue(element,kvs);
+               
+                proflieKVS.insert(std::make_pair(name, kvs));
+            }
+        }
+        return true;
+    }
+
     /*
     * \brief Load a JSON document and store the settings inside it.
     * \param document The JSON document to load the settings from.
@@ -199,6 +290,15 @@ namespace cxutil
         return 0;
     }
 
+    bool loadJSON(const rapidjson::Document& document, std::unordered_map<std::string, std::unordered_map<std::string, std::string>>& proflieKVS)
+    {
+        if (document.HasMember("settings") && document["settings"].IsObject())
+        {
+            loadJSONValue(document["settings"], proflieKVS);
+        }
+        return true;
+    }
+
     int loadSettingsJSON(const std::string& json_filename, Settings* settings,
         std::vector<ExtruderTrain>& extruders, Settings* extruderParent)
     {
@@ -256,5 +356,27 @@ namespace cxutil
 
         for (KeyValue& kv : kvs)
             settings->add(kv.first, kv.second);
+    }
+
+    bool loadProfileJSON(const std::string& json_filename, std::unordered_map<std::string, std::unordered_map<std::string, std::string>>& proflieKVS)
+    {
+        FILE* file = fopen(json_filename.c_str(), "rb");
+        if (!file)
+        {
+            LOGE("Couldn't open JSON file: %s\n", json_filename.c_str());
+            return false;
+        }
+
+        rapidjson::Document json_document;
+        char read_buffer[4096];
+        rapidjson::FileReadStream reader_stream(file, read_buffer, sizeof(read_buffer));
+        json_document.ParseStream(reader_stream);
+        fclose(file);
+        if (json_document.HasParseError())
+        {
+            LOGE("Error parsing JSON (offset %u): %s\n", static_cast<unsigned int>(json_document.GetErrorOffset()), GetParseError_En(json_document.GetParseError()));
+            return false;
+        }
+        return loadJSON(json_document, proflieKVS);
     }
 }
