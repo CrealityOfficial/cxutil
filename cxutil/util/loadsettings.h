@@ -8,6 +8,7 @@
 
 namespace cxutil
 {
+#define MAX_JSON_CONTENT_SIZE 4096
        /*
     * \brief Load a JSON file and store the settings inside it.
     * \param json_filename The location of the JSON file to load settings from.

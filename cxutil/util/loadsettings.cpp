@@ -191,10 +191,11 @@ namespace cxutil
                     continue;
                 }
                 kvs.insert(std::make_pair(name, value_string));
+                continue;
             }
-            if (setting_object.HasMember("children"))
+            if (name.find("children") != std::string::npos)
             {
-                loadCategoryValue(setting_object["children"], kvs);
+                loadCategoryValue(setting_object, kvs);
             }
         }
 
@@ -214,7 +215,7 @@ namespace cxutil
             if (defaultProfileCategoryMap.find(name) != defaultProfileCategoryMap.end())
             {
                 std::unordered_map<std::string, std::string> kvs;
-                loadCategoryValue(element,kvs);
+                loadCategoryValue(setting_object,kvs);
                
                 proflieKVS.insert(std::make_pair(name, kvs));
             }
@@ -368,7 +369,7 @@ namespace cxutil
         }
 
         rapidjson::Document json_document;
-        char read_buffer[4096];
+        char read_buffer[MAX_JSON_CONTENT_SIZE];
         rapidjson::FileReadStream reader_stream(file, read_buffer, sizeof(read_buffer));
         json_document.ParseStream(reader_stream);
         fclose(file);
