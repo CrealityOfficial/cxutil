@@ -26,7 +26,7 @@ namespace cxutil
     void modifySettings(Settings* settings, std::vector<std::pair<std::string, std::string>>& kvs);
 
 
-    bool loadProfileJSON(const std::string& json_filename, std::unordered_map<std::string, std::unordered_map<std::string, std::string>>& proflieKVS);
+    bool loadProfileJSON(const std::string& json_filename, const std::unordered_map<std::string,std::string> defaultProfileCategoryMap,std::unordered_map<std::string, std::unordered_map<std::string, std::string>>& proflieKVS);
 }
 
 #endif // CURA_LOADSETTINGS_1605061398960_H

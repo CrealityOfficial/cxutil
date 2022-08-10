@@ -15,26 +15,6 @@
 
 namespace cxutil
 {
-    //profile 参数分类
-    std::unordered_map<std::string, std::string> defaultProfileCategoryMap
-    {
-        { "machine_settings", "Machine" },
-        { "resolution", "Quality" },
-        { "shell", "Shell" },
-        { "infill", "Infill" },
-        { "material", "Material" },
-        { "speed", "Speed" },
-        { "travel", "Travel" },
-        { "cooling", "Cooling" },
-        { "support", "Support" },
-        { "platform_adhesion", "Build Plate Adhesion" },
-        { "dual", "Dual Extrusion" },
-        { "meshfix", "Mesh Fixes" },
-        { "blackmagic", "Special Modes" },
-        { "experimental", "Experimental" },
-        { "special", "Special Machine Type" }
-    };
-
     /*
     * \brief Find a definition file in the search directories.
     * \param definition_id The ID of the definition to look for.
@@ -201,7 +181,7 @@ namespace cxutil
 
     }
 
-    bool loadJSONValue(const rapidjson::Value& element, std::unordered_map<std::string, std::unordered_map<std::string, std::string>>& proflieKVS)
+    bool loadJSONValue(const rapidjson::Value& element, const std::unordered_map<std::string, std::string> defaultProfileCategoryMap,std::unordered_map<std::string, std::unordered_map<std::string, std::string>>& proflieKVS)
     {
         for (rapidjson::Value::ConstMemberIterator setting = element.MemberBegin(); setting != element.MemberEnd(); setting++)
         {
@@ -291,11 +271,11 @@ namespace cxutil
         return 0;
     }
 
-    bool loadJSON(const rapidjson::Document& document, std::unordered_map<std::string, std::unordered_map<std::string, std::string>>& proflieKVS)
+    bool loadJSON(const rapidjson::Document& document, const std::unordered_map<std::string, std::string> defaultProfileCategoryMap, std::unordered_map<std::string, std::unordered_map<std::string, std::string>>& proflieKVS)
     {
         if (document.HasMember("settings") && document["settings"].IsObject())
         {
-            loadJSONValue(document["settings"], proflieKVS);
+            loadJSONValue(document["settings"], defaultProfileCategoryMap, proflieKVS);
         }
         return true;
     }
@@ -359,7 +339,7 @@ namespace cxutil
             settings->add(kv.first, kv.second);
     }
 
-    bool loadProfileJSON(const std::string& json_filename, std::unordered_map<std::string, std::unordered_map<std::string, std::string>>& proflieKVS)
+    bool loadProfileJSON(const std::string& json_filename, const std::unordered_map<std::string, std::string> defaultProfileCategoryMap, std::unordered_map<std::string, std::unordered_map<std::string, std::string>>& proflieKVS)
     {
         FILE* file = fopen(json_filename.c_str(), "rb");
         if (!file)
@@ -378,6 +358,6 @@ namespace cxutil
             LOGE("Error parsing JSON (offset %u): %s\n", static_cast<unsigned int>(json_document.GetErrorOffset()), GetParseError_En(json_document.GetParseError()));
             return false;
         }
-        return loadJSON(json_document, proflieKVS);
+        return loadJSON(json_document, defaultProfileCategoryMap,proflieKVS);
     }
 }
