@@ -169,35 +169,36 @@ namespace cxutil
 
     void SierpinskiFill::createLowerBoundSequence()
     {
-#if _DEBUG
+//#if _DEBUG
         getChildren(root);
         for (int i = 0; i < _sequence.size(); i++)
         {
             sequence.emplace_back(&_sequence[i]);
         }
-#else
-        sequence.emplace_front(&root);
-
-        if (deep_debug_checking) debugCheck();
-        for (int iteration = 0; iteration < 999; iteration++)
-        {
-            bool change = false;
-            change |= subdivideAll();
-            if (deep_debug_checking) debugCheck();
-
-            if (constraint_error_diffusion)
-            {
-                change |= bubbleUpConstraintErrors();
-                if (deep_debug_checking) debugCheck();
-            }
-
-            if (!change)
-            {
-                LOGD("Finished after %i iterations, with a max depth of %i.\n", iteration + 1, max_depth);
-                break;
-            }
-        }
-#endif
+        return;
+//#else
+//        sequence.emplace_front(&root);
+//
+//        if (deep_debug_checking) debugCheck();
+//        for (int iteration = 0; iteration < 999; iteration++)
+//        {
+//            bool change = false;
+//            change |= subdivideAll();
+//            if (deep_debug_checking) debugCheck();
+//
+//            if (constraint_error_diffusion)
+//            {
+//                change |= bubbleUpConstraintErrors();
+//                if (deep_debug_checking) debugCheck();
+//            }
+//
+//            if (!change)
+//            {
+//                LOGD("Finished after %i iterations, with a max depth of %i.\n", iteration + 1, max_depth);
+//                break;
+//            }
+//        }
+//#endif
     }
 
     std::vector<std::vector<std::list<SierpinskiFill::SierpinskiTriangle*>::iterator>> SierpinskiFill::getDepthOrdered()
