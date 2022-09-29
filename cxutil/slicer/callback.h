@@ -19,6 +19,7 @@ namespace cxutil
 
 		virtual void onLayerPart(int meshIdx, int layerIdx, int partIdx, float z, float thickness, ClipperLib::Path& path) {};
 		virtual void onSupport(int layerIdx, int partIdx, float thickness, ClipperLib::Path& path) {};
+        virtual void onSupports(int layerIdx, float thickness, ClipperLib::Paths& paths) {};
 		virtual void onCxutilMesh(Mesh* mesh) {};
 
 		//GCode
