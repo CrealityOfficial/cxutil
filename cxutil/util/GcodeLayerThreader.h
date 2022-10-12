@@ -42,6 +42,7 @@ namespace cxutil
             int end_item_argument_index,
             const std::function<T* (int)>& produce_item,
             const std::function<void(T*)>& consume_item,
+            const std::function<bool()>& stop_func,
             const unsigned int max_task_count
             );
 
@@ -87,6 +88,8 @@ namespace cxutil
         const std::function<T* (int)>& produce_item; //!< The function to produce an item
         const std::function<void(T*)>& consume_item; //!< The function to consume an item
 
+        const std::function<bool()>& stop_func;  //to stop thread
+
         // variables which change throughout the computation of the algorithm
         std::vector<T*> produced; //!< ordered list for every item to be produced; contains pointers to produced items which aren't consumed yet; rest is nullptr
         int last_produced_argument_index; //!< Counter to see which item next to produce
@@ -106,6 +109,7 @@ namespace cxutil
         int end_item_argument_index,
         const std::function<T* (int)>& produce_item,
         const std::function<void(T*)>& consume_item,
+        const std::function<bool()>& stop_func,
         const unsigned int max_task_count
         )
         : start_item_argument_index(start_item_argument_index)
@@ -114,6 +118,7 @@ namespace cxutil
         , max_task_count(max_task_count)
         , produce_item(produce_item)
         , consume_item(consume_item)
+        , stop_func(stop_func)
         , last_produced_argument_index(start_item_argument_index - 1)
     {
         produced.resize(item_count, nullptr);
@@ -130,7 +135,7 @@ namespace cxutil
 #endif // _OPENMP
             while (true)
             {
-                if (finished())
+                if (finished()||(stop_func&&stop_func()))
                 {
                     break;
                 }
