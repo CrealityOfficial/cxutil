@@ -1,5 +1,8 @@
 __files_group(${CMAKE_CURRENT_SOURCE_DIR}/cxutil SRC)
 
+__cc_find(Clipper)
+__cc_find(RapidJson)
+
 __assert_target(clipper)
 __assert_parameter(RAPIDJSON_INCLUDE_DIRS)
 
