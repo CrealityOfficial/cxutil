@@ -44,6 +44,10 @@ namespace cxutil
 			box.include(ptr->box());
 		return box;
 	}
+	void DLPInput::addParam(DLPParam param)
+	{
+		m_param = param;
+	}
 
 	DLPParam& DLPInput::param()
 	{

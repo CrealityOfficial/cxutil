@@ -64,6 +64,7 @@ namespace cxutil
 		const std::vector< MeshObjectPtr>& meshes() const;
 		std::vector<MeshObjectPtr>& meshes();
 
+		void addParam(DLPParam param);
 		DLPParam& param();
 		AABB3D box();
 	protected:
