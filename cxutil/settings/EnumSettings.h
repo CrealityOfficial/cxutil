@@ -222,6 +222,18 @@ namespace cxutil
                MACH3_CREALITY = 9,
     };
 
+
+    /*!
+ * Type of retraction.
+ */
+    enum class RetractionType
+    {
+        DEFAULT,
+        BAMBOO,
+        RAISE3D,
+        NONE
+    };
+
 } //Cura namespace.
 
 #endif //CX_SETTINGSBASEVIRTUAL_H

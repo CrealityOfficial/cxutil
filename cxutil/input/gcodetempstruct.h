@@ -21,7 +21,7 @@ namespace cxutil
 		Temperature build_volume_temperature;
 
 		bool relative_extrusion;
-		bool retraction_enable;
+		bool retraction_type;
 		bool machine_heated_bed;
 		bool material_bed_temp_prepend;
 		bool material_print_temp_prepend;
