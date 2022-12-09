@@ -393,6 +393,7 @@ namespace cxutil
 	template<> RetractionType Settings::get<RetractionType>(const std::string& key) const
 	{
 		const std::string& value = get<std::string>(key);
+        const bool value2 = get<bool>(key);
 		if (value == "default")
 		{
 			return RetractionType::DEFAULT;
@@ -405,10 +406,15 @@ namespace cxutil
 		{
 			return RetractionType::RAISE3D;
 		}
+        else if (value2 == true)
+        {
+            return RetractionType::DEFAULT;
+        }
 		else
 		{
 			return RetractionType::NONE;
 		}
+
 	}
 
 
