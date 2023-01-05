@@ -21,6 +21,7 @@ namespace cxutil
         double cool_fan_speed_max;
         Velocity cool_min_speed;
         LayerIndex cool_fan_full_layer;
+        double cool_cds_fan_speed;
     };
 
 } // namespace cxutil
