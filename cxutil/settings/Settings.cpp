@@ -390,33 +390,6 @@ namespace cxutil
         }
     }
 
-	template<> RetractionType Settings::get<RetractionType>(const std::string& key) const
-	{
-		const std::string& value = get<std::string>(key);
-        const bool value2 = get<bool>(key);
-		if (value == "default")
-		{
-			return RetractionType::DEFAULT;
-		}
-		else if (value == "bamboo")
-		{
-			return RetractionType::BAMBOO;
-		}
-		else if (value == "raise3d")
-		{
-			return RetractionType::RAISE3D;
-		}
-        else if (value2 == true)
-        {
-            return RetractionType::DEFAULT;
-        }
-		else
-		{
-			return RetractionType::NONE;
-		}
-
-	}
-
 
 	template<> ColorChangeType Settings::get<ColorChangeType>(const std::string& key) const
 	{
@@ -460,6 +433,20 @@ namespace cxutil
             return ESupportType::NONE;
         }
     }
+
+	template<>
+	RetractionHopType Settings::get<RetractionHopType>(const std::string& key) const
+	{
+		const std::string& value = get<std::string>(key);
+		if (value == "directlift")
+		{
+			return RetractionHopType::DIRECTLIFT;
+		}
+		else // spirallift.
+		{
+			return RetractionHopType::SPIRALLIFT;
+		}
+	}
 
     template<> EZSeamType Settings::get<EZSeamType>(const std::string& key) const
     {
