@@ -49,9 +49,9 @@ namespace cxutil
         debugCheck(true);
 
 #ifndef _DEBUG
-        settleErrors();
+        //settleErrors();
 
-        diffuseError();
+        //diffuseError();
 #endif
     }
 
