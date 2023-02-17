@@ -17,6 +17,7 @@ __add_real_target(cxutil lib SOURCE ${SRC}
 							 OPENMP
 							 )
 							 
+__set_folder_targets(slice TARGET cxutil)
 
 
 
