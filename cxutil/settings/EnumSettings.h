@@ -222,6 +222,16 @@ namespace cxutil
                MACH3_CREALITY = 9,
     };
 
+
+    /*!
+ * Type of Z Hop.
+ */
+    enum class RetractionHopType
+    {
+        DIRECTLIFT,
+        SPIRALLIFT
+    };
+
 } //Cura namespace.
 
 #endif //CX_SETTINGSBASEVIRTUAL_H

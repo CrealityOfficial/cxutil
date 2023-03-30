@@ -434,6 +434,20 @@ namespace cxutil
         }
     }
 
+	template<>
+	RetractionHopType Settings::get<RetractionHopType>(const std::string& key) const
+	{
+		const std::string& value = get<std::string>(key);
+		if (value == "directlift")
+		{
+			return RetractionHopType::DIRECTLIFT;
+		}
+		else // spirallift.
+		{
+			return RetractionHopType::SPIRALLIFT;
+		}
+	}
+
     template<> EZSeamType Settings::get<EZSeamType>(const std::string& key) const
     {
         const std::string& value = get<std::string>(key);

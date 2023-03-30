@@ -12,7 +12,7 @@
 #include <assert.h>
 
 #ifdef _OPENMP
-#include <omp.h>
+#include "omp.h"
 #endif
 
 namespace cxutil
