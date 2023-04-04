@@ -10,6 +10,8 @@
 #include <sstream>
 #include <iomanip>
 
+#include "crcommon/header.h"
+
 namespace cxutil
 {
     size_t ConstPolygonRef::size() const
@@ -1342,4 +1344,45 @@ namespace cxutil
 		ifs.close();
 		return true;
 	}
+
+    void Polygons::save(const std::string& fileName)
+    {
+        std::ofstream out;
+        out.open(fileName, std::ios_base::binary);
+        if (out.is_open())
+        {
+            savePolygons(*this, out);
+        }
+        out.close();
+    }
+
+    void Polygons::load(const std::string& fileName)
+    {
+        std::ifstream in;
+        in.open(fileName, std::ios_base::binary);
+        if (in.is_open())
+        {
+            loadPolygons(*this, in);
+        }
+        in.close();
+    }
+
+    void savePolygons(const Polygons& polygons, std::ofstream& out)
+    {
+        int size = (int)polygons.paths.size();
+        templateSave<int>(size, out);
+        for (int i = 0; i < size; ++i)
+            templateSave(polygons.paths.at(i), out);
+    }
+
+    void loadPolygons(Polygons& polygons, std::ifstream& in)
+    {
+        int size = templateLoad<int>(in);
+        if (size > 0)
+        {
+            polygons.paths.resize(size);
+            for (int i = 0; i < size; ++i)
+                templateLoad(polygons.paths.at(i), in);
+        }
+    }
 }//namespace cxutil

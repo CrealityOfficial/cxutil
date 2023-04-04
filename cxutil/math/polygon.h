@@ -986,9 +986,10 @@ namespace cxutil
 	 *   Save the path of the Polygons to File.
 	 */
 		bool saveToLocalFile(const char* filename, double scale);
-
 		bool  loadFromLocalFile(const char* filename, double scale);
 
+        void save(const std::string& fileName);
+        void load(const std::string& fileName);
 		/*!
 		 * Split up the polygons into groups according to the even-odd rule.
 		 * Each PolygonsPart in the result has an outline as first polygon, whereas the rest are holes.
@@ -1265,6 +1266,8 @@ namespace cxutil
         PolygonsPart assemblePart(unsigned int part_idx) const;
     };
 
+    void savePolygons(const Polygons& polygons, std::ofstream& out);
+    void loadPolygons(Polygons& polygons, std::ifstream& in);
 }//namespace cxutil
 
 #endif//CX_UTILS_POLYGON_H

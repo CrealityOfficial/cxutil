@@ -197,6 +197,16 @@ namespace cxutil
 			DLPmesh& meshData = dataMeshes.dlpmeshs.at(meshIdx);
 			meshData.layers.resize(layerCount);
 
+#if _DEBUG
+			for (int layer_nr = 0; layer_nr < static_cast<int>(layerCount); layer_nr++)
+			{
+				SlicedMeshLayer& layer = slicedMesh.m_layers.at(layer_nr);
+				char name[256];
+				sprintf(name, "polygons_%p", &layer);
+				layer.polygons.save(name);
+			}
+#endif
+
 #pragma omp parallel for
 			for (int layer_nr = 0; layer_nr < static_cast<int>(layerCount); layer_nr++)
 			{
