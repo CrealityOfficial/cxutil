@@ -1,12 +1,14 @@
 __files_group(${CMAKE_CURRENT_SOURCE_DIR}/cxutil SRC)
 
 __cc_find(Clipper)
+__cc_find(TriMesh2)
 __cc_find(RapidJson)
 
 __assert_target(clipper)
-#__assert_parameter(RAPIDJSON_INCLUDE_DIRS)
+__assert_target(trimesh2)
+__assert_target(rapidjson)
 
-set(ILIBS clipper trimesh2 stringutil)
+set(ILIBS clipper trimesh2)
 if(TARGET rapidjson)
 	list(APPEND ILIBS rapidjson)
 endif()
