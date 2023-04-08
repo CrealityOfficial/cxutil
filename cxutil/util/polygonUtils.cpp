@@ -1307,4 +1307,8 @@ namespace cxutil
         return hamming_distance / total_area;
     }
 
+    ClipperLib::cInt lightOffDistance(const Polygons& polygons)
+    {
+        return 100;
+    }
 }//namespace cura

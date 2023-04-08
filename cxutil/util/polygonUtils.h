@@ -623,6 +623,9 @@ namespace cxutil
         static ClosestPolygonPoint _moveInside2(const ClosestPolygonPoint& closest_polygon_point, const int distance, Point& from, const int64_t max_dist2);
 
     };
+
+
+    ClipperLib::cInt lightOffDistance(const Polygons& polygons);
 }//namespace cura
 
 #endif//POLYGON_OPTIMIZER_H
