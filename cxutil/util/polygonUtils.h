@@ -624,8 +624,13 @@ namespace cxutil
 
     };
 
-
-    ClipperLib::cInt lightOffDistance(const Polygons& polygons);
+    /*
+    calculate the pole of the polygons,and return pole radius and pole's coordinate.
+    @param polygons, the input Polygons.
+    @param polePoly, the output Polygons, usually includes several points.
+    @param type, the algorithm selected to calculate the pole of the polygons.
+    */
+    ClipperLib::cInt lightOffDistance(const Polygons& polygons, Polygons& polePoly, const int type = 1);
 }//namespace cura
 
 #endif//POLYGON_OPTIMIZER_H
