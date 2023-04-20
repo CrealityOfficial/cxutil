@@ -1340,4 +1340,10 @@ namespace cxutil
         return bestCell.d;
     }
 
+    void lightOffDistance(const Polygons& polygons, LightOffCircle& result,
+        LightOffDebugger* debugger, ccglobal::Tracer* tracer)
+    {
+
+    }
+
 }//namespace cura

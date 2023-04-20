@@ -13,6 +13,11 @@
 #include "cxutil/util/optional.h"
 #include "cxutil/math/PolygonsPointIndex.h"
 
+namespace ccglobal
+{
+    class Tracer;
+}
+
 namespace cxutil
 {
     /*!
@@ -631,6 +636,22 @@ namespace cxutil
     @param type, the algorithm selected to calculate the pole of the polygons.
     */
     ClipperLib::cInt lightOffDistance(const Polygons& polygons, Polygons& polePoly, const int type = 1);
+
+
+    struct LightOffCircle
+    {
+        ClipperLib::IntPoint point;
+        ClipperLib::cInt radius;
+    };
+
+    class LightOffDebugger
+    {
+    public:
+        virtual void onIteration(const LightOffCircle& circle) = 0;
+    };
+
+    void lightOffDistance(const Polygons& polygons, LightOffCircle& result,
+        LightOffDebugger* debugger = nullptr, ccglobal::Tracer* tracer = nullptr);
 }//namespace cura
 
 #endif//POLYGON_OPTIMIZER_H
