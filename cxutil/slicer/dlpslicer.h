@@ -3,16 +3,20 @@
 #include "cxutil/input/dlpdata.h"
 #include "cxutil/input/dlpinput.h"
 
+namespace ccglobal
+{
+	class Tracer;
+}
+
 namespace cxutil
 {
-	class SliceTracer;
 	class DLPSlicer
 	{
 	public:
 		DLPSlicer();
 		~DLPSlicer();
 
-		DLPData* compute(DLPInput* input, SliceTracer* tracer);
+		DLPData* compute(DLPInput* input, ccglobal::Tracer* tracer);
 	protected:
 	};
 }

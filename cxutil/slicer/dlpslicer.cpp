@@ -6,8 +6,8 @@
 #include "cxutil/slicer/preslice.h"
 
 #include "cxutil/processor/openpolygonprocessor.h"
-#include "cxutil/util/slicetracer.h"
 #include "trimesh2/TriMesh.h"
+#include "ccglobal/tracer.h"
 
 #include <assert.h>
 
@@ -27,7 +27,7 @@ namespace cxutil
 
 	}
 
-	DLPData* DLPSlicer::compute(DLPInput* input, SliceTracer* tracer)
+	DLPData* DLPSlicer::compute(DLPInput* input, ccglobal::Tracer* tracer)
 	{
 		if (!input)
 			return nullptr;
@@ -47,10 +47,10 @@ namespace cxutil
 
 		if (tracer)
 		{
-			tracer->traceProgress(0.3f);
-			if (tracer->traceInterrupt())
+			tracer->progress(0.3f);
+			if (tracer->interrupt())
 			{
-				tracer->traceProgress(1.0f);
+				tracer->progress(1.0f);
 				return nullptr;
 			}
 		}
@@ -75,10 +75,10 @@ namespace cxutil
 
 		if (tracer)
 		{
-			tracer->traceProgress(0.6f);
-			if (tracer->traceInterrupt())
+			tracer->progress(0.6f);
+			if (tracer->interrupt())
 			{
-				tracer->traceProgress(1.0f);
+				tracer->progress(1.0f);
 				return nullptr;
 			}
 		}
@@ -138,10 +138,10 @@ namespace cxutil
 
 		if (tracer)
 		{
-			tracer->traceProgress(0.7f);
-			if (tracer->traceInterrupt())
+			tracer->progress(0.7f);
+			if (tracer->interrupt())
 			{
-				tracer->traceProgress(1.0f);
+				tracer->progress(1.0f);
 				return nullptr;
 			}
 		}
@@ -178,10 +178,10 @@ namespace cxutil
 
 		if (tracer)
 		{
-			tracer->traceProgress(0.9f);
-			if (tracer->traceInterrupt())
+			tracer->progress(0.9f);
+			if (tracer->interrupt())
 			{
-				tracer->traceProgress(1.0f);
+				tracer->progress(1.0f);
 				return nullptr;
 			}
 		}
@@ -221,8 +221,8 @@ namespace cxutil
 
 		if (tracer)
 		{
-			tracer->traceProgress(1.0f);
-			if (tracer->traceInterrupt())
+			tracer->progress(1.0f);
+			if (tracer->interrupt())
 			{
 				delete data;
 				data = nullptr;
