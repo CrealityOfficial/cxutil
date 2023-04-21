@@ -650,7 +650,7 @@ namespace cxutil
         virtual void onIteration(const LightOffCircle& circle) = 0;
     };
 
-    void lightOffDistance(const Polygons& polygons, LightOffCircle& result,
+    ClipperLib::cInt lightOffDistance(const Polygons& polygons, LightOffCircle& result,
         LightOffDebugger* debugger = nullptr, ccglobal::Tracer* tracer = nullptr);
 }//namespace cura
 

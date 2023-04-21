@@ -5,6 +5,7 @@
 #include <iostream>
 #include <vector>
 #include <windows.h>
+#include "../../cxutil/util/polygonUtils.h"
 
 /*
 https://blog.mapbox.com/a-new-algorithm-for-finding-a-visual-center-of-a-polygon-7c77e6492fbc
@@ -258,7 +259,7 @@ namespace polygonPole {
     }
     //计算多边形最近的两条边及对应的两个点
     template <typename T>
-    Point2D<T> GetUpdateCircleCenter(const Point2D<T>& point, const Polygon<T>& poly, T& miniDist)
+    Point2D<T> UpdateCircleCenter(const Point2D<T>& point, const Polygon<T>& poly, T& miniDist)
     {
         bool inside = false;
         const auto& points = poly.points;
@@ -589,7 +590,7 @@ namespace polygonPole {
             //初始圆心坐标
             Point2D<T> pc = (maxPt + minPt) * 0.5;
             //步骤1，计算角平分线与底边交点的圆心坐标
-            Point2D<T> pt = GetUpdateCircleCenter(pc, poly, lastDist);
+            Point2D<T> pt = UpdateCircleCenter(pc, poly, lastDist);
             double flag = 1.0;
             while (a > precision) {
                 //步骤2，根据步长，更新的圆心坐标
@@ -597,7 +598,7 @@ namespace polygonPole {
                 flag = lastDist > 0 ? 1.0 : -1.0;
                 Point2D<T> vec = (pc - pt).Unit();
                 Point2D<T> curPc = pc + vec * a * flag;
-                Point2D<T> curPt= GetUpdateCircleCenter(curPc, poly, curDist);
+                Point2D<T> curPt= UpdateCircleCenter(curPc, poly, curDist);
                 if (curDist > lastDist) {
                     pc = curPc;
                     pt = curPt;
@@ -614,12 +615,60 @@ namespace polygonPole {
         default:
             break;
         }
-        /*std::vector<Cell<T>> celllist;
-        for (int i = 0; i < 10000; ++i) {
-            celllist.push_back(Cell<T>(Point2D<T>(0, 0), 100, 100, poly));
-        }*/
         Translate(poly, -center);
         bestCell.c -= center;
         return bestCell;
+    }
+
+    template <typename T>
+    Cell<T> GetIterationCircles(Polygon<T>& poly, cxutil::LightOffCircle& result, cxutil::LightOffDebugger* debugger = nullptr,
+        ccglobal::Tracer* tracer = nullptr)
+    {
+        const T precision = 1;
+        Point2D<T>& center = GetCenter(poly);
+        Translate(poly, center);
+        BoundBox<T>& bound = GetBoundBox(poly);
+        const Point2D<T>& maxPt = bound.max;
+        const Point2D<T>& minPt = bound.min;
+        const Point2D<T>& size = maxPt - minPt;
+        //计算原理参考https://www.docin.com/p-1221389860.html
+            //初始步长，最短距离初始化
+        T a = 1200, lastDist = 0, curDist = 0;
+        //初始圆心坐标
+        Point2D<T> pc = (maxPt + minPt) * 0.5;
+        //步骤1，计算角平分线与底边交点的圆心坐标
+        Point2D<T> pt = UpdateCircleCenter(pc, poly, lastDist);
+        double flag = 1.0;
+        while (a > precision) {
+            if (debugger) {
+                result.point.X = pc.x;
+                result.point.Y = pc.y;
+                result.radius = std::fabs(lastDist);
+                debugger->onIteration(result);
+            }
+            //步骤2，根据步长，更新的圆心坐标
+            //注意，判断当前点在内外部，及更新内外角平分线上圆心坐标
+            flag = lastDist > 0 ? 1.0 : -1.0;
+            Point2D<T> vec = (pc - pt).Unit();
+            Point2D<T> curPc = pc + vec * a * flag;
+            Point2D<T> curPt = UpdateCircleCenter(curPc, poly, curDist);
+            if (curDist > lastDist) {
+                pc = curPc;
+                pt = curPt;
+                lastDist = curDist;
+            } else {
+                a *= 0.618;
+                continue;
+            }
+        }
+        Translate(poly, -center);
+        pc -= center;
+        Cell<T> res_cell;
+        res_cell.c = pc;
+        res_cell.d = sdPolygon(pc, poly);
+        result.point.X = res_cell.c.x;
+        result.point.Y = res_cell.c.y;
+        result.radius = std::fabs(res_cell.d);
+        return res_cell;
     }
 } // namespace polygonPole
