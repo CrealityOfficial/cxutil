@@ -297,13 +297,60 @@ namespace polygonPole {
         Point2D<T> q = GetSegmentProject(point, points[index3], points[index4]);
         return (p + q * k) / (1 + k);
     }
-    // get grid points from clipperlib
-    template<typename T>
-    void setGridPoints(Polygon<T>& poly, const std::vector<int>& points)
-    {
-        poly.gridPoints.swap(points);
-    }
     
+    template <typename T>
+    Point2D<T> UpdateCircleCenter(const Point2D<T>& point, const std::vector<Polygon<T>>& polys, T& miniDist){
+        bool inside = false;
+        std::vector<std::vector<T>> sdlists;
+        for (auto& poly : polys) {
+            const auto& points = poly.points;
+            const size_t len = points.size();
+            std::vector<T> sdDist;
+            for (std::size_t i = 0, j = len - 1; i < len; j = i++) {
+                const auto& a = points[i];
+                const auto& b = points[j];
+                if (((a.y > point.y) != (b.y > point.y)) &&
+                    ((point.x < (b.x - a.x) * (point.y - a.y) / (b.y - a.y) + a.x))) inside = !inside;
+                sdDist.push_back(sdSegment(point, a, b));
+            }
+            sdlists.push_back(sdDist);
+        }
+        T r1 = std::numeric_limits<T>::infinity();
+        T r2 = std::numeric_limits<T>::infinity();
+        size_t ps1 = 0, index1 = 0, index2 = 0;
+        for (int k = 0; k < sdlists.size(); ++k) {
+            auto sdDist = sdlists[k];
+            const size_t len = sdDist.size();
+            for (std::size_t i = 0, j = len - 1; i < len; j = i++) {
+                T dist = sdDist[i];
+                if (dist < r1) {
+                    r1 = dist;
+                    index1 = i;
+                    index2 = j;
+                    ps1 = k;
+                }
+            }
+        }
+        size_t ps2 = 0, index3 = 0, index4 = 0;
+        for (int k = 0; k < sdlists.size(); ++k) {
+            auto sdDist = sdlists[k];
+            const size_t len = sdDist.size();
+            for (std::size_t i = 0, j = len - 1; i != index1 && i < len; j = i++) {
+                T dist = sdDist[i];
+                if (dist < r2) {
+                    r2 = dist;
+                    index3 = i;
+                    index4 = j;
+                    ps2 = k;
+                }
+            }
+        }
+        miniDist = (inside ? 1 : -1) * std::sqrt(r1);
+        T k = std::sqrt(r1 / r2);
+        Point2D<T> p = GetSegmentProject(point, polys[ps1].points[index1], polys[ps1].points[index2]);
+        Point2D<T> q = GetSegmentProject(point, polys[ps2].points[index3], polys[ps2].points[index4]);
+        return (p + q * k) / (1 + k);
+    }
     // get squared distance from a point to a segment
     /*template <typename T>
     constexpr inline T sdSegment2(const Point2D<T>& p, const Point2D<T>& a, const Point2D<T>& b)
@@ -621,13 +668,11 @@ namespace polygonPole {
     }
 
     template <typename T>
-    Cell<T> GetIterationCircles(Polygon<T>& poly, cxutil::LightOffCircle& result, cxutil::LightOffDebugger* debugger = nullptr,
+    Cell<T> GetIterationCircles(std::vector<Polygon<T>>& polys, cxutil::LightOffCircle& result, cxutil::LightOffDebugger* debugger = nullptr,
         ccglobal::Tracer* tracer = nullptr)
     {
         const T precision = 1;
-        Point2D<T>& center = GetCenter(poly);
-        Translate(poly, center);
-        BoundBox<T>& bound = GetBoundBox(poly);
+        BoundBox<T>& bound = GetBoundBox(polys.front());
         const Point2D<T>& maxPt = bound.max;
         const Point2D<T>& minPt = bound.min;
         const Point2D<T>& size = maxPt - minPt;
@@ -637,12 +682,13 @@ namespace polygonPole {
         //初始圆心坐标
         Point2D<T> pc = (maxPt + minPt) * 0.5;
         //步骤1，计算角平分线与底边交点的圆心坐标
-        Point2D<T> pt = UpdateCircleCenter(pc, poly, lastDist);
+        Point2D<T> pt = UpdateCircleCenter(pc, polys, lastDist);
         double flag = 1.0;
+        bool incident = false;
         while (a > precision) {
             if (debugger) {
-                result.point.X = (pc + center).x;
-                result.point.Y = (pc + center).y;
+                result.point.X = pc.x;
+                result.point.Y = pc.y;
                 result.radius = std::fabs(lastDist);
                 debugger->onIteration(result);
             }
@@ -651,21 +697,23 @@ namespace polygonPole {
             flag = lastDist > 0 ? 1.0 : -1.0;
             Point2D<T> vec = (pc - pt).Unit();
             Point2D<T> curPc = pc + vec * a * flag;
-            Point2D<T> curPt = UpdateCircleCenter(curPc, poly, curDist);
+            Point2D<T> curPt = UpdateCircleCenter(curPc, polys, curDist);
+            T offset = (pc - curPt).Magnitude();
+            if (offset < precision && incident) break;
             if (curDist > lastDist) {
                 pc = curPc;
                 pt = curPt;
+                incident = true;
                 lastDist = curDist;
             } else {
+                incident = false;
                 a *= 0.618;
                 continue;
             }
         }
-        Translate(poly, -center);
-        pc -= center;
         Cell<T> res_cell;
         res_cell.c = pc;
-        res_cell.d = sdPolygon(pc, poly);
+        res_cell.d = lastDist;
         result.point.X = res_cell.c.x;
         result.point.Y = res_cell.c.y;
         result.radius = std::fabs(res_cell.d);
