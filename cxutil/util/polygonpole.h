@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 #include <algorithm>
 #include <cmath>
@@ -10,17 +10,17 @@
 /*
 https://blog.mapbox.com/a-new-algorithm-for-finding-a-visual-center-of-a-polygon-7c77e6492fbc
 https://github.com/mapbox/polylabel/blob/master/include/mapbox/polylabel.hpp
-µãÔÚ¶à±ßĞÎÄÚ²¿ÅĞ¶ÏËã·¨ https://www.cnblogs.com/charlee44/p/10704156.html
+ç‚¹åœ¨å¤šè¾¹å½¢å†…éƒ¨åˆ¤æ–­ç®—æ³• https://www.cnblogs.com/charlee44/p/10704156.html
 */
 namespace polygonPole {
     #ifndef SQRT2
     #define SQRT2 1.414213562373095
     #endif
     enum class poleAlgo:int {
-        QUARDTER_COVER = 0,///< ËÄ·Ö·¨
-        REGIONAL_SAMPLE = 1,///< Ìõ¼ş²ÉÑù
-        POISSON_SAMPLE = 2,///< ²´ËÉ²ÉÑù
-        INTERNAL_CIRCLE = 3,///< ×î´óÄÚ½ÓÔ²
+        QUARDTER_COVER = 0,///< å››åˆ†æ³•
+        REGIONAL_SAMPLE = 1,///< æ¡ä»¶é‡‡æ ·
+        POISSON_SAMPLE = 2,///< æ³Šæ¾é‡‡æ ·
+        INTERNAL_CIRCLE = 3,///< æœ€å¤§å†…æ¥åœ†
     };
     /*LARGE_INTEGER StartMicroSecTime()
     {
@@ -126,7 +126,7 @@ namespace polygonPole {
         lhs.y *= -1;
         return lhs;
     }
-    // AC=KCB,CÔÚÖ±ÏßABÉÏ
+    // AC=KCB,Cåœ¨ç›´çº¿ABä¸Š
     template <typename T>
     inline Point2D<T> kEqualPoint(const Point2D<T>& lhs, const Point2D<T>& rhs, const T k)
     {
@@ -164,7 +164,7 @@ namespace polygonPole {
         Point2D<T> ab = b - a, ap = p - a;
         return std::pow(Cross(ab, ap), 2) / ab.Magnitude2();
     }
-    //¼ÆËãµã¾àÀëÏß¶Î×î½üµÄµã
+    //è®¡ç®—ç‚¹è·ç¦»çº¿æ®µæœ€è¿‘çš„ç‚¹
     template<typename T>
     inline Point2D<T> GetSegmentProject(const Point2D<T>& p, const Point2D<T>& a, const Point2D<T>& b)
     {
@@ -257,7 +257,7 @@ namespace polygonPole {
         }
         return BoundBox<T>(min, max);
     }
-    //¼ÆËã¶à±ßĞÎ×î½üµÄÁ½Ìõ±ß¼°¶ÔÓ¦µÄÁ½¸öµã
+    //è®¡ç®—å¤šè¾¹å½¢æœ€è¿‘çš„ä¸¤æ¡è¾¹åŠå¯¹åº”çš„ä¸¤ä¸ªç‚¹
     template <typename T>
     Point2D<T> UpdateCircleCenter(const Point2D<T>& point, const Polygon<T>& poly, T& miniDist)
     {
@@ -432,7 +432,7 @@ namespace polygonPole {
         return Cell<T>(area == 0 ? ring.at(0) : c / area, 0, 0, poly);
     }
 
-    // ¼ÆËãË®Æ½ÏßÓë¶à±ßĞÎµÄ½»Ïß¶Î£¬²¢ÔÚÏà½»Ïß¶ÎÖĞ¾Ö²¿¾ùÔÈ²ÉÑù
+    // è®¡ç®—æ°´å¹³çº¿ä¸å¤šè¾¹å½¢çš„äº¤çº¿æ®µï¼Œå¹¶åœ¨ç›¸äº¤çº¿æ®µä¸­å±€éƒ¨å‡åŒ€é‡‡æ ·
     template<typename T>
     std::vector<Cell<T>> crossCellsInPolygon(const Point2D<T>& pt, const Polygon<T>& poly, T delta = 1.0, int nxs = 20)
     {
@@ -447,9 +447,9 @@ namespace polygonPole {
             if (a.y == b.y) continue;
             if (pt.y <= Min(a.y, b.y)) continue;
             if (pt.y >= Max(a.y, b.y)) continue;
-            // Çó½»µãµÄx×ø±ê£¨ÓÉÖ±ÏßÁ½µãÊ½·½³Ì×ª»¯¶øÀ´£©  
+            // æ±‚äº¤ç‚¹çš„xåæ ‡ï¼ˆç”±ç›´çº¿ä¸¤ç‚¹å¼æ–¹ç¨‹è½¬åŒ–è€Œæ¥ï¼‰  
             double x = (double)(pt.y - a.y) * (double)(b.x - a.x) / (double)(b.y - a.y) + a.x;
-            // Í³¼Æp1p2ÓëpÏòÓÒÉäÏßµÄ½»µã¼°×óÉäÏßµÄ½»µã  
+            // ç»Ÿè®¡p1p2ä¸på‘å³å°„çº¿çš„äº¤ç‚¹åŠå·¦å°„çº¿çš„äº¤ç‚¹  
             if (pt.x < x) {
                 rightXs.push_back(x);
                 inside = !inside;
@@ -510,7 +510,7 @@ namespace polygonPole {
         return sampleCells;
     }
     /*
-    ¼ÆËã¶à±ßĞÎµÄ¼«ĞÄ
+    è®¡ç®—å¤šè¾¹å½¢çš„æå¿ƒ
     */
     template <typename T>
     Cell<T> sdPolygonPole(Polygon<T>& poly, T precision = 1, const poleAlgo type = poleAlgo::REGIONAL_SAMPLE)
@@ -570,7 +570,7 @@ namespace polygonPole {
             break;
         case poleAlgo::REGIONAL_SAMPLE:
             // conditional sample
-            // ÔÚ¶à±ßĞÎÄÚ²¿¼ä¸ô²ÉÑù£¬¾¡Á¿±£ÁôÁ½ÌõÏà½»Ïß¶ÎµÄÖĞ¼ä²¿·Ö
+            // åœ¨å¤šè¾¹å½¢å†…éƒ¨é—´éš”é‡‡æ ·ï¼Œå°½é‡ä¿ç•™ä¸¤æ¡ç›¸äº¤çº¿æ®µçš„ä¸­é—´éƒ¨åˆ†
             {
                 auto& cells = conditionalSample(poly, 20, 20);
                 std::sort(cells.begin(), cells.end(), std::greater<Cell<T>>());
@@ -584,17 +584,17 @@ namespace polygonPole {
             break;
         case poleAlgo::INTERNAL_CIRCLE:
         {
-            //¼ÆËãÔ­Àí²Î¿¼https://www.docin.com/p-1221389860.html
-            //³õÊ¼²½³¤£¬×î¶Ì¾àÀë³õÊ¼»¯
+            //è®¡ç®—åŸç†å‚è€ƒhttps://www.docin.com/p-1221389860.html
+            //åˆå§‹æ­¥é•¿ï¼Œæœ€çŸ­è·ç¦»åˆå§‹åŒ–
             T a = 1200, lastDist = 0, curDist = 0;
-            //³õÊ¼Ô²ĞÄ×ø±ê
+            //åˆå§‹åœ†å¿ƒåæ ‡
             Point2D<T> pc = (maxPt + minPt) * 0.5;
-            //²½Öè1£¬¼ÆËã½ÇÆ½·ÖÏßÓëµ×±ß½»µãµÄÔ²ĞÄ×ø±ê
+            //æ­¥éª¤1ï¼Œè®¡ç®—è§’å¹³åˆ†çº¿ä¸åº•è¾¹äº¤ç‚¹çš„åœ†å¿ƒåæ ‡
             Point2D<T> pt = UpdateCircleCenter(pc, poly, lastDist);
             double flag = 1.0;
             while (a > precision) {
-                //²½Öè2£¬¸ù¾İ²½³¤£¬¸üĞÂµÄÔ²ĞÄ×ø±ê
-                //×¢Òâ£¬ÅĞ¶Ïµ±Ç°µãÔÚÄÚÍâ²¿£¬¼°¸üĞÂÄÚÍâ½ÇÆ½·ÖÏßÉÏÔ²ĞÄ×ø±ê
+                //æ­¥éª¤2ï¼Œæ ¹æ®æ­¥é•¿ï¼Œæ›´æ–°çš„åœ†å¿ƒåæ ‡
+                //æ³¨æ„ï¼Œåˆ¤æ–­å½“å‰ç‚¹åœ¨å†…å¤–éƒ¨ï¼ŒåŠæ›´æ–°å†…å¤–è§’å¹³åˆ†çº¿ä¸Šåœ†å¿ƒåæ ‡
                 flag = lastDist > 0 ? 1.0 : -1.0;
                 Point2D<T> vec = (pc - pt).Unit();
                 Point2D<T> curPc = pc + vec * a * flag;
@@ -631,23 +631,23 @@ namespace polygonPole {
         const Point2D<T>& maxPt = bound.max;
         const Point2D<T>& minPt = bound.min;
         const Point2D<T>& size = maxPt - minPt;
-        //¼ÆËãÔ­Àí²Î¿¼https://www.docin.com/p-1221389860.html
-            //³õÊ¼²½³¤£¬×î¶Ì¾àÀë³õÊ¼»¯
+        //è®¡ç®—åŸç†å‚è€ƒhttps://www.docin.com/p-1221389860.html
+            //åˆå§‹æ­¥é•¿ï¼Œæœ€çŸ­è·ç¦»åˆå§‹åŒ–
         T a = 1200, lastDist = 0, curDist = 0;
-        //³õÊ¼Ô²ĞÄ×ø±ê
+        //åˆå§‹åœ†å¿ƒåæ ‡
         Point2D<T> pc = (maxPt + minPt) * 0.5;
-        //²½Öè1£¬¼ÆËã½ÇÆ½·ÖÏßÓëµ×±ß½»µãµÄÔ²ĞÄ×ø±ê
+        //æ­¥éª¤1ï¼Œè®¡ç®—è§’å¹³åˆ†çº¿ä¸åº•è¾¹äº¤ç‚¹çš„åœ†å¿ƒåæ ‡
         Point2D<T> pt = UpdateCircleCenter(pc, poly, lastDist);
         double flag = 1.0;
         while (a > precision) {
             if (debugger) {
-                result.point.X = pc.x;
-                result.point.Y = pc.y;
+                result.point.X = (pc + center).x;
+                result.point.Y = (pc + center).y;
                 result.radius = std::fabs(lastDist);
                 debugger->onIteration(result);
             }
-            //²½Öè2£¬¸ù¾İ²½³¤£¬¸üĞÂµÄÔ²ĞÄ×ø±ê
-            //×¢Òâ£¬ÅĞ¶Ïµ±Ç°µãÔÚÄÚÍâ²¿£¬¼°¸üĞÂÄÚÍâ½ÇÆ½·ÖÏßÉÏÔ²ĞÄ×ø±ê
+            //æ­¥éª¤2ï¼Œæ ¹æ®æ­¥é•¿ï¼Œæ›´æ–°çš„åœ†å¿ƒåæ ‡
+            //æ³¨æ„ï¼Œåˆ¤æ–­å½“å‰ç‚¹åœ¨å†…å¤–éƒ¨ï¼ŒåŠæ›´æ–°å†…å¤–è§’å¹³åˆ†çº¿ä¸Šåœ†å¿ƒåæ ‡
             flag = lastDist > 0 ? 1.0 : -1.0;
             Point2D<T> vec = (pc - pt).Unit();
             Point2D<T> curPc = pc + vec * a * flag;
