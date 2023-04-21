@@ -177,16 +177,10 @@ namespace cxutil
 			}
 		}
 
-		data.m_dlpmeshsgroup.dlpmeshsgroup.resize(1);
-
-		DLPmeshs& dataMeshes = data.m_dlpmeshsgroup.dlpmeshsgroup.at(0);
-		dataMeshes.dlpmeshs.resize(meshCount);
+		data.layersData.resize(layerCount);
 		for (size_t meshIdx = 0; meshIdx < meshCount; meshIdx++)
 		{
 			SlicedMesh& slicedMesh = slicedMeshes.at(meshIdx);
-			DLPmesh& meshData = dataMeshes.dlpmeshs.at(meshIdx);
-			meshData.layers.resize(layerCount);
-
 #if _DEBUG
 			for (int layer_nr = 0; layer_nr < static_cast<int>(layerCount); layer_nr++)
 			{
@@ -202,10 +196,10 @@ namespace cxutil
 			{
 				SlicedMeshLayer& layer = slicedMesh.m_layers.at(layer_nr);
 
-				DLPLayer& dlpplayer = meshData.layers.at(layer_nr);
+				DLPLayer& dlpplayer = data.layersData.at(layer_nr);
+
 				dlpplayer.printZ = z.at(layer_nr);
-				dlpplayer.parts.push_back((layer.polygons.splitIntoPolyTree(true)));
-				layer.polygons.deletePaths();
+				dlpplayer.polygons = dlpplayer.polygons.unionPolygons(layer.polygons);
 			}
 		}
 
