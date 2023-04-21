@@ -11,7 +11,7 @@
 #include <type_traits> // for operations on any arithmetic number type
 
 #include "Coord_t.h"
-
+#include "trimesh2/Vec.h"
 
 namespace cxutil
 {
@@ -128,6 +128,10 @@ namespace cxutil
         return rhs * i;
     }
 
+    inline trimesh::vec3 toVec3(const Point3& point)
+    {
+        return trimesh::vec3(INT2MM(point.x), INT2MM(point.y), INT2MM(point.z));
+    }
 }
 
 #endif //CX_UTILS_POINT3_H

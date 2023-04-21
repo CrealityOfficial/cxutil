@@ -6,8 +6,7 @@
 
 namespace cxutil
 {
-	void buildSliceInfos(GroupInput* meshGroup, std::vector<int>& z, std::vector<coord_t>& printZ, std::vector<coord_t>& thicknesses);
-	void buildSliceInfos(DLPInput* input, std::vector<int>& z);
+	void buildSliceInfos(const DLPInput& input, std::vector<int>& z);
 }
 
 #endif // CX_PRESLICE_1600132451200_H

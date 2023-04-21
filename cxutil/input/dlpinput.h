@@ -2,10 +2,6 @@
 #define CX_DLPINPUT_1602651441705_H
 #include "cxutil/input/meshobject.h"
 
-namespace trimesh {
-	class TriMesh;
-}
-
 namespace cxutil
 {
 	
@@ -58,19 +54,10 @@ namespace cxutil
 		DLPInput();
 		~DLPInput();
 
-		void addMeshObject(MeshObjectPtr object);
-		void addTriMesh(trimesh::TriMesh* Mesh);
-		std::vector<trimesh::TriMesh*>& getMeshesSrc();
-		const std::vector< MeshObjectPtr>& meshes() const;
-		std::vector<MeshObjectPtr>& meshes();
+		AABB3D box() const;
 
-		void addParam(DLPParam param);
-		DLPParam& param();
-		AABB3D box();
-	protected:
-		std::vector <trimesh::TriMesh*> m_meshesSrc;
-		std::vector<MeshObjectPtr> m_meshes;
-		DLPParam m_param;
+		std::vector<MeshObjectPtr> Meshes;
+		DLPParam Param;
 	};
 }
 

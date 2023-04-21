@@ -27,16 +27,12 @@ namespace cxutil
 
 	}
 
-	DLPData* DLPSlicer::compute(DLPInput* input, ccglobal::Tracer* tracer)
+	bool DLPSlicer::compute(const DLPInput& input, DLPData& data, ccglobal::Tracer* tracer)
 	{
-		if (!input)
-			return nullptr;
-#ifndef USE_TRIMESH_SLICE
-		std::vector<MeshObjectPtr>& meshptres = input->meshes();
+		const std::vector<MeshObjectPtr>& meshptres = input.Meshes;
 		size_t meshCount = meshptres.size();
 		if (meshCount == 0)
-			return nullptr;
-#endif
+			return false;
 
 		std::vector<int> z;
 		buildSliceInfos(input, z);
@@ -58,7 +54,7 @@ namespace cxutil
 #ifdef _OPENMP
 		omp_set_num_threads(omp_get_num_procs());
 #endif
-#ifndef USE_TRIMESH_SLICE
+
 		std::vector<MeshObject*> meshes;
 		for (size_t i = 0; i < meshCount; ++i)
 		{
@@ -66,12 +62,6 @@ namespace cxutil
 		}
 		std::vector<SlicedMesh> slicedMeshes(meshCount);
 		sliceMeshes(meshes, slicedMeshes, z);
-#else
-		std::vector<trimesh::TriMesh*> meshes_src = input->getMeshesSrc();
-		size_t meshCount = meshes_src.size();
-		std::vector<SlicedMesh> slicedMeshes(meshCount);
-		sliceMeshes_src(meshes_src, slicedMeshes, z);
-#endif
 
 		if (tracer)
 		{
@@ -82,7 +72,8 @@ namespace cxutil
 				return nullptr;
 			}
 		}
-		DLPParam& param = input->param();
+
+		const DLPParam& param = input.Param;
 		//////////
 		for (size_t i = 0; i < meshCount; ++i)
 		{
@@ -166,8 +157,8 @@ namespace cxutil
 				layer.polygons.simplify(line_segment_resolution, line_segment_deviation);
 				layer.polygons.removeDegenerateVerts(); // remove verts connected to overlapping line segments
 
-				float xy_offset = input->param().xy_offset;
-				bool enable_xy_offset = input->param().enable_xy_offset;
+				float xy_offset = param.xy_offset;
+				bool enable_xy_offset = param.enable_xy_offset;
 
 				if (enable_xy_offset && abs(xy_offset) > 0.000001)
 				{
@@ -186,10 +177,9 @@ namespace cxutil
 			}
 		}
 
-		DLPData* data = new DLPData();
-		data->m_dlpmeshsgroup.dlpmeshsgroup.resize(1);
+		data.m_dlpmeshsgroup.dlpmeshsgroup.resize(1);
 
-		DLPmeshs& dataMeshes = data->m_dlpmeshsgroup.dlpmeshsgroup.at(0);
+		DLPmeshs& dataMeshes = data.m_dlpmeshsgroup.dlpmeshsgroup.at(0);
 		dataMeshes.dlpmeshs.resize(meshCount);
 		for (size_t meshIdx = 0; meshIdx < meshCount; meshIdx++)
 		{
@@ -219,15 +209,6 @@ namespace cxutil
 			}
 		}
 
-		if (tracer)
-		{
-			tracer->progress(1.0f);
-			if (tracer->interrupt())
-			{
-				delete data;
-				data = nullptr;
-			}
-		}
-		return data;
+		return true;
 	}
 }

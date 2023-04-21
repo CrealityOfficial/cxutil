@@ -39,6 +39,14 @@ namespace cxutil
         return mesh;
     }
 
+    MeshObject* meshFromTrimesh(trimesh::TriMesh* mesh)
+    {
+        if (!mesh || mesh->vertices.size() == 0 || mesh->faces.size() == 0)
+            return nullptr;
+
+        return meshFromTrimesh((float*)&mesh->vertices.at(0), (int)mesh->faces.size(), (int*)&mesh->faces.at(0));
+    }
+
     MeshObject* meshFromTrimesh(float* vertex, int faceNum, int* faceIndex)
     {
         HashMeshBuilder builder;

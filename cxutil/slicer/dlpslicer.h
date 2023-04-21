@@ -16,7 +16,7 @@ namespace cxutil
 		DLPSlicer();
 		~DLPSlicer();
 
-		DLPData* compute(DLPInput* input, ccglobal::Tracer* tracer);
+		bool compute(const DLPInput& input, DLPData& data, ccglobal::Tracer* tracer);
 	protected:
 	};
 }
