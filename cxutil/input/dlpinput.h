@@ -55,6 +55,7 @@ namespace cxutil
 		~DLPInput();
 
 		AABB3D box() const;
+		int meshCount() const;
 
 		std::vector<MeshObjectPtr> Meshes;
 		DLPParam Param;

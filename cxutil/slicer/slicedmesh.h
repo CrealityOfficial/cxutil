@@ -13,6 +13,7 @@ namespace cxutil
 
 		Polygons polygons;
 		Polygons openPolylines;
+		ClipperLib::cInt z;
 	};
 
 	class SlicedMesh
@@ -21,7 +22,25 @@ namespace cxutil
 		SlicedMesh();
 		~SlicedMesh();
 
+		void save(int index, const std::string& prefix);
+
 		std::vector<SlicedMeshLayer> m_layers;
+	};
+
+	class SlicedResult
+	{
+	public:
+		SlicedResult();
+		~SlicedResult();
+
+		void save(const std::string& prefix);
+		void connect();
+		void simplify(coord_t resolution, coord_t deviation,
+			float xy_offset, bool enable_xy_offset);
+		int meshCount();
+		int layerCount();
+
+		std::vector<SlicedMesh> slicedMeshes;
 	};
 }
 

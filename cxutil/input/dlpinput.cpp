@@ -18,4 +18,9 @@ namespace cxutil
 			box.include(ptr->box());
 		return box;
 	}
+
+	int DLPInput::meshCount() const
+	{
+		return (int)Meshes.size();
+	}
 }

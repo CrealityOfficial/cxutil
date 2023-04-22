@@ -2,7 +2,13 @@
 #include "cxutil/slicer/slicepolygonbuilder.h"
 #include "trimesh2/TriMesh.h"
 
+#include "cxutil/slicer/slicedmesh.h"
+#include "cxutil/slicer/meshslice.h"
+#include "cxutil/slicer/preslice.h"
 #include "cxutil/slicer/slicehelper.h"
+
+#include "ccglobal/tracer.h"
+
 namespace cxutil
 {
 	void sliceMeshes(std::vector<MeshObject*>& meshes, std::vector<SlicedMesh>& slicedMeshes, std::vector<int>& z)
@@ -77,6 +83,84 @@ namespace cxutil
 	{
 		SlicePolygonBuilder builder;
 		builder.sliceOneLayer_dst(helper, z, &slicedMeshLayer.polygons, &slicedMeshLayer.openPolylines);
+	}
+
+	bool sliceInput(const DLPInput& input, SlicedResult& result, ccglobal::Tracer* tracer)
+	{
+		int meshCount = input.meshCount();
+		if (meshCount == 0)
+			return false;
+
+		std::vector<int> z;
+		buildSliceInfos(input, z);
+
+		size_t layerCount = z.size();
+		if (layerCount == 0)
+			return false;
+
+		if (tracer)
+		{
+			tracer->progress(0.3f);
+			if (tracer->interrupt())
+			{
+				tracer->progress(1.0f);
+				return nullptr;
+			}
+		}
+
+		const std::vector<MeshObjectPtr>& meshptres = input.Meshes;
+		std::vector<MeshObject*> meshes;
+		for (size_t i = 0; i < meshCount; ++i)
+		{
+			meshes.push_back(&*meshptres.at(i));
+		}
+
+		sliceMeshes(meshes, result.slicedMeshes, z);
+		result.save("sliced");
+
+		if (tracer)
+		{
+			tracer->progress(0.6f);
+			if (tracer->interrupt())
+			{
+				tracer->progress(1.0f);
+				return nullptr;
+			}
+		}
+
+		const DLPParam& param = input.Param;
+		//////////
+		result.connect();
+		result.save("connected");
+
+		if (tracer)
+		{
+			tracer->progress(0.7f);
+			if (tracer->interrupt())
+			{
+				tracer->progress(1.0f);
+				return nullptr;
+			}
+		}
+
+		const coord_t line_segment_resolution = param.line_segment_resolution;
+		const coord_t line_segment_deviation = param.line_segment_deviation;
+		float xy_offset = param.xy_offset;
+		bool enable_xy_offset = param.enable_xy_offset;
+		result.simplify(line_segment_resolution, line_segment_deviation, xy_offset, enable_xy_offset);
+
+		if (tracer)
+		{
+			tracer->progress(0.9f);
+			if (tracer->interrupt())
+			{
+				tracer->progress(1.0f);
+				return nullptr;
+			}
+		}
+
+		result.save("result");
+
 	}
 }
 
