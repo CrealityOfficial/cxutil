@@ -23,4 +23,9 @@ namespace cxutil
 
 		return tree;
 	}
+
+	bool DLPData::isValid() const
+	{
+		return layers() > 0;
+	}
 }

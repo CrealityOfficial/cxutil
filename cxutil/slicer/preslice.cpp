@@ -8,7 +8,6 @@ namespace cxutil
 {
     void buildSliceInfos(const DLPInput& input, std::vector<int>& z)
     {
-        const std::vector<MeshObjectPtr>& meshes = input.Meshes;
         const DLPParam& param = input.Param;
 
         int slice_layer_count = 0;

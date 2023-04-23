@@ -19,6 +19,7 @@ namespace cxutil
 
 		int layers() const;
 		ClipperLib::PolyTree* layerData(int layer) const;
+		bool isValid() const;
 
 		std::vector<DLPLayer> layersData;
 	};

@@ -46,6 +46,7 @@ namespace cxutil
 		helper->sliceOneLayer(z, builder.segments, builder.face_idx_to_segment_idx);
 
 		builder.makePolygon(&slicedMeshLayer.polygons, &slicedMeshLayer.openPolylines);
+		slicedMeshLayer.z = z;
 	}
 
 	void sliceMeshes_src(std::vector<trimesh::TriMesh*>& meshes, std::vector<SlicedMesh>& slicedMeshes, std::vector<int>& z)
@@ -104,7 +105,7 @@ namespace cxutil
 			if (tracer->interrupt())
 			{
 				tracer->progress(1.0f);
-				return nullptr;
+				return false;
 			}
 		}
 
@@ -124,7 +125,7 @@ namespace cxutil
 			if (tracer->interrupt())
 			{
 				tracer->progress(1.0f);
-				return nullptr;
+				return false;
 			}
 		}
 
@@ -139,7 +140,7 @@ namespace cxutil
 			if (tracer->interrupt())
 			{
 				tracer->progress(1.0f);
-				return nullptr;
+				return false;
 			}
 		}
 
@@ -155,12 +156,12 @@ namespace cxutil
 			if (tracer->interrupt())
 			{
 				tracer->progress(1.0f);
-				return nullptr;
+				return false;
 			}
 		}
 
 		result.save("result");
-
+		return true;
 	}
 }
 

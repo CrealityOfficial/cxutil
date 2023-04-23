@@ -129,8 +129,6 @@ namespace cxutil
 				//layer.polygons.erase(it, layer.polygons.end());
 
 				//Finally optimize all the polygons. Every point removed saves time in the long run.
-				const coord_t line_segment_resolution = line_segment_resolution;
-				const coord_t line_segment_deviation = line_segment_deviation;
 				layer.polygons.simplify(line_segment_resolution, line_segment_deviation);
 				layer.polygons.removeDegenerateVerts(); // remove verts connected to overlapping line segments
 
