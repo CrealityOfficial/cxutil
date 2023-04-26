@@ -4,7 +4,6 @@
 #include <cmath>
 #include <iostream>
 #include <vector>
-#include <windows.h>
 #include "../../cxutil/util/polygonUtils.h"
 
 /*
@@ -26,19 +25,7 @@ namespace polygonPole {
         POISSON_SAMPLE = 2,///< 泊松采样
         INTERNAL_CIRCLE = 3,///< 最大内接圆
     };
-    /*LARGE_INTEGER StartMicroSecTime()
-    {
-        LARGE_INTEGER t, tc;
-        QueryPerformanceFrequency(&tc);
-        QueryPerformanceCounter(&t);
-        return t;
-    }
-    LARGE_INTEGER EndMicroSecTime()
-    {
-        LARGE_INTEGER t;
-        QueryPerformanceCounter(&t);
-        return t;
-    }*/
+    
     template<typename T>
     constexpr inline T Min(const T& a, const T& b)
     {
@@ -61,21 +48,21 @@ namespace polygonPole {
             : x(x_), y(y_)
         {
         }
-        constexpr inline T Magnitude() const
+        inline T Magnitude() const
         {
             return std::sqrt(x * x + y * y);
         }
-        constexpr inline T Magnitude2() const
+        inline T Magnitude2() const
         {
             return x * x + y * y;
         }
-        constexpr inline Point2D Unit() const
+        inline Point2D Unit() const
         {
             if (Magnitude() < EPS) return Point2D(0, 0);
             return Point2D(x, y) / Magnitude();
         }
 
-        constexpr inline Point2D Normalized()
+        inline Point2D Normalized()
         {
             if (Magnitude() < EPS) return Point2D(0, 0);
             x /= Magnitude(), y /= Magnitude();
@@ -157,12 +144,12 @@ namespace polygonPole {
         return lhs.x* rhs.y - lhs.y * rhs.x;
     }
     template<typename T>
-    constexpr inline T GetDistance(const Point2D<T>& lhs, const Point2D<T>& rhs)
+    inline T GetDistance(const Point2D<T>& lhs, const Point2D<T>& rhs)
     {
         return (lhs - rhs).Magnitude();
     }
     template<typename T>
-    constexpr inline T GetDistance2(const Point2D<T>& lhs, const Point2D<T>& rhs)
+    inline T GetDistance2(const Point2D<T>& lhs, const Point2D<T>& rhs)
     {
         return (lhs - rhs).Magnitude2();
     }
@@ -213,7 +200,8 @@ namespace polygonPole {
     template<typename T>
     inline Point2D<T> GetSegmentProject(const Point2D<T>& p, const Segment<T>& seg)
     {
-        Point2D<T> ab = seg.b - seg.a, ap = p - seg.a;
+        Point2D<T> a = seg.a, b = seg.b;
+        Point2D<T> ab = b - a, ap = p - a;
         T k = Dot(ap, ab) / ab.Magnitude2();
         if (k < 0) return a;
         if (k > 1) return b;
@@ -569,7 +557,7 @@ namespace polygonPole {
         }
     }*/
     template <typename T>
-    constexpr inline T sdSegment(const Point2D<T>& p, const Point2D<T>& a, const Point2D<T>& b)
+    inline T sdSegment(const Point2D<T>& p, const Point2D<T>& a, const Point2D<T>& b)
     {
         auto x = a.x;
         auto y = a.y;
@@ -593,10 +581,10 @@ namespace polygonPole {
 
     // signed distance from point to poly outline (negative if point is outside)
     template <typename T>
-    constexpr inline auto sdPolygon(const Point2D<T>& pt, const Polygon<T>& polys)
+    inline T sdPolygon(const Point2D<T>& pt, const Polygon<T>& polys)
     {
         bool inside = false;
-        auto minDistSq = std::numeric_limits<T>::infinity();
+        T minDistSq = std::numeric_limits<T>::infinity();
         for (auto& poly : polys.rings) {
             const auto& points = poly.points;
             const size_t len = points.size();
@@ -636,6 +624,7 @@ namespace polygonPole {
         T h; // half the cell height size
         T d; // distance from cell center to polys
         T max; // max distance to poly within a cell
+        
     };
     
     template<typename T>
@@ -732,7 +721,7 @@ namespace polygonPole {
         // threshold 除上 sqrt(2)，可用保证每一个区块的斜边长为 threshold，
         // 从而确保一个区块内的任意两个点的距离都是小于 threshold 的。
         // 利用这个特性可用快速的确定两个采样点的间距小于 threshold。
-        auto cell_size = threshold / SQRT2;
+        T cell_size = threshold / SQRT2;
         // 划分区块
         int32_t cols = std::ceil(range.x / cell_size);
         int32_t rows = std::ceil(range.y / cell_size);
@@ -909,7 +898,7 @@ namespace polygonPole {
     {
         const Point2D<T> center = polys.GetBoundCenter();
         polys.Translate(center);
-        BoundBox<T>& bound = polys.GetBoundBox();
+        const BoundBox<T>& bound = polys.GetBoundBox();
         const Point2D<T>& maxPt = bound.max;
         const Point2D<T>& minPt = bound.min;
         const Point2D<T>& size = maxPt - minPt;
@@ -921,7 +910,7 @@ namespace polygonPole {
             return Cell<T>(bound.min, w, h, polys);
         }
         // take centroid as the first best guess
-        auto& bestCell = GetPolyCentroidCell(polys, w, h);
+        Cell<T> bestCell = GetPolyCentroidCell(polys, w, h);
         // second guess: bounding box centroid
         Point2D<T> boundCenroid = (maxPt + minPt) * 0.5;
         Cell<T> bboxCell(boundCenroid, w, h, polys);
@@ -967,14 +956,14 @@ namespace polygonPole {
             // conditional sample
             // 在多边形内部间隔采样，尽量保留两条相交线段的中间部分
             {
-                auto& cells = conditionalSample(polys, 20, 20);
+                std::vector<Cell<T>> cells = conditionalSample(polys, 20, 20);
                 std::sort(cells.begin(), cells.end(), std::greater<Cell<T>>());
                 bestCell = cells.front();
             }
             break;
         case poleAlgo::POISSON_SAMPLE:
         {
-            auto& samplePoints = possionSample(size, 1000 * precision);
+            std::vector<Point2D<T>> samplePoints = possionSample(size, 1000 * precision);
             std::vector<Cell<T>>cells;
             for (auto& pt : samplePoints) {
                 cells.push_back(Cell<T>(pt, precision, precision, polys));
@@ -1027,7 +1016,7 @@ namespace polygonPole {
     {
         polys.Simplify();
         const T precision = 1;
-        BoundBox<T>& bound = polys.GetBoundBox();
+        const BoundBox<T>& bound = polys.GetBoundBox();
         const Point2D<T>& maxPt = bound.max;
         const Point2D<T>& minPt = bound.min;
         const Point2D<T>& size = maxPt - minPt;
@@ -1082,7 +1071,7 @@ namespace polygonPole {
     {
         polys.Simplify();
         const T precision = 1;
-        BoundBox<T>& bound = polys.GetBoundBox();
+        const BoundBox<T>& bound = polys.GetBoundBox();
         const Point2D<T>& maxPt = bound.max;
         const Point2D<T>& minPt = bound.min;
         const Point2D<T>& size = maxPt - minPt;
