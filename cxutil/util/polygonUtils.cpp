@@ -7,7 +7,7 @@
 #include <functional>
 
 #include "polygonUtils.h"
-
+#include "cxutil/util/polygonpole.h"
 #include "cxutil/math/linearAlg2D.h"
 #include "cxutil/util/logoutput.h"
 //#include "cxutil/util/SparsePointGridInclusive.h"
@@ -1305,6 +1305,57 @@ namespace cxutil
         const Polygons symmetric_difference = poly_a.xorPolygons(poly_b);
         const double hamming_distance = symmetric_difference.area();
         return hamming_distance / total_area;
+    }
+
+    ClipperLib::cInt lightOffDistance(const Polygons& polygons, Polygons& polePoly, const int type)
+    {
+        if (polygons.empty()) return 0;
+        ClipperLib::Paths paths;
+        for (auto& pls : polygons.paths) {
+            paths.push_back(pls);
+        }
+        const double precision = 1.0;
+        polygonPole::poleAlgo split_type = polygonPole::poleAlgo(type);
+        std::vector<polygonPole::Cell<double>> cells;
+        for (auto& path : paths) {
+            polygonPole::Polygon<double> poly;
+            for (auto& pt : path) {
+                polygonPole::Point2D<double> point(pt.X, pt.Y);
+                poly.points.push_back(point);
+            }
+            cells.push_back(polygonPole::sdPolygonPole(poly, precision, split_type));
+        }
+        polygonPole::Cell<double> bestCell;
+        for (int i = 0; i < cells.size(); ++i) {
+            if (std::fabs(cells[i].d) > bestCell.d) {
+                bestCell = cells[i];
+            }
+        }
+        auto& corners = GetCorners(bestCell);
+        ClipperLib::Path outPath;
+        outPath.push_back(ClipperLib::IntPoint(bestCell.c.x, bestCell.c.y));
+        for (auto& point : corners) {
+            outPath.push_back(ClipperLib::IntPoint(point.x, point.y));
+        }
+        polePoly.paths.push_back(outPath);
+        return bestCell.d;
+    }
+
+    ClipperLib::cInt lightOffDistance(const Polygons& polygons, LightOffCircle& result,
+        LightOffDebugger* debugger, ccglobal::Tracer* tracer)
+    {
+        if (polygons.empty()) return 0;
+        std::vector<polygonPole::Polygon<double>>polys;
+        for (auto& path:polygons.paths) {
+            polygonPole::Polygon<double> poly;
+            for (auto& pt : path) {
+                polygonPole::Point2D<double> p(pt.X, pt.Y);
+                poly.points.push_back(p);
+            }
+            polys.push_back(poly);
+        }
+        auto cell = polygonPole::GetIterationCircles(polys, result, debugger, tracer);
+        return cell.d;
     }
 
 }//namespace cura
