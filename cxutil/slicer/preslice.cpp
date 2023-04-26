@@ -15,7 +15,7 @@ namespace cxutil
         const coord_t layer_thickness = param.layer_thickness;
 
         AABB3D box = input.box();
-        slice_layer_count = (box.max.z - initial_layer_thickness) / layer_thickness + 1;
+        slice_layer_count = ceil((box.max.z - initial_layer_thickness) / (layer_thickness * 1.0)) + 1;
 
         if (slice_layer_count > 0)
         {
