@@ -1307,55 +1307,58 @@ namespace cxutil
         return hamming_distance / total_area;
     }
 
-    ClipperLib::cInt lightOffDistance(const Polygons& polygons, Polygons& polePoly, const int type)
+    ClipperLib::cInt lightOffDistance(const Polygons& polygons, Point& result, const int type)
     {
         if (polygons.empty()) return 0;
-        ClipperLib::Paths paths;
-        for (auto& pls : polygons.paths) {
-            paths.push_back(pls);
-        }
+        polygonPole::Cell<double> optimalCell;
         const double precision = 1.0;
-        polygonPole::poleAlgo split_type = polygonPole::poleAlgo(type);
-        std::vector<polygonPole::Cell<double>> cells;
-        for (auto& path : paths) {
-            polygonPole::Polygon<double> poly;
-            for (auto& pt : path) {
-                polygonPole::Point2D<double> point(pt.X, pt.Y);
-                poly.points.push_back(point);
+        polygonPole::poleAlgo algo_type = polygonPole::poleAlgo(type);
+        std::vector<cxutil::PolygonsPart> parts = polygons.splitIntoParts();
+        for (auto& part : parts) {
+            polygonPole::Polygon<double> polys;
+            for (auto& path : part.paths) {
+                polygonPole::Ring<double> poly;
+                for (auto& pt : path) {
+                    polygonPole::Point2D<double> p(pt.X, pt.Y);
+                    poly.points.push_back(p);
+                }
+                polys.rings.push_back(poly);
             }
-            cells.push_back(polygonPole::sdPolygonPole(poly, precision, split_type));
-        }
-        polygonPole::Cell<double> bestCell;
-        for (int i = 0; i < cells.size(); ++i) {
-            if (std::fabs(cells[i].d) > bestCell.d) {
-                bestCell = cells[i];
+            auto cell = polygonPole::sdPolygonPole(polys, precision, algo_type);
+            if (cell.d > optimalCell.d) {
+                optimalCell = cell;
             }
         }
-        auto& corners = GetCorners(bestCell);
-        ClipperLib::Path outPath;
-        outPath.push_back(ClipperLib::IntPoint(bestCell.c.x, bestCell.c.y));
-        for (auto& point : corners) {
-            outPath.push_back(ClipperLib::IntPoint(point.x, point.y));
-        }
-        polePoly.paths.push_back(outPath);
-        return bestCell.d;
+        auto centroid = optimalCell.c;
+        result.X = centroid.x;
+        result.Y = centroid.y;
+        return optimalCell.d;
     }
 
     ClipperLib::cInt lightOffDistance(const Polygons& polygons, LightOffCircle& result,
         LightOffDebugger* debugger, ccglobal::Tracer* tracer)
     {
         if (polygons.empty()) return 0;
-        std::vector<polygonPole::Polygon<double>>polys;
-        for (auto& path:polygons.paths) {
-            polygonPole::Polygon<double> poly;
-            for (auto& pt : path) {
-                polygonPole::Point2D<double> p(pt.X, pt.Y);
-                poly.points.push_back(p);
+        polygonPole::Cell<double> optimalCell;
+        std::vector<cxutil::PolygonsPart> parts = polygons.splitIntoParts();
+        for (auto& part : parts) {
+            LightOffCircle circle;
+            polygonPole::Polygon<double>polys;
+            for (auto& path : part.paths) {
+                polygonPole::Ring<double> poly;
+                for (auto& pt : path) {
+                    polygonPole::Point2D<double> p(pt.X, pt.Y);
+                    poly.points.push_back(p);
+                }
+                polys.rings.push_back(poly);
             }
-            polys.push_back(poly);
+            auto cell = polygonPole::GetIterationCircles(polys, circle, debugger, tracer);
+            if (cell.d > optimalCell.d) {
+                optimalCell = cell;
+                result = circle;
+            }
         }
-        auto cell = polygonPole::GetIterationCircles(polys, result, debugger, tracer);
-        return cell.d;
+        return optimalCell.d;
     }
 
 }//namespace cura
