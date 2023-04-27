@@ -3,6 +3,7 @@
 #include "cxutil/slicer/slicedmesh.h"
 
 #include "cxutil/slicer/meshslice.h"
+#include "cxutil/slicer/slicepolygonbuilder.h"
 
 #include <assert.h>
 
@@ -72,5 +73,33 @@ namespace cxutil
         }
 
         return  true;
+    }
+
+    OneLayerSlicer::OneLayerSlicer(MeshObjectPtr mesh)
+        :m_mesh(mesh)
+    {
+        m_helper.prepare(mesh.get());
+    }
+
+    OneLayerSlicer::~OneLayerSlicer()
+    {
+
+    }
+
+    bool OneLayerSlicer::compute(float z, DLPDebugger* debugger)
+    {
+        SlicePolygonBuilder builder;
+        m_helper.sliceOneLayer(z, builder.segments, builder.face_idx_to_segment_idx);
+
+        Polygons polygons;
+        Polygons openPolygons;
+        builder.makePolygon(&polygons, &openPolygons);
+
+        if (debugger)
+        {
+            debugger->onConnected(polygons, openPolygons);
+        }
+
+        return true;
     }
 }

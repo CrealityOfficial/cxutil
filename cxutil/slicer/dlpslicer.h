@@ -2,6 +2,7 @@
 #define CX_DLPSLICER_1602646711722_H
 #include "cxutil/input/dlpdata.h"
 #include "cxutil/input/dlpinput.h"
+#include "cxutil/slicer/slicehelper.h"
 
 namespace ccglobal
 {
@@ -31,6 +32,18 @@ namespace cxutil
         bool compute(const DLPInput& input, float z, DLPDebugger* debugger = nullptr);
 	protected:
 	};
+
+    class OneLayerSlicer
+    {
+    public:
+        OneLayerSlicer(MeshObjectPtr mesh);
+        ~OneLayerSlicer();
+
+        bool compute(float z, DLPDebugger* debugger = nullptr);
+    protected:
+        MeshObjectPtr m_mesh;
+        SliceHelper m_helper;
+    };
 }
 
 #endif // CX_DLPSLICER_1602646711722_H
