@@ -54,6 +54,22 @@ namespace cxutil
 
     bool DLPSlicer::compute(const DLPInput& input, float z, DLPDebugger* debugger)
     {
+        int meshCount = input.meshCount();
+        if (meshCount == 0)
+            return false;
+
+        SlicedMesh slicedMesh;
+        std::vector<int> zs;
+        zs.push_back(z*1000);
+        sliceMesh(input.Meshes[0].get(), slicedMesh, zs);
+
+        if (debugger)
+        {
+            if (slicedMesh.m_layers.size()>0)
+            {
+                debugger->onConnected(slicedMesh.m_layers[0].polygons, slicedMesh.m_layers[0].openPolylines);
+            }
+        }
 
         return  true;
     }
