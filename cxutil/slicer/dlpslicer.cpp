@@ -51,4 +51,10 @@ namespace cxutil
 
 		return true;
 	}
+
+    bool DLPSlicer::compute(const DLPInput& input, float z, DLPDebugger* debugger)
+    {
+
+        return  true;
+    }
 }

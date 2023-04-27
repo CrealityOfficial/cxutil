@@ -10,6 +10,15 @@ namespace ccglobal
 
 namespace cxutil
 {
+    class DLPDebugger
+    {
+    public:
+        virtual ~DLPDebugger() {}
+
+        virtual void onSegments() = 0;
+        virtual void onConnected(const Polygons& polygons, const Polygons& openPolygons) = 0;
+    };
+
 	class DLPSlicer
 	{
 	public:
@@ -17,6 +26,9 @@ namespace cxutil
 		~DLPSlicer();
 
 		bool compute(const DLPInput& input, DLPData& data, ccglobal::Tracer* tracer);
+
+        //debug
+        bool compute(const DLPInput& input, float z, DLPDebugger* debugger = nullptr);
 	protected:
 	};
 }
