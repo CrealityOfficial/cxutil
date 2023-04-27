@@ -635,8 +635,6 @@ namespace cxutil
     @param polePoly, the output Polygons, usually includes several points.
     @param type, the algorithm selected to calculate the pole of the polygons.
     */
-    ClipperLib::cInt lightOffDistance(const Polygons& polygons, Polygons& polePoly, const int type = 1);
-
 
     struct LightOffCircle
     {
@@ -649,7 +647,7 @@ namespace cxutil
     public:
         virtual void onIteration(const LightOffCircle& circle) = 0;
     };
-
+    ClipperLib::cInt lightOffDistance(const Polygons& polygons, Point& result, const int type = 1);
     ClipperLib::cInt lightOffDistance(const Polygons& polygons, LightOffCircle& result,
         LightOffDebugger* debugger = nullptr, ccglobal::Tracer* tracer = nullptr);
 }//namespace cura
