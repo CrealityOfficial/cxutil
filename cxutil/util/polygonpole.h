@@ -19,11 +19,12 @@ namespace polygonPole {
     #ifndef SQRT2
     #define SQRT2 1.414213562373095
     #endif // !SQRT2
-    enum class poleAlgo:int {
+    enum class poleAlgo :int {
         QUARDTER_COVER = 0,///< 四分法
         REGIONAL_SAMPLE = 1,///< 条件采样
         POISSON_SAMPLE = 2,///< 泊松采样
-        INTERNAL_CIRCLE = 3,///< 最大内接圆
+        INSCRIBED_CIRCLE = 3,///< 最大内接圆
+        AXIS_INTERSECTION = 4,///< 中轴线算法
     };
     
     template<typename T>
@@ -175,6 +176,15 @@ namespace polygonPole {
         if (k > 1) return b;
         else return a * (1 - k) + b * k;
     }
+    // 判断向量是否共线
+    template<typename T>
+    inline bool Collinear(const Point2D<T>& vec1, const Point2D<T>& vec2)
+    {
+        Point2D<T> dir1 = vec1.Unit();
+        Point2D<T> dir2 = vec2.Unit();
+        T area = std::fabs(Cross(dir1, dir2));
+        return area < EPS;
+    }
     // 判断三点是否共线
     template<typename T>
     inline bool Collinear(const Point2D<T>& p, const Point2D<T>& a, const Point2D<T>& b)
@@ -209,6 +219,7 @@ namespace polygonPole {
     }
     template <typename T>
     struct BoundBox {
+        constexpr BoundBox(){}
         constexpr BoundBox(const Point2D<T>& min_, const Point2D<T>& max_)
             : min(min_), max(max_)
         {
@@ -284,56 +295,82 @@ namespace polygonPole {
             }
             points.swap(swapPts);
         }
+        bool IsRectangle() const
+        {
+            size_t len = points.size();
+            if (len == 4) {
+                Point2D<T> ab = points[1] - points[0];
+                Point2D<T> dc = points[2] - points[3];
+                if (Collinear(ab, dc)) {
+                    Point2D<T> ad = points[3] - points[0];
+                    Point2D<T> bc = points[2] - points[1];
+                    if (Collinear(ad, bc)) {
+                        if (std::fabs(Dot(ab, ad)) < EPS) {
+                            return true;
+                        }
+                    }
+                }
+            }
+            return false;
+        }
     };
     //复杂多边形，可能带有孔洞
     template <typename T>
     class Polygon {
+    private:
+        Point2D<T> min, max;
     public:
+        bool bGeneratedBound = false;
         std::vector<Ring<T>> rings;
         constexpr Polygon() {}
         constexpr Polygon(const std::vector<Ring<T>>& rs) :rings(rs)
         {
         }
-        void Translate(const Point2D<T>& trans){
+        void Translate(const Point2D<T>& trans)
+        {
             for (auto& ring : rings) {
                 auto& points = ring.points;
                 for (auto& pt : points) {
                     pt -= trans;
                 }
             }
+            bGeneratedBound = false;
         }
         Point2D<T> Min() const
         {
+            if (bGeneratedBound) return min;
             using limits = std::numeric_limits<T>;
             T max_t = limits::has_infinity ? limits::infinity() : limits::max();
-            Point2D<T> min(max_t, max_t);
+            Point2D<T> minPt(max_t, max_t);
             for (auto& ring : rings) {
                 for (auto& point : ring.points) {
-                    if (min.x > point.x) min.x = point.x;
-                    if (min.y > point.y) min.y = point.y;
+                    if (minPt.x > point.x) minPt.x = point.x;
+                    if (minPt.y > point.y) minPt.y = point.y;
                 }
             }
-            return min;
+            return minPt;
         }
         Point2D<T> Max() const
         {
+            if (bGeneratedBound) return max;
             using limits = std::numeric_limits<T>;
             T min_t = limits::has_infinity ? -limits::infinity() : limits::min();
-            Point2D<T> max(min_t, min_t);
+            Point2D<T> maxPt(min_t, min_t);
             for (auto& ring : rings) {
                 for (auto& point : ring.points) {
-                    if (max.x < point.x) max.x = point.x;
-                    if (max.y < point.y) max.y = point.y;
+                    if (maxPt.x < point.x) maxPt.x = point.x;
+                    if (maxPt.y < point.y) maxPt.y = point.y;
                 }
             }
-            return max;
+            return maxPt;
         }
-        BoundBox<T> GetBoundBox() const{
+        BoundBox<T> GetBoundBox() {
+            if (bGeneratedBound) return BoundBox<T>(min, max);
             using limits = std::numeric_limits<T>;
             T min_t = limits::has_infinity ? -limits::infinity() : limits::min();
             T max_t = limits::has_infinity ? limits::infinity() : limits::max();
-            Point2D<T> min(max_t, max_t);
-            Point2D<T> max(min_t, min_t);
+            min.x = max_t, min.y = max_t;
+            max.x = min_t, max.y = min_t;
             for (auto& ring : rings) {
                 for (auto& point : ring.points) {
                     if (min.x > point.x) min.x = point.x;
@@ -342,15 +379,17 @@ namespace polygonPole {
                     if (max.y < point.y) max.y = point.y;
                 }
             }
+            bGeneratedBound = true;
             return BoundBox<T>(min, max);
         }
-        Point2D<T> GetBoundCenter() const
+        Point2D<T> GetBoundCenter()
         {
+            if (bGeneratedBound) return (min + max) / 2.0;
             using limits = std::numeric_limits<T>;
             T min_t = limits::has_infinity ? -limits::infinity() : limits::min();
             T max_t = limits::has_infinity ? limits::infinity() : limits::max();
-            Point2D<T> min(max_t, max_t);
-            Point2D<T> max(min_t, min_t);
+            min.x = max_t, min.y = max_t;
+            max.x = min_t, max.y = min_t;
             for (auto& ring : rings) {
                 for (auto& point : ring.points) {
                     if (min.x > point.x) min.x = point.x;
@@ -359,7 +398,8 @@ namespace polygonPole {
                     if (max.y < point.y) max.y = point.y;
                 }
             }
-            return (max + min) / 2.0;
+            bGeneratedBound = true;
+            return (min + max) / 2.0;
         }
         Point2D<T> GetMassCentroid() const{
             T area = 0;
@@ -374,7 +414,7 @@ namespace polygonPole {
                     /*c.x += (a.x + b.x) * f;
                     c.y += (a.y + b.y) * f;*/
                     c += (a + b) * f;
-                    area += f * 3;
+                    area += f * 6.0;
                 }
             }
             if (std::fabs(area) < EPS) return rings.at(0).points.at(0);
@@ -387,8 +427,74 @@ namespace polygonPole {
                 poly.Simplify();
             }
         }
+        bool IsRectangle() const
+        {
+            size_t len = rings.size();
+            if (len == 1) {
+                for (auto& poly : rings) {
+                    if (poly.IsRectangle()) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+        T ComputeArea() const
+        {
+            T area = 0.0;
+            for (auto& ring : rings) {
+                size_t len = ring.points.size();
+                for (size_t i = 0, j = len - 1; i < len; j = i++) {
+                    Point2D<T> a = ring.points[j];
+                    Point2D<T> b = ring.points[i];
+                    area += Cross(a, b);
+                }
+            }
+            return area / 2.0;
+        }
     };
-    
+    template<typename T>
+    class Circle :Ring<T> {
+    public:
+        T radius = 0;
+        Point2D<T> center;
+        Circle(){}
+        Circle(const Point2D<T>& c, T r) :center(c), radius(r) {}
+    };
+    template<typename T>
+    class Rectangle :Ring<T> {
+    public:
+        std::vector<Point2D<T>> points;
+        Rectangle() {}
+        Rectangle(const std::vector<Point2D<T>>&pts):points(pts){}
+        Rectangle(const Ring<T>& poly)
+        {
+            auto pts = poly.points;
+            for (auto& pt : pts) {
+                points.push_back(pt);
+            }
+        }
+        bool ConstructFromPolygon(const Polygon<T>& polys)
+        {
+            if (polys.IsRectangle()) {
+                auto ring = polys.rings.front();
+                for (auto& pt : ring.points) {
+                    points.push_back(pt);
+                }
+                return true;
+            }
+            return false;
+        }
+        Circle<T> GetInscribedCircle() const
+        {
+            if (points.size() == 0) return Circle<T>();
+            Point2D<T> ab = points[1] - points[0];
+            Point2D<T> ad = points[3] - points[0];
+            Point2D<T> center = (points[0] + points[2]) / 2.0;
+            T radius = Min(ab.Magnitude(), ad.Magnitude()) / 2.0;
+            return Circle<T>(center, radius);
+        }
+    };
     //计算多边形最近的两条边及对应的两个点
     template <typename T>
     Point2D<T> UpdateCircleCenter(const Point2D<T>& point, Polygon<T>& polys, T& miniDist){
@@ -457,11 +563,10 @@ namespace polygonPole {
 
     //判断点是否在多边形轮廓内部
     template<typename T>
-    bool PointInPolygons(const Point2D<T>& point, const Polygon<T>& polys)
+    bool IsPointInPolygons(const Point2D<T>& point, const Polygon<T>& polys)
     {
         bool inside = false;
-        BoundBox<T>& bound = polys.GetBoundBox();
-        Point2D<T>min = bound.min, max = bound.max;
+        Point2D<T> min = polys.Min(), max = polys.Max();
         if (point.x <= min.x || point.x >= max.x || point.y <= min.y || point.y >= max.y) {
             return inside;
         }
@@ -477,6 +582,40 @@ namespace polygonPole {
             }
         }
         return inside;
+    }
+
+    //获取多边形轮廓内部某一点
+    template<typename T>
+    Point2D<T> GetPointInPolygons(const Polygon<T>& polys) {
+        Point2D<T> pt = (polys.Min() + polys.Max()) / 2.0;
+        std::vector<T> leftXs, rightXs;
+        bool inside = false;
+        for (auto& poly : polys.rings) {
+            const auto& points = poly.points;
+            const size_t len = points.size();
+            for (std::size_t i = 0, j = len - 1; i < len; j = i++) {
+                const auto& a = points[i];
+                const auto& b = points[j];
+                if (a.y == b.y) continue;
+                if (pt.y < Min(a.y, b.y)) continue;
+                if (pt.y >= Max(a.y, b.y)) continue;
+                // 求交点的x坐标（由直线两点式方程转化而来）  
+                double x = (double)(pt.y - a.y) * (double)(b.x - a.x) / (double)(b.y - a.y) + a.x;
+                // 统计p1p2与p向右射线的交点及左射线的交点  
+                if (pt.x < x) {
+                    rightXs.push_back(x);
+                    inside = !inside;
+                } else {
+                    leftXs.push_back(x);
+                }
+            }
+        }
+        if (inside) return pt;
+        std::sort(leftXs.begin(), leftXs.end());
+        std::sort(rightXs.begin(), rightXs.end());
+        leftXs.insert(leftXs.end(), rightXs.begin(), rightXs.end());
+        pt.x = (leftXs[0] + leftXs[1]) / 2.0;
+        return pt;
     }
 
     template <typename T>
@@ -610,12 +749,12 @@ namespace polygonPole {
             max(d + std::sqrt(w * w + h * h))
         {
         }
-        constexpr Cell(const Point2D<T>& c_, T w_, T h_, T d_, T max_)
+        constexpr Cell(const Point2D<T>& c_, T w_, T h_, T d_)
             :c(c_),
             w(w_),
             h(h_),
             d(d_),
-            max(max_)
+            max(d+ std::sqrt(w * w + h * h))
         {
 
         }
@@ -658,8 +797,7 @@ namespace polygonPole {
     template<typename T>
     Cell<T> GetPolyCentroidCell(const Polygon<T>& polys)
     {
-        BoundBox<T> bound = polys.GetBoundBox();
-        Point2D<T> size = bound.max - bound.min;
+        Point2D<T> size = polys.Max() - polys.Min();
         Point2D<T> c = polys.GetMassCentroid();
         return Cell<T>(c, size.x / 2, size.y / 2, polys);
     }
@@ -825,7 +963,7 @@ namespace polygonPole {
                 const auto& a = points[i];
                 const auto& b = points[j];
                 if (a.y == b.y) continue;
-                if (pt.y <= Min(a.y, b.y)) continue;
+                if (pt.y < Min(a.y, b.y)) continue;
                 if (pt.y >= Max(a.y, b.y)) continue;
                 // 求交点的x坐标（由直线两点式方程转化而来）  
                 double x = (double)(pt.y - a.y) * (double)(b.x - a.x) / (double)(b.y - a.y) + a.x;
@@ -876,11 +1014,10 @@ namespace polygonPole {
     template<typename T>
     std::vector<Cell<T>> conditionalSample(const Polygon<T>& polys, int nxs = 20, int nys = 20)
     {
-        const BoundBox<T>& bound = polys.GetBoundBox();
-        const Point2D<T>& max = bound.max;
-        const Point2D<T>& min = bound.min;
+        const Point2D<T>& min = polys.Min();
+        const Point2D<T>& max = polys.Max();
         const T yMin = min.y, yMax = max.y;
-        T delta = (yMax - yMin) / (double)(2 * nys + 1);
+        T delta = (yMax - yMin) / (double)(2.0 * nys + 1);
         T x = (max.x + min.x) / 2.0;
         std::vector<Cell<T>> sampleCells;
         for (T y = yMax - delta / 2; y >= yMin; y -= delta) {
@@ -896,9 +1033,16 @@ namespace polygonPole {
     template <typename T>
     Cell<T> sdPolygonPole(Polygon<T>& polys, T precision = 1, const poleAlgo type = poleAlgo::REGIONAL_SAMPLE)
     {
+        polys.Simplify();
+        if (polys.IsRectangle()) {
+            Rectangle<T> rect(polys.rings.front());
+            Circle<T> circle = rect.GetInscribedCircle();
+            Cell<T> cell(circle.center, 0, 0, circle.radius);
+            return cell;
+        }
         const Point2D<T> center = polys.GetBoundCenter();
         polys.Translate(center);
-        const BoundBox<T>& bound = polys.GetBoundBox();
+        BoundBox<T> bound = polys.GetBoundBox();
         const Point2D<T>& maxPt = bound.max;
         const Point2D<T>& minPt = bound.min;
         const Point2D<T>& size = maxPt - minPt;
@@ -917,10 +1061,6 @@ namespace polygonPole {
         if (bboxCell.d > bestCell.d) {
             bestCell = bboxCell;
         }
-        if (cellSize - bestCell.d < precision) {
-            bestCell.c += center;
-            return bestCell;
-        }
         // select different coverage strategies according to the split methods.
         switch (type) {
         case poleAlgo::QUARDTER_COVER:
@@ -928,11 +1068,12 @@ namespace polygonPole {
             {
                 for (T x = minPt.x; x < maxPt.x; x += w) {
                     for (T y = minPt.y; y < maxPt.y; y += h) {
-                        cellQueue.push(Cell<T>(Point2D<T>(x + h, y + h), w, h, polys));
+                        cellQueue.push(Cell<T>(Point2D<T>(x + w / 2, y + h / 2), w, h, polys));
                     }
                 }
                 auto numProbes = cellQueue.size();
                 while (!cellQueue.empty()) {
+                    if (cellSize - bestCell.d < precision) break;
                     // pick the most promising cell from the queue
                     auto cell = cellQueue.top();
                     h = cell.h / 2, w = cell.w / 2;
@@ -972,13 +1113,13 @@ namespace polygonPole {
             bestCell = cells.front();
         }
             break;
-        case poleAlgo::INTERNAL_CIRCLE:
+        case poleAlgo::INSCRIBED_CIRCLE:
         {
             //计算原理参考https://www.docin.com/p-1221389860.html
             //初始步长，最短距离初始化
             T a = 1200, lastDist = 0, curDist = 0;
             //初始圆心坐标
-            Point2D<T> pc = (maxPt + minPt) * 0.5;
+            Point2D<T> pc = (maxPt + minPt) / 2.0;
             //步骤1，计算角平分线与底边交点的圆心坐标
             Point2D<T> pt = UpdateCircleCenter(pc, polys, lastDist);
             double flag = 1.0;
@@ -1015,8 +1156,17 @@ namespace polygonPole {
         ccglobal::Tracer* tracer = nullptr)
     {
         polys.Simplify();
+        if (polys.IsRectangle()) {
+            Rectangle<T> rect(polys.rings.front());
+            Circle<T> circle = rect.GetInscribedCircle();
+            result.point.X = circle.center.x;
+            result.point.Y = circle.center.y;
+            result.radius = circle.radius;
+            Cell<T> cell(circle.center, 0, 0, circle.radius);
+            return cell;
+        }
         const T precision = 1;
-        const BoundBox<T>& bound = polys.GetBoundBox();
+        BoundBox<T> bound = polys.GetBoundBox();
         const Point2D<T>& maxPt = bound.max;
         const Point2D<T>& minPt = bound.min;
         const Point2D<T>& size = maxPt - minPt;
@@ -1070,8 +1220,17 @@ namespace polygonPole {
         ccglobal::Tracer* tracer = nullptr)
     {
         polys.Simplify();
+        if (polys.IsRectangle()) {
+            Rectangle<T> rect(polys.rings.front());
+            Circle<T> circle = rect.GetInscribedCircle();
+            result.point.X = circle.center.x;
+            result.point.Y = circle.center.y;
+            result.radius = circle.radius;
+            Cell<T> cell(circle.center, 0, 0, circle.radius);
+            return cell;
+        }
         const T precision = 1;
-        const BoundBox<T>& bound = polys.GetBoundBox();
+        BoundBox<T> bound = polys.GetBoundBox();
         const Point2D<T>& maxPt = bound.max;
         const Point2D<T>& minPt = bound.min;
         const Point2D<T>& size = maxPt - minPt;

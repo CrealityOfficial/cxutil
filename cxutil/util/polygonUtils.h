@@ -632,7 +632,7 @@ namespace cxutil
     struct LightOffCircle
     {
         ClipperLib::IntPoint point;
-        ClipperLib::cInt radius;
+        ClipperLib::cInt radius = 0;
     };
 
     class LightOffDebugger
@@ -646,6 +646,10 @@ namespace cxutil
     @param polygons, the input Polygons.
     @param result, the output circle centroid.
     @param type, the algorithm selected to calculate the pole of the polygons.
+    for type=0, select QUARDTER_COVER;
+    for type=1, select REGIONAL_SAMPLE;
+    for type=2, select POISSON_SAMPLE;
+    for type=3, select INSCRIBED_CIRCLE;
     */
     ClipperLib::cInt lightOffDistance(const Polygons& polygons, Point& result, const int type = 1);
 
