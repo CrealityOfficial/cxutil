@@ -88,8 +88,9 @@ namespace cxutil
 
     bool OneLayerSlicer::compute(float z, DLPDebugger* debugger)
     {
+        cxutil::coord_t iz = MM2INT(z);
         SlicePolygonBuilder builder;
-        m_helper.sliceOneLayer(z, builder.segments, builder.face_idx_to_segment_idx);
+        m_helper.sliceOneLayer(iz, builder.segments, builder.face_idx_to_segment_idx);
 
         Polygons polygons;
         Polygons openPolygons;
