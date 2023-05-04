@@ -322,4 +322,287 @@ namespace cxutil
 			out << p.first << " " << p.second << std::endl;
 		}
 	}
+
+    void tryConnectPath(Polygons& open_polylines, int cell_size, bool needReverse = false)
+    {
+        //获取开多边形的起始点
+        std::vector<SlicerSegment> openSegs;
+        for (const ClipperLib::Path& path : open_polylines.paths)
+        {
+            if (path.size() < 2)
+                continue;
+            SlicerSegment seg;
+            seg.start = path.front();
+            seg.end = path.back();
+            openSegs.push_back(seg);
+        }
+
+        for (size_t i = 0; i < openSegs.size(); i++)
+        {
+            SlicerSegment& seg1 = openSegs.at(i);
+
+            for (size_t j = 0; j < openSegs.size(); j++)
+            {
+                SlicerSegment& seg2 = openSegs.at(j);
+                if (i == j || seg2.addedToPolygon || open_polylines.paths[i].empty())
+                    continue;
+
+                Point diff = seg1.end - seg2.start;
+                bool bdiff = shorterThen(diff, cell_size);
+                if (bdiff)
+                {
+                    open_polylines.paths[i].insert(open_polylines.paths[i].end(), open_polylines.paths[j].begin(), open_polylines.paths[j].end());
+                    open_polylines.paths[j].clear();
+                    seg2.addedToPolygon = true;
+                    seg1.end = open_polylines.paths[i].back();
+                    break;
+                }
+                else if (needReverse) //处理反序
+                {
+                    Point diffR1 = seg1.start - seg2.end;
+                    Point diffR2 = seg1.end - seg2.end;
+                    Point diffR3 = seg1.start - seg2.start;
+                    bool bdiffR1 = shorterThen(diffR1, cell_size);
+                    bool bdiffR2 = shorterThen(diffR2, cell_size);
+                    bool bdiffR3 = shorterThen(diffR3, cell_size);
+                    if (bdiffR1)
+                    {
+                        open_polylines.paths[i].insert(open_polylines.paths[i].begin(), open_polylines.paths[j].begin(), open_polylines.paths[j].end());
+                        open_polylines.paths[j].clear();
+                        seg2.addedToPolygon = true;
+                        seg1.end = open_polylines.paths[i].back();
+                        break;
+                    }
+                    else if (bdiffR2)
+                    {
+                        if (open_polylines.paths[i].size() > open_polylines.paths[j].size())
+                        {
+                            std::reverse(open_polylines.paths[j].begin(), open_polylines.paths[j].end());
+                            open_polylines.paths[i].insert(open_polylines.paths[i].end(), open_polylines.paths[j].begin(), open_polylines.paths[j].end());
+                        }
+                        else
+                        {
+                            std::reverse(open_polylines.paths[i].begin(), open_polylines.paths[i].end());
+                            open_polylines.paths[i].insert(open_polylines.paths[i].begin(), open_polylines.paths[j].begin(), open_polylines.paths[j].end());
+                        }
+
+                        open_polylines.paths[j].clear();
+                        seg2.addedToPolygon = true;
+                        seg1.end = open_polylines.paths[i].back();
+                        break;
+                    }
+                    else if (bdiffR3)
+                    {
+                        if (open_polylines.paths[i].size() > open_polylines.paths[j].size())
+                        {
+                            std::reverse(open_polylines.paths[j].begin(), open_polylines.paths[j].end());
+                            open_polylines.paths[i].insert(open_polylines.paths[i].begin(), open_polylines.paths[j].begin(), open_polylines.paths[j].end());
+                        }
+                        else
+                        {
+                            std::reverse(open_polylines.paths[i].begin(), open_polylines.paths[i].end());
+                            open_polylines.paths[i].insert(open_polylines.paths[i].end(), open_polylines.paths[j].begin(), open_polylines.paths[j].end());
+                        }
+
+                        open_polylines.paths[j].clear();
+                        seg2.addedToPolygon = true;
+                        seg1.end = open_polylines.paths[i].back();
+                        break;
+                    }
+                }
+            }
+        }
+
+        for (auto it = open_polylines.paths.begin(); it != open_polylines.paths.end(); )
+        {
+            if (it->empty())
+            {
+                it = open_polylines.paths.erase(it);
+            }
+            else
+                it++;
+        }
+    }
+
+
+    ClipperLib::IntPoint Vector(ClipperLib::IntPoint a, ClipperLib::IntPoint b)   //向量ab
+    {
+        return{ b.X - a.X, b.Y - a.Y };
+    }
+
+    double dot(ClipperLib::IntPoint A, ClipperLib::IntPoint B, ClipperLib::IntPoint P)      //向量的内积
+    {
+        ClipperLib::IntPoint AB = Vector(A, B);
+        ClipperLib::IntPoint AP = Vector(A, P);
+        return AB.X* AP.X + AB.Y * AP.Y;
+    }
+
+    double cross(ClipperLib::IntPoint A, ClipperLib::IntPoint B, ClipperLib::IntPoint P)  //向量的外积
+    {
+        ClipperLib::IntPoint AB = Vector(A, B);
+        ClipperLib::IntPoint AP = Vector(A, P);
+        return AB.X* AP.Y - AB.Y * AP.X;
+    }
+
+    double dis2(ClipperLib::IntPoint a, ClipperLib::IntPoint b)           //两点间的距离的平方
+    {
+        return (b.X - a.X) * (b.X - a.X) + (b.Y - a.Y) * (b.Y - a.Y);
+
+    }
+
+    int dir(ClipperLib::IntPoint A, ClipperLib::IntPoint B, ClipperLib::IntPoint P)     //点与线段方位判定
+    {
+        if (cross(A, B, P) > 0)  return -1;
+        else if (cross(A, B, P) < 0) return 1;
+        else if (dot(A, B, P) < 0) return -2;
+        else if (dot(A, B, P) >= 0)
+        {
+            if (dis2(A, B) < dis2(A, P)) return 2;
+            else return 0;
+        }
+    }
+
+    double disLine(ClipperLib::IntPoint A, ClipperLib::IntPoint B, ClipperLib::IntPoint P)    //点P到直线AB的距离
+    {
+        return fabs(cross(A, B, P)) / sqrt(dis2(A, B));
+    }
+
+    bool pointInSegment(ClipperLib::IntPoint & A1, ClipperLib::IntPoint & A2, ClipperLib::IntPoint & p)
+    {
+        //判断交点有效
+        if ((p.X >= A1.X && p.X <= A2.X) || (p.X <= A1.X && p.X >= A2.X))
+        {
+            if ((p.Y >= A1.Y && p.Y <= A2.Y) || (p.Y <= A1.Y && p.Y >= A2.Y))
+                return true;
+        }
+
+        return false;
+    }
+
+    void insertPoint(ClipperLib::Path & path, ClipperLib::IntPoint & p)
+    {
+        for (size_t i = 0; i < path.size() - 1; i++)
+        {
+            if (pointInSegment(path[i], path[i + 1], p))
+            {
+                path.insert(path.begin() + i + 1, p);
+                return;
+            }
+        }
+    }
+
+    struct InsertData
+    {
+        int index1;
+        int index2;
+        ClipperLib::IntPoint p;
+    };
+
+    void tryConnectPaths(Polygons & open_polylines, int cell_size, ClipperLib::Path& intersectPoints,bool needReverse = false)
+    {
+
+        //Polygons result = open_polylines.intersection_open();
+        int test = 0;
+
+
+        if (open_polylines.paths.size() > 1)
+        {
+            for (size_t i = 0; i < open_polylines.paths.size() - 1; i++, i++)
+            {
+                ClipperLib::Path& path1 = open_polylines.paths[i];
+                ClipperLib::Path& path2 = open_polylines.paths[i + 1];
+
+                //插入交点
+                ClipperLib::Paths paths1;
+                ClipperLib::Paths paths2;
+                paths1.reserve(path1.size());
+                paths2.reserve(path2.size());
+
+                std::vector<InsertData> insertDataS;
+                for (size_t j = 0; j < path1.size() - 1; j++)
+                {
+                    ClipperLib::IntPoint& A1 = path1[j];
+                    ClipperLib::IntPoint& A2 = path1[j + 1];
+
+                    ClipperLib::Path path;
+                    path.push_back(A1);
+                    path.push_back(A2);
+                    paths1.push_back(path);
+
+                    ClipperLib::Path::iterator iter = path2.begin();
+                    for (size_t k = 0; k < path2.size() - 1; k++)
+                    {
+                        ClipperLib::IntPoint& B1 = path2[k];
+                        ClipperLib::IntPoint& B2 = path2[k + 1];
+                        if (dir(A1, A2, B1) * dir(A1, A2, B2) <= 0 && dir(B1, B2, A1) * dir(B1, B2, A2) <= 0)
+                        {//判断有无交点
+                            double t = disLine(A1, A2, B1) / (disLine(A1, A2, B1) + disLine(A1, A2, B2));
+
+                            ClipperLib::IntPoint B1B2 = Vector(B1, B2);
+                            ClipperLib::IntPoint inter = { B1.X + (ClipperLib::cInt)(B1B2.X * t), B1.Y + (ClipperLib::cInt)(B1B2.Y * t) };
+
+                            if (pointInSegment(A1, A2, inter) && pointInSegment(B1, B2, inter))
+                            {
+                                InsertData insertData;
+                                insertData.index1 = j;
+                                insertData.index2 = k;
+                                insertData.p = inter;
+                                insertDataS.push_back(insertData);
+                            }
+                        }
+                    }
+                }
+
+                for (size_t k = 0; k < path2.size() - 1; k++)
+                {
+                    ClipperLib::IntPoint& B1 = path2[k];
+                    ClipperLib::IntPoint& B2 = path2[k + 1];
+
+                    ClipperLib::Path path;
+                    path.push_back(B1);
+                    path.push_back(B2);
+                    paths2.push_back(path);
+                }
+
+                for (size_t i = 0; i < insertDataS.size(); i++)
+                {
+                    ClipperLib::Path& path1 = paths1[insertDataS[i].index1];
+                    ClipperLib::Path& path2 = paths2[insertDataS[i].index2];
+                    ClipperLib::IntPoint& p = insertDataS[i].p;
+                    insertPoint(path1, p);
+                    insertPoint(path2, p);
+
+                    intersectPoints.push_back(p);
+                }
+
+                ClipperLib::Path path11;
+                ClipperLib::Path path22;
+
+
+            }
+        }
+    }
+
+    void SlicePolygonBuilder::connectOpenPolylines(Polygons & open_polylines,ClipperLib::Path& intersectPoints)
+    {
+        if (open_polylines.empty())
+        {
+            return;
+        }
+
+        constexpr bool allow_reverse = false;
+        // Search a bit fewer cells but at cost of covering more area.
+        // Since acceptance area is small to start with, the extra is unlikely to hurt much.
+        constexpr coord_t cell_size = largest_neglected_gap_first_phase * 2;
+
+        tryConnectPath(open_polylines, largest_neglected_gap_first_phase);
+
+        //再次检测
+        if (open_polylines.paths.size())
+        {
+            tryConnectPath(open_polylines, cell_size, true);
+        }
+
+        tryConnectPaths(open_polylines, cell_size, intersectPoints, true);
+    }
 }

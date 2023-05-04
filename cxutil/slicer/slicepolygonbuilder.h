@@ -22,6 +22,8 @@ namespace cxutil
 		void sliceOneLayer_dst(cxutil::SliceHelper* helper, int z, Polygons* polygons, Polygons* openPolygons);
 		void makePolygon(Polygons* polygons, Polygons* openPolygons);
 
+        void connectOpenPolylines(Polygons& openPolygons,ClipperLib::Path& intersectPoints);
+
 		std::vector<SlicerSegment> segments;
 		std::unordered_map<int, int> face_idx_to_segment_idx; // topology
 

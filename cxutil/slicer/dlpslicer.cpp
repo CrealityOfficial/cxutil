@@ -74,6 +74,12 @@ namespace cxutil
         Polygons openPolygons;
         builder.makePolygon(&polygons, &openPolygons);
 
+        ClipperLib::Path intersectPoints;
+        if (openPolygons.size())
+        {
+            builder.connectOpenPolylines(openPolygons, intersectPoints);
+        }
+
         //connect 1
         Polygons closedPolygons;
         connectOpenPolygons(openPolygons, closedPolygons);
@@ -127,7 +133,7 @@ namespace cxutil
 
         if (debugger)
         {
-            debugger->onConnected(polygons, openPolygons);
+            debugger->onConnected(polygons, openPolygons, intersectPoints);
         }
 
         return true;

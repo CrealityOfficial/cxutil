@@ -17,7 +17,7 @@ namespace cxutil
         virtual ~DLPDebugger() {}
 
         virtual void onSegments() = 0;
-        virtual void onConnected(const Polygons& polygons, const Polygons& openPolygons) = 0;
+        virtual void onConnected(const Polygons& polygons, const Polygons& openPolygons, const ClipperLib::Path& intersectionPoints) = 0;
     };
 
 	class DLPSlicer
