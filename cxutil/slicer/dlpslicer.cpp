@@ -4,7 +4,7 @@
 
 #include "cxutil/slicer/meshslice.h"
 #include "cxutil/slicer/slicepolygonbuilder.h"
-
+#include "cxutil/processor/openpolygonprocessor.h"
 #include <assert.h>
 
 #ifdef _OPENMP
@@ -53,28 +53,6 @@ namespace cxutil
 		return true;
 	}
 
-    bool DLPSlicer::compute(const DLPInput& input, float z, DLPDebugger* debugger)
-    {
-        int meshCount = input.meshCount();
-        if (meshCount == 0)
-            return false;
-
-        SlicedMesh slicedMesh;
-        std::vector<int> zs;
-        zs.push_back(z*1000);
-        sliceMesh(input.Meshes[0].get(), slicedMesh, zs);
-
-        if (debugger)
-        {
-            if (slicedMesh.m_layers.size()>0)
-            {
-                debugger->onConnected(slicedMesh.m_layers[0].polygons, slicedMesh.m_layers[0].openPolylines);
-            }
-        }
-
-        return  true;
-    }
-
     OneLayerSlicer::OneLayerSlicer(MeshObjectPtr mesh)
         :m_mesh(mesh)
     {
@@ -95,6 +73,57 @@ namespace cxutil
         Polygons polygons;
         Polygons openPolygons;
         builder.makePolygon(&polygons, &openPolygons);
+
+        //connect 1
+        Polygons closedPolygons;
+        connectOpenPolygons(openPolygons, closedPolygons);
+        for (size_t k = 0; k < closedPolygons.size(); ++k)
+        {
+            polygons.add(closedPolygons[k]);
+        }
+
+        //connect 2
+        Polygons stitchClosedPolygons;
+        stitch(openPolygons, stitchClosedPolygons);
+        for (size_t k = 0; k < stitchClosedPolygons.size(); ++k)
+        {
+            polygons.add(stitchClosedPolygons[k]);
+        }
+
+        if (false)
+        {
+            stitchExtensive(openPolygons, polygons);
+        }
+
+        if (false)
+        {
+            for (PolygonRef polyline : openPolygons)
+            {
+                if (polyline.size() > 0)
+                    polygons.add(polyline);
+            }
+        }
+
+        Polygons resultPolygons;
+        for (PolygonRef polyline : openPolygons)
+        {
+            if (polyline.size() > 0)
+            {
+                resultPolygons.add(polyline);
+            }
+        }
+        openPolygons = resultPolygons;
+
+        coord_t line_segment_resolution = 50;
+        coord_t line_segment_deviation = 50;
+        float xy_offset = 0.00f;
+        bool enable_xy_offset = true;
+        polygons.simplify(line_segment_resolution, line_segment_deviation);
+        polygons.removeDegenerateVerts(); // remove verts connected to overlapping line segments
+        if (enable_xy_offset && abs(xy_offset) > 0.000001)
+        {
+            polygons = polygons.offset((int)(xy_offset * 1000));
+        }
 
         if (debugger)
         {

@@ -28,8 +28,6 @@ namespace cxutil
 
 		bool compute(const DLPInput& input, DLPData& data, ccglobal::Tracer* tracer);
 
-        //debug
-        bool compute(const DLPInput& input, float z, DLPDebugger* debugger = nullptr);
 	protected:
 	};
 
