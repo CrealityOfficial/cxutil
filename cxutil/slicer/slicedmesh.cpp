@@ -136,6 +136,9 @@ namespace cxutil
 				{
 					layer.polygons = layer.polygons.offset((int)(xy_offset * 1000));
 				}
+
+                //ºÏ²¢±ÕºÏÂÖÀª
+                layer.polygons = layer.polygons.unionPolygons();
 			}
 		}
 	}

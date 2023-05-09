@@ -353,6 +353,7 @@ namespace cxutil
             if (dis2(A, B) < dis2(A, P)) return 2;
             else return 0;
         }
+        return 0;
     }
 
     double disLine(const Point& A, const Point& B, const Point& P)    //点P到直线AB的距离
@@ -490,6 +491,7 @@ namespace cxutil
             }
             return sqrt(dis2(nearestPoint, C));
         }
+        return 0.0f;
     }
 
     //包含端点
@@ -706,7 +708,7 @@ namespace cxutil
     {
         if (pse.endIndex > pse.startIndex && pse.startIndex >= 0)
         {
-            if (path[pse.startIndex].X != pse.start.X || path[pse.startIndex].Y != pse.start.Y)
+            if (path[pse.startIndex % path.size()].X != pse.start.X || path[pse.startIndex % path.size()].Y != pse.start.Y)
             {
                 pathresult.push_back(pse.start);
             }
@@ -715,7 +717,7 @@ namespace cxutil
             {
                 pathresult.push_back(path[j]);
             }
-            if (path[pse.endIndex].X != pse.end.X || path[pse.endIndex].Y != pse.end.Y)
+            if (path[pse.endIndex % path.size()].X != pse.end.X || path[pse.endIndex % path.size()].Y != pse.end.Y)
                 pathresult.push_back(pse.end);
         }
     }
@@ -832,13 +834,13 @@ namespace cxutil
                     ClipperLib::Path& pathOther = open_polylines.paths[pse.startNextPathIndex];
                     if (pse.endOtherIndex < pse.startOtherIndex && pse.endOtherIndex >= 0)
                     {
-                        if (pathOther[pse.endOtherIndex].X != pse.endOther.X || path[pse.endOtherIndex].Y != pse.endOther.Y)
+                        if (pathOther[pse.endOtherIndex% pathOther.size()].X != pse.endOther.X || pathOther[pse.endOtherIndex % pathOther.size()].Y != pse.endOther.Y)
                             pathresult.push_back(pse.endOther);
                         for (size_t j = pse.endOtherIndex + 1; j < pse.startOtherIndex; j++)
                         {
                             pathresult.push_back(pathOther[j]);
                         }
-                        if (pathOther[pse.startOtherIndex].X != pse.startOther.X || path[pse.startOtherIndex].Y != pse.startOther.Y)
+                        if (pathOther[pse.startOtherIndex % pathOther.size()].X != pse.startOther.X || pathOther[pse.startOtherIndex % pathOther.size()].Y != pse.startOther.Y)
                             pathresult.push_back(pse.startOther);
 
                         result.paths.push_back(pathresult);
