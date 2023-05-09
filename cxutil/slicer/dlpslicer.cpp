@@ -77,7 +77,7 @@ namespace cxutil
         ClipperLib::Path intersectPoints;
         if (openPolygons.size())
         {
-            builder.connectOpenPolylines(openPolygons, intersectPoints);
+            builder.connectOpenPolylines(polygons,openPolygons, intersectPoints);
         }
 
         //connect 1
@@ -130,6 +130,8 @@ namespace cxutil
         {
             polygons = polygons.offset((int)(xy_offset * 1000));
         }
+
+        polygons = polygons.unionPolygons();
 
         if (debugger)
         {
