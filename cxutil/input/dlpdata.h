@@ -23,7 +23,7 @@ namespace cxutil
 
 		std::vector<DLPLayer> layersData;
 	};
-
-
 }
+
+
 #endif // _CXSW_DLPDATA_1593762618888_H

@@ -28,9 +28,9 @@ namespace cxutil
         for (size_t i = 0; i < size; ++i)
         {
             float* v = vertex + 9 * i;
-            Point3 v1 = Point3(MM2INT(1.0 * *v), MM2INT(1.0 * *(v + 1)), MM2INT(1.0 * *(v + 2)));
-            Point3 v2 = Point3(MM2INT(1.0 * *(v + 3)), MM2INT(1.0 * *(v + 4)), MM2INT(1.0 * *(v + 5)));
-            Point3 v3 = Point3(MM2INT(1.0 * *(v + 6)), MM2INT(1.0 * *(v + 7)), MM2INT(1.0 * *(v + 8)));
+            Point3 v1 = Point3(DLP_MM2_S(1.0 * *v), DLP_MM2_S(1.0 * *(v + 1)), DLP_MM2_S(1.0 * *(v + 2)));
+            Point3 v2 = Point3(DLP_MM2_S(1.0 * *(v + 3)), DLP_MM2_S(1.0 * *(v + 4)), DLP_MM2_S(1.0 * *(v + 5)));
+            Point3 v3 = Point3(DLP_MM2_S(1.0 * *(v + 6)), DLP_MM2_S(1.0 * *(v + 7)), DLP_MM2_S(1.0 * *(v + 8)));
             builder.addFace(v1, v2, v3);
         }
 
@@ -57,9 +57,9 @@ namespace cxutil
             float* v1 = vertex + 3 * *(face);
             float* v2 = vertex + 3 * *(face + 1);
             float* v3 = vertex + 3 * *(face + 2);
-            Point3 p1 = Point3(MM2INT(1.0 * *v1), MM2INT(1.0 * *(v1 + 1)), MM2INT(1.0 * *(v1 + 2)));
-            Point3 p2 = Point3(MM2INT(1.0 * *v2), MM2INT(1.0 * *(v2 + 1)), MM2INT(1.0 * *(v2 + 2)));
-            Point3 p3 = Point3(MM2INT(1.0 * *v3), MM2INT(1.0 * *(v3 + 1)), MM2INT(1.0 * *(v3 + 2)));
+            Point3 p1 = Point3(DLP_MM2_S(1.0 * *v1), DLP_MM2_S(1.0 * *(v1 + 1)), DLP_MM2_S(1.0 * *(v1 + 2)));
+            Point3 p2 = Point3(DLP_MM2_S(1.0 * *v2), DLP_MM2_S(1.0 * *(v2 + 1)), DLP_MM2_S(1.0 * *(v2 + 2)));
+            Point3 p3 = Point3(DLP_MM2_S(1.0 * *v3), DLP_MM2_S(1.0 * *(v3 + 1)), DLP_MM2_S(1.0 * *(v3 + 2)));
             builder.addFace(p1, p2, p3);
         }
 
@@ -84,9 +84,9 @@ namespace cxutil
 				float* v1 = vertex + 3 * index1;
 				float* v2 = vertex + 3 * index2;
 				float* v3 = vertex + 3 * index3;
-				Point3 p1 = Point3(MM2INT(1.0 * *v1), MM2INT(1.0 * *(v1 + 1)), MM2INT(1.0 * *(v1 + 2)));
-				Point3 p2 = Point3(MM2INT(1.0 * *v2), MM2INT(1.0 * *(v2 + 1)), MM2INT(1.0 * *(v2 + 2)));
-				Point3 p3 = Point3(MM2INT(1.0 * *v3), MM2INT(1.0 * *(v3 + 1)), MM2INT(1.0 * *(v3 + 2)));
+				Point3 p1 = Point3(DLP_MM2_S(1.0 * *v1), DLP_MM2_S(1.0 * *(v1 + 1)), DLP_MM2_S(1.0 * *(v1 + 2)));
+				Point3 p2 = Point3(DLP_MM2_S(1.0 * *v2), DLP_MM2_S(1.0 * *(v2 + 1)), DLP_MM2_S(1.0 * *(v2 + 2)));
+				Point3 p3 = Point3(DLP_MM2_S(1.0 * *v3), DLP_MM2_S(1.0 * *(v3 + 1)), DLP_MM2_S(1.0 * *(v3 + 2)));
 				builder.addFace(p1, p2, p3);
 			}
 		}
@@ -169,7 +169,7 @@ namespace cxutil
                 //if (i == 566 * 3)
                 //	printf("");
 
-                points.at(i) = Point3(MM2INT(1.0 * p.x), MM2INT(1.0 * p.y), MM2INT(1.0 * p.z));
+                points.at(i) = Point3(DLP_MM2_S(1.0 * p.x), DLP_MM2_S(1.0 * p.y), DLP_MM2_S(1.0 * p.z));
             }
         }
     }

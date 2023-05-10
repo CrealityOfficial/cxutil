@@ -7,12 +7,20 @@
 
 //Include Clipper to get the ClipperLib::IntPoint definition, which we reuse as Point definition.
 #include "clipper/clipper.hpp"
-
 namespace cxutil
 {
 	using coord_t = ClipperLib::cInt;
 } // namespace cura
+#ifdef DLP_USE_UM
+#define DLP_MM2_S(n) MM2INT(n)
+#define DLP_S_2MM(n) (double(n) / 1000.0f)
+#define DLP_S_UM(n) (double(n)/1.0f) 
+#else
+#define DLP_MM2_S(n) MM2_2INT(n)
+#define DLP_S_2MM(n) INT2MM2(n)
+#define DLP_S_UM(n) (double(n)/1000.0f) 
 
+#endif
 #define INT2MM2(n) (double(n) / 1000000.0)
 #define MM2INT(n) (cxutil::coord_t((n) * 1000 + 0.5 * (((n) > 0) - ((n) < 0))))
 #define MM2_2INT(n) (cxutil::coord_t((n) * 1000000 + 0.5 * (((n) > 0) - ((n) < 0))))

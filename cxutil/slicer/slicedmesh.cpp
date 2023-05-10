@@ -68,7 +68,8 @@ namespace cxutil
 				SlicedMeshLayer& layer = slicedMesh.m_layers.at(j);
 
 				Polygons closedPolygons;
-				connectOpenPolygons(layer.openPolylines, closedPolygons);
+				if(layer.openPolylines.size() > 0)
+					connectOpenPolygons(layer.openPolylines, closedPolygons);
 
 				for (size_t k = 0; k < closedPolygons.size(); ++k)
 				{

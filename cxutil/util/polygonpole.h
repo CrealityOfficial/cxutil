@@ -1165,7 +1165,7 @@ namespace polygonPole {
             Cell<T> cell(circle.center, 0, 0, circle.radius);
             return cell;
         }
-        const T precision = 1;
+        const T precision = 1e3;
         BoundBox<T> bound = polys.GetBoundBox();
         const Point2D<T>& maxPt = bound.max;
         const Point2D<T>& minPt = bound.min;
@@ -1180,6 +1180,7 @@ namespace polygonPole {
         Point2D<T> pt = UpdateCircleCenter(pc, polys, lastDist);
         double flag = 1.0;
         bool incident = false;
+        int num = 0;
         while (a > precision) {
             if (debugger) {
                 result.point.X = pc.x;
@@ -1194,8 +1195,9 @@ namespace polygonPole {
             Point2D<T> curPc = pc + vec * a * flag;
             Point2D<T> curPt = UpdateCircleCenter(curPc, polys, curDist);
             T offset = (pc - curPt).Magnitude();
+            ++num;
             if (offset < precision && incident) break;
-            if (curDist > lastDist) {
+            if (curDist > lastDist+precision) {
                 pc = curPc;
                 pt = curPt;
                 incident = true;
@@ -1229,7 +1231,10 @@ namespace polygonPole {
             Cell<T> cell(circle.center, 0, 0, circle.radius);
             return cell;
         }
-        const T precision = 1;
+        T precision = 1e3; ///<默认乘以1000
+#ifdef DLP_USE_UM
+        precision /= 1e-3;
+#endif
         BoundBox<T> bound = polys.GetBoundBox();
         const Point2D<T>& maxPt = bound.max;
         const Point2D<T>& minPt = bound.min;
