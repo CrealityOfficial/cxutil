@@ -706,7 +706,7 @@ namespace cxutil
 
     void addTopaths(ClipperLib::Path& path, polyStartEnd& pse, ClipperLib::Path& pathresult)
     {
-        if (pse.endIndex > pse.startIndex && pse.startIndex >= 0)
+        if (pse.endIndex > pse.startIndex && pse.startIndex >= 0 && pse.endIndex < path.size())
         {
             if (path[pse.startIndex % path.size()].X != pse.start.X || path[pse.startIndex % path.size()].Y != pse.start.Y)
             {
@@ -765,6 +765,7 @@ namespace cxutil
                         if (pathconnect.size() > 3)
                         {
                             connected.add(pathconnect);
+                            break;
                         }
                     }
                 }
@@ -775,7 +776,6 @@ namespace cxutil
     void tryConnectEnd(Polygons& polylines,Polygons& open_polylines, int cell_size, ClipperLib::Path& intersectPoints)
     {
         //加入闭合多边形
-        int openCount = open_polylines.size();
         open_polylines.paths.insert(open_polylines.paths.end(), polylines.paths.begin(), polylines.paths.end());
 
         //从端点开始查找最近的点
@@ -817,9 +817,66 @@ namespace cxutil
             }
         }
 
+        for (size_t i = 0; i < polyStartEnds.size(); i++)
+        {
+            std::vector<polyStartEnd>& polys = polyStartEnds[i];
+            bool open = true;
+            if (true)
+            {
+                for (auto poly : polys)
+                {
+                    if (poly.startIndex != -1 && poly.endIndex != -1)
+                    {
+                        open = false;
+                    }
+                }
+                if (open)
+                {
+                    polyStartEnd newPoly;
+                    newPoly.curPathIndex = i;
+                    for (auto poly : polys)
+                    {
+                        if (poly.startIndex != -1)
+                        {
+                            if (newPoly.startIndex == -1 || newPoly.startIndex > poly.startIndex)
+                            {
+                                newPoly.start = poly.start;
+                                newPoly.startIndex = poly.startIndex;
+                                newPoly.startNextPathIndex = poly.startNextPathIndex;
+                                newPoly.startOther = poly.startOther;
+                                newPoly.startOtherIndex = poly.startOtherIndex;
+                            }
+                        }
+
+                        if (poly.end != -1)
+                        {
+                            if (newPoly.endIndex == -1 || newPoly.endIndex < poly.endIndex)
+                            {
+                                newPoly.end = poly.end;
+                                newPoly.endIndex = poly.endIndex;
+                                newPoly.endNextPathIndex = poly.endNextPathIndex;
+                                newPoly.endOther = poly.endOther;
+                                newPoly.endOtherIndex = poly.endOtherIndex;
+                            }
+                        }
+                    }
+                    if (newPoly.startNextPathIndex >= 0 && newPoly.endNextPathIndex >= 0)
+                    {
+                        polys.push_back(newPoly);
+                    }
+                }
+            }
+        }
+
+        long long count = 1;
+        for (auto poly : polyStartEnds)
+        {
+            count *= (poly.size()>0 ? poly.size() : 1);
+        }
+
         //首尾连接
         Polygons result;
-        for (size_t i = 0; i < open_polylines.paths.size(); i++)
+        for (int i = 0; i < open_polylines.paths.size(); i++)
         {
             ClipperLib::Path& path = open_polylines.paths[i];
             for (int j = 0; j < polyStartEnds[i].size(); j++)
@@ -831,23 +888,76 @@ namespace cxutil
                 //两个轮廓闭合的情况
                 if (pse.startNextPathIndex == pse.endNextPathIndex)
                 {
-                    ClipperLib::Path& pathOther = open_polylines.paths[pse.startNextPathIndex];
+                    ClipperLib::Path& pathOther = open_polylines.paths[pse.startNextPathIndex % open_polylines.paths.size()];
                     if (pse.endOtherIndex < pse.startOtherIndex && pse.endOtherIndex >= 0)
                     {
-                        if (pathOther[pse.endOtherIndex% pathOther.size()].X != pse.endOther.X || pathOther[pse.endOtherIndex % pathOther.size()].Y != pse.endOther.Y)
+                        if (pathOther[pse.endOtherIndex %pathOther.size()].X != pse.endOther.X || pathOther[pse.endOtherIndex %pathOther.size()].Y != pse.endOther.Y)
                             pathresult.push_back(pse.endOther);
-                        for (size_t j = pse.endOtherIndex + 1; j < pse.startOtherIndex; j++)
+                        for (int k = pse.endOtherIndex + 1; k < pse.startOtherIndex; k++)
                         {
-                            pathresult.push_back(pathOther[j]);
+                            pathresult.push_back(pathOther[k % pathOther.size()]);
                         }
-                        if (pathOther[pse.startOtherIndex % pathOther.size()].X != pse.startOther.X || pathOther[pse.startOtherIndex % pathOther.size()].Y != pse.startOther.Y)
+                        if (pathOther[pse.startOtherIndex %pathOther.size()].X != pse.startOther.X || pathOther[pse.startOtherIndex %pathOther.size()].Y != pse.startOther.Y)
                             pathresult.push_back(pse.startOther);
 
                         result.paths.push_back(pathresult);
                     }
                 }
-            }
+                else if (pse.startNextPathIndex >= 0 && pse.endNextPathIndex >= 0)
+                {
+                    int nextIndex = pse.endNextPathIndex;
+                    int curIndex = i;
+                    polyStartEnd curpoly = pse;
 
+                    long long cnt = count * 5;
+                    while (cnt-- > 0)
+                    {
+                        ClipperLib::Path& pathOther = open_polylines.paths[nextIndex %open_polylines.paths.size()];
+                        polyStartEnd PolySE;
+                        PolySE.startIndex = curpoly.endOtherIndex;
+                        PolySE.start = curpoly.endOther;
+
+                        std::vector<polyStartEnd>& polys = polyStartEnds[nextIndex %polyStartEnds.size()];
+                        bool hasConnect = false;
+                        for (auto poly : polys)
+                        {
+                            if (poly.startNextPathIndex >= 0 && poly.endNextPathIndex >= 0)
+                            {
+                                if (poly.endNextPathIndex == i && pse.startNextPathIndex == poly.endNextPathIndex)
+                                {
+                                    PolySE.endIndex = pse.startOtherIndex;
+                                    PolySE.end = pse.startOther;
+                                    curpoly = pse;
+                                    hasConnect = false;
+                                    addTopaths(pathOther, PolySE, pathresult);
+
+                                    result.paths.push_back(pathresult);
+                                    break;
+                                }
+                                else if (poly.startNextPathIndex == curIndex)
+                                {
+                                    PolySE.endIndex = poly.endIndex;
+                                    PolySE.end = poly.end;
+                                    curpoly = poly;
+                                    
+                                    addTopaths(pathOther, PolySE, pathresult);
+                                    curIndex = nextIndex;
+                                    nextIndex = poly.endNextPathIndex;
+                                    if (nextIndex != i)
+                                        hasConnect = true;
+                                    else
+                                        result.paths.push_back(pathresult);
+                                    break;
+                                }
+                            }
+                        }
+                        if (!hasConnect)
+                        {
+                            break;
+                        }
+                    }
+                }
+            }
         }
         result = result.unionPolygons();
         open_polylines.paths.swap(result.paths);
