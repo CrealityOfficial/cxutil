@@ -1165,7 +1165,10 @@ namespace polygonPole {
             Cell<T> cell(circle.center, 0, 0, circle.radius);
             return cell;
         }
-        const T precision = 1e3;
+        T precision = 1e3; ///<默认乘以1000
+#ifdef DLP_USE_UM
+        precision /= 1e-3;
+#endif
         BoundBox<T> bound = polys.GetBoundBox();
         const Point2D<T>& maxPt = bound.max;
         const Point2D<T>& minPt = bound.min;
