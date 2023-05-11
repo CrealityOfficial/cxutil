@@ -1015,7 +1015,10 @@ namespace polygonPole {
         ccglobal::Tracer* tracer = nullptr)
     {
         polys.Simplify();
-        const T precision = 1;
+        const T precision = 1e3;
+#ifdef DLP_USE_UM
+        precision = 1;
+#endif
         const BoundBox<T>& bound = polys.GetBoundBox();
         const Point2D<T>& maxPt = bound.max;
         const Point2D<T>& minPt = bound.min;
@@ -1045,7 +1048,7 @@ namespace polygonPole {
             Point2D<T> curPt = UpdateCircleCenter(curPc, polys, curDist);
             T offset = (pc - curPt).Magnitude();
             if (offset < precision && incident) break;
-            if (curDist > lastDist) {
+            if (curDist > lastDist + precision) {
                 pc = curPc;
                 pt = curPt;
                 incident = true;

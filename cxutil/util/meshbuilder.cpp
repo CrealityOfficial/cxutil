@@ -28,9 +28,9 @@ namespace cxutil
         for (size_t i = 0; i < size; ++i)
         {
             float* v = vertex + 9 * i;
-            Point3 v1 = Point3(MM2INT(1.0 * *v), MM2INT(1.0 * *(v + 1)), MM2INT(1.0 * *(v + 2)));
-            Point3 v2 = Point3(MM2INT(1.0 * *(v + 3)), MM2INT(1.0 * *(v + 4)), MM2INT(1.0 * *(v + 5)));
-            Point3 v3 = Point3(MM2INT(1.0 * *(v + 6)), MM2INT(1.0 * *(v + 7)), MM2INT(1.0 * *(v + 8)));
+            Point3 v1 = Point3(DLP_MM2_S(1.0 * *v), DLP_MM2_S(1.0 * *(v + 1)), DLP_MM2_S(1.0 * *(v + 2)));
+            Point3 v2 = Point3(DLP_MM2_S(1.0 * *(v + 3)), DLP_MM2_S(1.0 * *(v + 4)), DLP_MM2_S(1.0 * *(v + 5)));
+            Point3 v3 = Point3(DLP_MM2_S(1.0 * *(v + 6)), DLP_MM2_S(1.0 * *(v + 7)), DLP_MM2_S(1.0 * *(v + 8)));
             builder.addFace(v1, v2, v3);
         }
 
