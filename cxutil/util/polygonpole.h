@@ -1015,7 +1015,7 @@ namespace polygonPole {
         ccglobal::Tracer* tracer = nullptr)
     {
         polys.Simplify();
-        const T precision = 1e3;
+        T precision = 1e3;
 #ifdef DLP_USE_UM
         precision = 1;
 #endif

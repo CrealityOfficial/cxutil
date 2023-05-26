@@ -171,7 +171,8 @@ namespace cxutil
 
 				if (enable_xy_offset && abs(xy_offset) > 0.000001)
 				{
-					layer.polygons = layer.polygons.offset((int)(xy_offset * 1000));
+					layer.polygons = layer.polygons.offset(DLP_MM2_S(xy_offset));
+
 				}
 			}
 		}
