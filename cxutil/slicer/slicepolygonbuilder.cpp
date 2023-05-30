@@ -773,10 +773,45 @@ namespace cxutil
         }
     }
 
+    void insertClosedPloy(Polygons& polylines, Polygons& open_polylines)
+    {
+        std::vector<bool> needAdd(polylines.paths.size(), false);
+        for (int i = 0; i < polylines.paths.size(); i++)
+        {
+            Polygons poly;
+            poly.add(polylines.paths[i]);
+            for (int j = 0; j < open_polylines.paths.size(); j++)
+            {
+                Polygons polyOpen;
+                polyOpen.add(open_polylines.paths[j]);
+                bool border_resultMin = false;
+                bool border_resultMax = false;
+                if (poly.inside(polyOpen.min(), border_resultMin) || poly.inside(polyOpen.max(), border_resultMax))
+                {
+                    needAdd[i] = true;
+                    break;
+                }
+                else if (border_resultMin || border_resultMax)
+                {
+                    needAdd[i] = true;
+                    break;
+                }
+            }
+        }
+
+        for (int i = 0; i < needAdd.size(); i++)
+        {
+            if (needAdd[i])
+            {
+                open_polylines.paths.push_back(polylines.paths[i]);
+            }
+        }
+    }
+
     void tryConnectEnd(Polygons& polylines,Polygons& open_polylines, int cell_size, ClipperLib::Path& intersectPoints)
     {
-        //加入闭合多边形
-        open_polylines.paths.insert(open_polylines.paths.end(), polylines.paths.begin(), polylines.paths.end());
+        //加入闭合多边形 //相关的闭合多边形
+        insertClosedPloy(polylines, open_polylines);
 
         //从端点开始查找最近的点
         std::vector<std::vector<polyStartEnd>> polyStartEnds;
