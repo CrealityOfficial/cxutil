@@ -639,7 +639,7 @@ namespace cxutil
     struct LightOffCircle
     {
         ClipperLib::IntPoint point;
-        ClipperLib::cInt radius;
+        ClipperLib::cInt radius = 0;
     };
 
     class LightOffDebugger

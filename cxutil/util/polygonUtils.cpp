@@ -1327,11 +1327,10 @@ namespace cxutil
             auto cell = polygonPole::sdPolygonPole(polys, precision, algo_type);
             if (cell.d > optimalCell.d) {
                 optimalCell = cell;
+                result.X = cell.c.x;
+                result.Y = cell.c.y;
             }
         }
-        auto centroid = optimalCell.c;
-        result.X = centroid.x;
-        result.Y = centroid.y;
         return optimalCell.d;
     }
 
