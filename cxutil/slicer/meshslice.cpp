@@ -47,13 +47,13 @@ namespace cxutil
 
 		builder.makePolygon(&slicedMeshLayer.polygons, &slicedMeshLayer.openPolylines);
         
-        {//连接开多边形
-            ClipperLib::Path intersectPoints;
-            if (slicedMeshLayer.openPolylines.size())
-            {
-                builder.connectOpenPolylines(slicedMeshLayer.polygons, slicedMeshLayer.openPolylines, intersectPoints);
-            }
-        }
+        //{//连接开多边形
+        //    ClipperLib::Path intersectPoints;
+        //    if (slicedMeshLayer.openPolylines.size())
+        //    {
+        //        builder.connectOpenPolylines(slicedMeshLayer.polygons, slicedMeshLayer.openPolylines, intersectPoints);
+        //    }
+        //}
 
 		slicedMeshLayer.z = z;
 	}

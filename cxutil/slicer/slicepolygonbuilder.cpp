@@ -252,8 +252,13 @@ namespace cxutil
 		if (it != it_end)
 		{
 			const int segment_idx = (*it).second;
+            Point p0 = segment.end;
+            p0.X = DLP_S_UM(p0.X);
+            p0.Y = DLP_S_UM(p0.Y);
 			Point p1 = segments[segment_idx].start;
-			Point diff = segment.end - p1;
+            p1.X = DLP_S_UM(p1.X);
+            p1.Y = DLP_S_UM(p1.Y);
+            Point diff = p0 - p1;
 			if (shorterThen(diff, largest_neglected_gap_first_phase))
 			{
 				if (segment_idx == static_cast<int>(start_segment_idx))
@@ -371,6 +376,123 @@ namespace cxutil
                 continue;
             SlicerSegment seg;
             seg.start = path.front();
+            seg.start.X = DLP_S_UM(seg.start.X);
+            seg.start.Y = DLP_S_UM(seg.start.Y);
+            seg.end = path.back();
+            seg.end.X = DLP_S_UM(seg.end.X);
+            seg.end.Y = DLP_S_UM(seg.end.Y);
+            openSegs.push_back(seg);
+        }
+
+        //segment: a-->b   c-->d
+        //connect: a-->b-->c-->d    c-->d-->a-->b   Positive 
+        //connect: a-->b-->d-->c    c-->d-->b-->a   negative
+        int i = 0;
+        while (i < openSegs.size())
+        {
+            SlicerSegment& seg1 = openSegs.at(i);
+            if (seg1.addedToPolygon)
+            {
+                i++;
+                continue;
+            }
+
+            int j = 0;
+            while (j < openSegs.size())
+            {
+                if (open_polylines.paths[0].size() > 350)
+                {
+                    int test = 0;
+                }
+
+
+                SlicerSegment& seg2 = openSegs.at(j);
+                if (i == j || seg2.addedToPolygon)
+                {
+                    j++;
+                    continue;
+                }
+
+                Point diff = seg1.end - seg2.start;
+                bool bdiff = shorterThen(diff, cell_size);
+                if (bdiff)
+                { //a-->b-->c-->d 
+                    open_polylines.paths[i].insert(open_polylines.paths[i].end(), open_polylines.paths[j].begin(), open_polylines.paths[j].end());
+                    open_polylines.paths[j].clear();
+                    seg2.addedToPolygon = true;
+                    seg1.end = seg2.end;
+
+                    j = 0;
+                    continue;
+                }
+                Point diff1 = seg2.end - seg1.start;
+                bool bdiff1 = shorterThen(diff1, cell_size);
+                if (bdiff1)
+                { //c-->d-->a-->b
+                    open_polylines.paths[i].insert(open_polylines.paths[i].begin(), open_polylines.paths[j].begin(), open_polylines.paths[j].end());
+                    open_polylines.paths[j].clear();
+                    seg2.addedToPolygon = true;
+                    seg1.start = seg2.start;
+
+                    j = 0;
+                    continue;
+                }
+                Point diff2 = seg2.end - seg1.end;
+                bool bdiff2 = shorterThen(diff2, cell_size);
+                if (bdiff2)
+                { //a-->b-->d-->c
+                    std::reverse(open_polylines.paths[j].begin(), open_polylines.paths[j].end());
+                    open_polylines.paths[i].insert(open_polylines.paths[i].end(), open_polylines.paths[j].begin(), open_polylines.paths[j].end());
+                    open_polylines.paths[j].clear();
+                    seg2.addedToPolygon = true;
+                    seg1.end = seg2.start;
+
+                    j = 0;
+                    continue;
+                }
+
+                Point diff3 = seg2.end - seg1.end;
+                bool bdiff3 = shorterThen(diff3, cell_size);
+                if (bdiff3)
+                { //c-->d-->b-->a
+                    std::reverse(open_polylines.paths[i].begin(), open_polylines.paths[i].end());
+                    open_polylines.paths[i].insert(open_polylines.paths[i].begin(), open_polylines.paths[j].begin(), open_polylines.paths[j].end());
+                    open_polylines.paths[j].clear();
+                    seg2.addedToPolygon = true;
+                    seg1.end = seg1.start;
+                    seg1.start = seg2.start;
+
+
+                    j = 0;
+                    continue;
+                }
+
+                j++;
+            }
+            i++;
+        }
+
+        for (auto it = open_polylines.paths.begin(); it != open_polylines.paths.end(); )
+        {
+            if (it->empty())
+            {
+                it = open_polylines.paths.erase(it);
+            }
+            else
+                it++;
+        }
+    }
+
+    void tryConnectPath1(Polygons& open_polylines, int cell_size, bool needReverse = false)
+    {
+        //获取开多边形的起始点
+        std::vector<SlicerSegment> openSegs;
+        for (const ClipperLib::Path& path : open_polylines.paths)
+        {
+            if (path.size() < 2)
+                continue;
+            SlicerSegment seg;
+            seg.start = path.front();
             seg.end = path.back();
             openSegs.push_back(seg);
         }
@@ -386,6 +508,8 @@ namespace cxutil
                     continue;
 
                 Point diff = seg1.end - seg2.start;
+                diff.X = DLP_S_UM(diff.X);
+                diff.Y = DLP_S_UM(diff.Y);
                 bool bdiff = shorterThen(diff, cell_size);
                 if (bdiff)
                 {
@@ -400,6 +524,12 @@ namespace cxutil
                     Point diffR1 = seg1.start - seg2.end;
                     Point diffR2 = seg1.end - seg2.end;
                     Point diffR3 = seg1.start - seg2.start;
+                    diffR1.X = DLP_S_UM(diffR1.X);
+                    diffR1.Y = DLP_S_UM(diffR1.Y);
+                    diffR2.X = DLP_S_UM(diffR2.X);
+                    diffR2.Y = DLP_S_UM(diffR2.Y);
+                    diffR3.X = DLP_S_UM(diffR3.X);
+                    diffR3.Y = DLP_S_UM(diffR3.Y);
                     bool bdiffR1 = shorterThen(diffR1, cell_size);
                     bool bdiffR2 = shorterThen(diffR2, cell_size);
                     bool bdiffR3 = shorterThen(diffR3, cell_size);
@@ -585,7 +715,7 @@ namespace cxutil
             float len2 = std::sqrt(dis2(p.X, A1.X) + dis2(p.Y, A1.Y)) + std::sqrt(dis2(p.X, A2.X) + dis2(p.Y, A2.Y));
             if (fabs(len1 - len2) < 0.1)
             {
-                if ((A1.X != p.X && A1.Y != p.Y) && (A2.X != p.X && A2.Y != p.Y))
+                //if ((A1.X != p.X && A1.Y != p.Y) && (A2.X != p.X && A2.Y != p.Y))
                 {
                     return true;
                 }
@@ -659,16 +789,27 @@ namespace cxutil
         //查找起始点 //超过一半舍弃
         for (size_t k = 0; k < path.size() / 2; k++)
         {
-            Point& A1 = path[k];
-            Point& A2 = path[(k + 1) % path.size()];
-
+            Point A1 = path[k];
+            Point A2 = path[(k + 1) % path.size()];
+            A1.X = DLP_S_UM(A1.X);
+            A1.Y = DLP_S_UM(A1.Y);
+            A2.X = DLP_S_UM(A2.X);
+            A2.Y = DLP_S_UM(A2.Y);
             for (size_t m = 0; m < pathOther.size() - 1; m++)
             {
-                Point& B1 = pathOther[m];
-                Point& B2 = pathOther[(m + 1) % pathOther.size()];
-
+                Point B1 = pathOther[m];
+                Point B2 = pathOther[(m + 1) % pathOther.size()];
+                B1.X = DLP_S_UM(B1.X);
+                B1.Y = DLP_S_UM(B1.Y);
+                B2.X = DLP_S_UM(B2.X);
+                B2.Y = DLP_S_UM(B2.Y);
                 if (tryConnectSegment(A1, A2, B1, B2, ployStartEnd.start, ployStartEnd.startOther))
                 {
+                    ployStartEnd.start.X = MM2INT(ployStartEnd.start.X);
+                    ployStartEnd.start.Y = MM2INT(ployStartEnd.start.Y);
+                    ployStartEnd.startOther.X = MM2INT(ployStartEnd.startOther.X);
+                    ployStartEnd.startOther.Y = MM2INT(ployStartEnd.startOther.Y);
+
                     ployStartEnd.startIndex = k;
                     ployStartEnd.startOtherIndex = m;
                     return true;
@@ -684,16 +825,28 @@ namespace cxutil
         //查找起始点
         for (int k = path.size() - 2; k >= path.size() / 2; k--)
         {
-            const Point& A1 = path[k];
-            const Point& A2 = path[(k + 1) % path.size()];
-
+            Point A1 = path[k];
+            Point A2 = path[(k + 1) % path.size()];
+            A1.X = DLP_S_UM(A1.X);
+            A1.Y = DLP_S_UM(A1.Y);
+            A2.X = DLP_S_UM(A2.X);
+            A2.Y = DLP_S_UM(A2.Y);
             for (int m = 0; m < pathOther.size() - 1; m++)
             {
-                const Point& B1 = pathOther[m];
-                const Point& B2 = pathOther[(m + 1) % pathOther.size()];
+                Point B1 = pathOther[m];
+                Point B2 = pathOther[(m + 1) % pathOther.size()];
+                B1.X = DLP_S_UM(B1.X);
+                B1.Y = DLP_S_UM(B1.Y);
+                B2.X = DLP_S_UM(B2.X);
+                B2.Y = DLP_S_UM(B2.Y);
 
                 if (tryConnectSegment(A1, A2, B1, B2, ployStartEnd.end, ployStartEnd.endOther))
                 {
+                    ployStartEnd.end.X = MM2INT(ployStartEnd.end.X);
+                    ployStartEnd.end.Y = MM2INT(ployStartEnd.end.Y);
+                    ployStartEnd.endOther.X = MM2INT(ployStartEnd.endOther.X);
+                    ployStartEnd.endOther.Y = MM2INT(ployStartEnd.endOther.Y);
+
                     ployStartEnd.endIndex = k;
                     ployStartEnd.endOtherIndex = m;
                     return true;
@@ -729,18 +882,28 @@ namespace cxutil
             if (path.size() > 3)
             {
                 //查找起始点 //超过一半舍弃
-                Point& A1 = path[0];
-                Point& A2 = path[1];
+                Point A1 = path[0];
+                Point A2 = path[1];
+                A1.X = DLP_S_UM(A1.X);
+                A1.Y = DLP_S_UM(A1.Y);
+                A2.X = DLP_S_UM(A2.X);
+                A2.Y = DLP_S_UM(A2.Y);
+
+                int end = 0;
                 for (int i = path.size() - 2; i > path.size() / 2; i--)
                 {
-                    Point& B1 = path[i];
-                    Point& B2 = path[(i + 1) % path.size()];
+                    Point B1 = path[i];
+                    Point B2 = path[(i + 1) % path.size()];
                     Point p1;
                     Point p2;
+                    B1.X = DLP_S_UM(B1.X);
+                    B1.Y = DLP_S_UM(B1.Y);
+                    B2.X = DLP_S_UM(B2.X);
+                    B2.Y = DLP_S_UM(B2.Y);
                     if (tryConnectSegmentSE(A1, A2, B1, B2, p1, p2))
                     {
                         ClipperLib::Path pathconnect;
-                        pathconnect.insert(pathconnect.end(), path.begin(), path.begin() + i);
+                        pathconnect.insert(pathconnect.end(), path.begin(), path.begin() + i + 2);
                         if (pathconnect.size() > 3)
                         {
                             connected.add(pathconnect);
@@ -750,14 +913,22 @@ namespace cxutil
                 }
 
                 //检测结束
-                Point& A3 = path[path.size() - 1];
-                Point& A4 = path[path.size() - 2];
+                Point A3 = path[path.size() - 1];
+                Point A4 = path[path.size() - 2];
+                A3.X = DLP_S_UM(A3.X);
+                A3.Y = DLP_S_UM(A3.Y);
+                A4.X = DLP_S_UM(A4.X);
+                A4.Y = DLP_S_UM(A4.Y);
                 for (int i = 0; i < path.size() / 2; i++)
                 {
-                    Point& B3 = path[i];
-                    Point& B4 = path[(i + 1) % path.size()];
+                    Point B3 = path[i];
+                    Point B4 = path[(i + 1) % path.size()];
                     Point p1;
                     Point p2;
+                    B3.X = DLP_S_UM(B3.X);
+                    B3.Y = DLP_S_UM(B3.Y);
+                    B4.X = DLP_S_UM(B4.X);
+                    B4.Y = DLP_S_UM(B4.Y);
                     if (tryConnectSegmentSE(A3, A4, B3, B4, p1, p2))
                     {
                         ClipperLib::Path pathconnect;
@@ -787,6 +958,17 @@ namespace cxutil
                 bool border_resultMin = false;
                 bool border_resultMax = false;
                 if (poly.inside(polyOpen.min(), border_resultMin) || poly.inside(polyOpen.max(), border_resultMax))
+                {
+                    needAdd[i] = true;
+                    break;
+                }
+                else if (border_resultMin || border_resultMax)
+                {
+                    needAdd[i] = true;
+                    break;
+                }
+
+                if (polyOpen.inside(poly.min(), border_resultMin) || polyOpen.inside(poly.max(), border_resultMax))
                 {
                     needAdd[i] = true;
                     break;
@@ -1002,7 +1184,7 @@ namespace cxutil
     void SlicePolygonBuilder::connectOpenPolylines(Polygons& polygons, Polygons& open_polylines,ClipperLib::Path& intersectPoints)
     {
         Polygons open_polylinesOrigin = open_polylines;
-        if (open_polylines.empty())
+        if (open_polylinesOrigin.empty())
         {
             return;
         }
@@ -1010,36 +1192,28 @@ namespace cxutil
         constexpr coord_t cell_size = largest_neglected_gap_first_phase * 2;
 
         //线段连接成多边形
-        tryConnectPath(open_polylines, largest_neglected_gap_first_phase);
-
-        //再次线段连接成多边形(包含反向线段检测)
-        if (open_polylines.paths.size())
-        {
-            tryConnectPath(open_polylines, cell_size, true);
-        }
+        tryConnectPath(open_polylinesOrigin, largest_neglected_gap_first_phase);
 
         //提取自身闭合的部分
         Polygons connected;
-        trySplitConnected(open_polylines, connected, largest_neglected_gap_first_phase);
-
-
-        //尝试首尾相连
-        tryConnectEnd(polygons,open_polylines, cell_size, intersectPoints);
+        trySplitConnected(open_polylinesOrigin, connected, largest_neglected_gap_first_phase);
 
         //合并闭合多边形
         if (!connected.paths.empty())
         {
-            open_polylines.paths.insert(open_polylines.paths.end(), connected.paths.begin(), connected.paths.end());
+            polygons.paths.insert(polygons.paths.end(), connected.paths.begin(), connected.paths.end());
         }
 
-        //合并多边形
-        if (!open_polylines.paths.empty())
+        //尝试首尾相连
+        tryConnectEnd(polygons, open_polylinesOrigin, cell_size, intersectPoints);
+
+        //合并闭合多边形
+        if (!open_polylinesOrigin.paths.empty())
         {
-            open_polylines = open_polylines.unionPolygons();
+            polygons.paths.insert(polygons.paths.end(), open_polylinesOrigin.paths.begin(), open_polylinesOrigin.paths.end());
         }
-        else //如果未得到闭合多边形 还原
-        {
-            open_polylines=open_polylinesOrigin;
-        }
+
+        polygons = polygons.unionPolygons();
+
     }
 }

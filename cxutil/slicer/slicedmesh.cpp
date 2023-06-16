@@ -1,5 +1,6 @@
 #include "cxutil/slicer/slicedmesh.h"
 #include "cxutil/processor/openpolygonprocessor.h"
+#include "cxutil/slicer/slicepolygonbuilder.h"
 
 namespace cxutil
 {
@@ -118,6 +119,7 @@ namespace cxutil
 	{
 		for (SlicedMesh& slicedMesh : slicedMeshes)
 		{
+			SlicePolygonBuilder builder;
 			int layerCount = (int)slicedMesh.m_layers.size();
 #pragma omp parallel for
 			for (int j = 0; j < (int)layerCount; ++j)
@@ -140,6 +142,12 @@ namespace cxutil
 
                 //ºÏ²¢±ÕºÏÂÖÀª
                 layer.polygons = layer.polygons.unionPolygons();
+
+				ClipperLib::Path intersectPoints;
+				if (layer.openPolylines.paths.size())
+				{
+					builder.connectOpenPolylines(layer.polygons, layer.openPolylines, intersectPoints);
+				}
 			}
 		}
 	}
