@@ -1213,7 +1213,96 @@ namespace cxutil
             polygons.paths.insert(polygons.paths.end(), open_polylinesOrigin.paths.begin(), open_polylinesOrigin.paths.end());
         }
 
-        polygons = polygons.unionPolygons();
+        //polygons = polygons.unionPolygons();
 
     }
+
+    void SlicePolygonBuilder::connectOpenPolylines(Polygons& polygons, Polygons& openPolygons)
+    {
+        //线段连接成多边形
+        tryConnectPath(openPolygons, largest_neglected_gap_first_phase);
+
+        //再次线段连接成多边形(包含反向线段检测)
+        constexpr bool allow_reverse = false;
+        constexpr coord_t cell_size = largest_neglected_gap_first_phase * 2;
+        if (openPolygons.paths.size())
+        {
+            tryConnectPath(openPolygons, cell_size, true);
+        }
+
+        //提取自身闭合的部分
+        trySplitConnected(openPolygons, polygons, largest_neglected_gap_first_phase);
+    }
+
+    void SlicePolygonBuilder::removeSamePoint(Polygons& openPolygons)
+    {
+        std::vector<std::pair<int, int>> pathNum(openPolygons.paths.size());
+        for (int i = 0; i < openPolygons.paths.size(); i++)
+        {
+            pathNum[i].first = openPolygons.paths[i].size();
+            pathNum[i].second = i;
+        }
+
+        for (size_t i = 0; i < pathNum.size(); i++)
+        {
+            for (int j = i + 1; j < pathNum.size(); j++)
+            {
+                if (pathNum[i].first > pathNum[j].first)
+                {
+                    std::pair<int, int> temp = std::pair<int, int>(pathNum[i]);
+                    pathNum[i] = pathNum[j];
+                    pathNum[j] = temp;
+                }
+            }
+        }
+
+        std::vector<bool> needDelete(pathNum.size(), false);
+        for (size_t i = 0; i < pathNum.size(); i++)
+        {
+            if (needDelete[i])
+            {
+                continue;
+            }
+            auto& pathi = openPolygons.paths.at(pathNum[i].second);
+            for (int j = i + 1; j < pathNum.size(); j++)
+            {
+                if (needDelete[j])
+                {
+                    continue;
+                }
+
+                auto& pathj = openPolygons.paths.at(pathNum[j].second);
+                Polygons polygons2;
+                polygons2.add(pathj);
+                polygons2 = polygons2.offsetPolyLine(10);
+                bool inside = true;
+                for (auto& p : pathi)
+                {
+                    if (!polygons2.inside(p, true))
+                    {
+                        inside = false;
+                        break;
+                    }
+                }
+
+                if (inside)
+                {
+                    needDelete[i] = true;
+                    break;
+                }
+            }
+        }
+
+        Polygons _openPolygons;
+        for (int i = 0; i < pathNum.size(); i++)
+        {
+            if (!needDelete[i])
+            {
+                _openPolygons.add(openPolygons.paths[pathNum[i].second]);
+            }
+        }
+
+        openPolygons = _openPolygons;
+    }
+
 }

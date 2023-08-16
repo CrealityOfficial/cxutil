@@ -24,6 +24,10 @@ namespace cxutil
 
         void connectOpenPolylines(Polygons& polygons, Polygons& openPolygons,ClipperLib::Path& intersectPoints);
 
+		void connectOpenPolylines(Polygons& polygons, Polygons& openPolygons);
+
+		void removeSamePoint(Polygons& openPolygons);
+
 		std::vector<SlicerSegment> segments;
 		std::unordered_map<int, int> face_idx_to_segment_idx; // topology
 

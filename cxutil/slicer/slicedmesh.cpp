@@ -62,6 +62,7 @@ namespace cxutil
 	{
 		for (SlicedMesh& slicedMesh : slicedMeshes)
 		{
+			SlicePolygonBuilder builder;
 			int layerCount = (int)slicedMesh.m_layers.size();
 #pragma omp parallel for
 			for (int j = 0; j < (int)layerCount; ++j)
@@ -78,6 +79,39 @@ namespace cxutil
 				}
 
 				{
+					Polygons _openPolygons;
+					for (auto poly : layer.openPolylines)
+					{
+						if (poly.size())
+						{
+							_openPolygons.add(poly);
+						}
+					}
+					layer.openPolylines.clear();
+					layer.openPolylines = _openPolygons;
+					_openPolygons.clear();
+
+					layer.openPolylines.removeDegenerateVerts(); // remove verts connected to overlapping line segments
+					builder.removeSamePoint(layer.openPolylines);
+
+
+					_openPolygons.clear();
+					for (auto poly : layer.openPolylines)
+					{
+						if (poly.size())
+						{
+							_openPolygons.add(poly);
+						}
+					}
+					layer.openPolylines.clear();
+					layer.openPolylines = _openPolygons;
+					_openPolygons.clear();
+
+					layer.openPolylines.removeDegenerateVerts();
+
+				}
+
+				{
 					Polygons stitchClosedPolygons;
 					stitch(layer.openPolylines, stitchClosedPolygons);
 
@@ -87,7 +121,7 @@ namespace cxutil
 					}
 				}
 
-				if (false)
+				if (true)
 				{
 					stitchExtensive(layer.openPolylines, layer.polygons);
 				}
@@ -98,6 +132,19 @@ namespace cxutil
 					{
 						if (polyline.size() > 0)
 							layer.polygons.add(polyline);
+					}
+				}
+
+				{
+					//connect 1
+					if (layer.openPolylines.size())
+					{
+						Polygons connected;
+						builder.connectOpenPolylines(connected, layer.openPolylines);
+						for (size_t k = 0; k < connected.size(); ++k)
+						{
+							layer.polygons.add(connected[k]);
+						}
 					}
 				}
 
@@ -141,13 +188,13 @@ namespace cxutil
 				}
 
                 //ºÏ²¢±ÕºÏÂÖÀª
-                layer.polygons = layer.polygons.unionPolygons();
+                //layer.polygons = layer.polygons.unionPolygons();
 
-				ClipperLib::Path intersectPoints;
-				if (layer.openPolylines.paths.size())
-				{
-					builder.connectOpenPolylines(layer.polygons, layer.openPolylines, intersectPoints);
-				}
+				//ClipperLib::Path intersectPoints;
+				//if (layer.openPolylines.paths.size())
+				//{
+				//	builder.connectOpenPolylines(layer.polygons, layer.openPolylines, intersectPoints);
+				//}
 			}
 		}
 	}
