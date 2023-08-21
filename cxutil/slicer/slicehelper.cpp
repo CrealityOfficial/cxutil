@@ -203,11 +203,10 @@ namespace cxutil
 		}
 	}
 
-	void getConnectFaceData(std::vector<std::vector<uint32_t>>& vertexConnectFaceData, std::vector<trimesh::TriMesh::Face> allFaces)
+	void getConnectFaceData(const std::vector<trimesh::TriMesh::Face>& allFaces, std::vector<std::vector<uint32_t>>& vertexConnectFaceData)
 	{
-		std::vector<trimesh::TriMesh::Face> nearFaces;
 		int faceId = 0;
-		for (trimesh::TriMesh::Face face : allFaces)
+		for (const trimesh::TriMesh::Face& face : allFaces)
 		{
 			vertexConnectFaceData[face[0]].push_back(faceId);
 			vertexConnectFaceData[face[1]].push_back(faceId);
@@ -216,10 +215,10 @@ namespace cxutil
 		}
 	}
 
-	int getNearFaceId(std::vector<std::vector<uint32_t>>& vertexConnectFaceData, int curFaceId, int vertexId_1, int vertexId_2)
+	int getNearFaceId(const std::vector<std::vector<uint32_t>>& vertexConnectFaceData, int curFaceId, int vertexId_1, int vertexId_2)
 	{
-		std::vector<uint32_t> firstVertexFaceId = vertexConnectFaceData[vertexId_1];
-		std::vector<uint32_t> secondVertexFaceId = vertexConnectFaceData[vertexId_2];
+		const std::vector<uint32_t>& firstVertexFaceId = vertexConnectFaceData[vertexId_1];
+		const std::vector<uint32_t>& secondVertexFaceId = vertexConnectFaceData[vertexId_2];
 		for (int i = 0; i < firstVertexFaceId.size(); i++)
 		{
 			int MatchFaceId = firstVertexFaceId[i];
@@ -251,20 +250,19 @@ namespace cxutil
 		size_t vertexSize = meshSrc->vertices.size();
 		vertexConnectFaceData.clear();
 		vertexConnectFaceData.resize(vertexSize);
-		getConnectFaceData(vertexConnectFaceData, meshSrc->faces);
+		getConnectFaceData(meshSrc->faces, vertexConnectFaceData);
 		faces.clear();
-		faces.reserve(faceSize);
+		faces.resize(faceSize);
 		for (int i = 0; i < faceSize; i++)
 		{
-			trimesh::TriMesh::Face face = meshSrc->faces[i];
-			MeshFace tmpFace;
+			const trimesh::TriMesh::Face& face = meshSrc->faces[i];
+			MeshFace& tmpFace = faces[i];
 			tmpFace.vertex_index[0] = face[0];
 			tmpFace.vertex_index[1] = face[1];
 			tmpFace.vertex_index[2] = face[2];
 			tmpFace.connected_face_index[0] = getNearFaceId(vertexConnectFaceData, i, face[0], face[1]);
 			tmpFace.connected_face_index[1] = getNearFaceId(vertexConnectFaceData, i, face[1], face[2]);
 			tmpFace.connected_face_index[2] = getNearFaceId(vertexConnectFaceData, i, face[2], face[0]);
-			faces.push_back(tmpFace);
 		}
 	}
 }
