@@ -21,7 +21,7 @@ namespace cxutil
 			throw std::invalid_argument("Chi factor must be between 0 and 1 inclusive");
 		}
 
-		delaunator::Delaunator d(coords);
+		delaunatorex::Delaunator d(coords);
 
 		// Determine initial path on outside hull
 		std::vector<size_t> bpoints = d.get_hull_points();
@@ -84,9 +84,9 @@ namespace cxutil
 
 			// Get two edges connected to interior point
 			//  c -> b
-			size_t e_b = d.halfedges[delaunator::next_halfedge(e)];
+			size_t e_b = d.halfedges[delaunatorex::next_halfedge(e)];
 			//  a -> c
-			size_t e_a = d.halfedges[delaunator::next_halfedge(delaunator::next_halfedge(e))];
+			size_t e_a = d.halfedges[delaunatorex::next_halfedge(delaunatorex::next_halfedge(e))];
 
 			// Add edges to heap
 			double len_a = d.edge_length(e_a);
@@ -99,7 +99,7 @@ namespace cxutil
 
 			// Update outer hull and connect new edges
 			size_t a = d.triangles[e];
-			size_t b = d.triangles[delaunator::next_halfedge(e)];
+			size_t b = d.triangles[delaunatorex::next_halfedge(e)];
 
 			d.hull_next[c] = b;
 			d.hull_prev[c] = a;

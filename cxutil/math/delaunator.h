@@ -9,7 +9,7 @@
 #include <utility>
 #include <vector>
 
-namespace delaunator {
+namespace delaunatorex {
 
 	size_t next_halfedge(size_t e) {
 		return (e % 3 == 2) ? e - 2 : e + 1;
