@@ -6,6 +6,7 @@
 
 namespace trimesh {
 	class TriMesh;
+	class quaternion;
 }
 
 namespace cxutil
@@ -22,6 +23,7 @@ namespace cxutil
 		void prepare(MeshObject* mesh);
 		void prepare(trimesh::TriMesh* _mesh);
 		void getMeshFace();
+		void generateConcave(std::vector<trimesh::vec3>& concave, const trimesh::quaternion* rotation, const trimesh::vec3 scale);
 		std::vector<Point2>* getFaceRanges();
 		void sliceOneLayer(int z,
 			std::vector<SlicerSegment>& segments, std::unordered_map<int, int>& face_idx_to_segment_idx);

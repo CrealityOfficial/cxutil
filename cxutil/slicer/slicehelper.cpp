@@ -1,6 +1,8 @@
 #include "cxutil/slicer/slicehelper.h"
 #include "cxutil/math/linearAlg2D.h"
+#include "cxutil/math/polygonLib.h"
 #include "trimesh2/TriMesh.h"
+#include "trimesh2/quaternion.h"
 
 namespace cxutil
 {
@@ -234,6 +236,27 @@ namespace cxutil
 		return -1;
 	}
 
+	int find_connet(std::vector<std::pair<int, int>>& harf_edge, int cur_idx)
+	{
+		int connet_idx = -1;
+		for (int i = 0; i < harf_edge.size(); i++)
+		{
+			if (cur_idx == harf_edge[i].first)
+			{
+				connet_idx = harf_edge[i].second;
+				harf_edge[i] = std::make_pair(-1, -1);
+				break;
+			}
+			if (cur_idx == harf_edge[i].second)
+			{
+				connet_idx = harf_edge[i].first;
+				harf_edge[i] = std::make_pair(-1, -1);
+				break;
+			}
+		}
+		return connet_idx;
+	}
+
 	trimesh::TriMesh* SliceHelper::getMeshSrc()
 	{
 		return meshSrc;
@@ -265,4 +288,193 @@ namespace cxutil
 			tmpFace.connected_face_index[2] = getNearFaceId(vertexConnectFaceData, i, face[2], face[0]);
 		}
 	}
+
+	void SliceHelper::generateConcave(std::vector<trimesh::vec3> & concave, const trimesh::quaternion* rotation, const trimesh::vec3 scale)
+	{
+		auto addPoint = [](ClipperLib::Path& item, int max_dis, bool openPoly = false)
+		{
+			int ptSize = item.size();
+			if (ptSize == 0) return;
+			ClipperLib::Path itemDensed;
+			itemDensed.push_back(item[0]);
+			int add = openPoly ? 0 : 1;
+			for (int i = 1; i < ptSize + add; i++)
+			{
+				int curIdx = i < ptSize ? i : i - ptSize;
+				ClipperLib::IntPoint ptAdd;
+				ptAdd.X = item[curIdx].X - item[i - 1].X;
+				ptAdd.Y = item[curIdx].Y - item[i - 1].Y;
+				int len = sqrt(ptAdd.X * ptAdd.X + ptAdd.Y * ptAdd.Y);
+				if (len > max_dis)
+				{
+					int addNum = len / max_dis;
+					for (int j = 1; j < addNum; j++)
+					{
+						float theta = j * max_dis / (float)len;
+
+						ClipperLib::IntPoint pt_theta = ClipperLib::IntPoint(theta * ptAdd.X, theta * ptAdd.Y);
+						ClipperLib::IntPoint pt_new;
+						pt_new.X = item[i - 1].X + pt_theta.X;
+						pt_new.Y = item[i - 1].Y + pt_theta.Y;
+						itemDensed.push_back(pt_new);
+					}
+				}
+				itemDensed.push_back(item[curIdx]);
+			}
+			item.swap(itemDensed);
+		};
+		auto getMidPoint = [](const ClipperLib::Path& path)
+		{
+			ClipperLib::IntPoint mid_point;
+			ClipperLib::Clipper clipper;
+			clipper.AddPath(path, ClipperLib::PolyType::ptSubject, true);
+			ClipperLib::IntRect rect = clipper.GetBounds();
+			mid_point = ClipperLib::IntPoint((rect.left + rect.right) / 2, (rect.bottom + rect.top) / 2);
+			return mid_point;
+		};
+
+		double SCALE = 1000.0;
+		int face_size = faces.size();
+		std::vector<bool> face_normal(face_size, false);
+		for (int i = 0; i < face_size; i++)
+		{
+			const cxutil::MeshFace& face = faces[i];
+			trimesh::vec3& v0 = meshSrc->vertices.at(face.vertex_index[0]);
+			trimesh::vec3& v1 = meshSrc->vertices.at(face.vertex_index[1]);
+			trimesh::vec3& v2 = meshSrc->vertices.at(face.vertex_index[2]);
+
+			trimesh::vec3 v01 = v1 - v0;
+			trimesh::vec3 v02 = v2 - v0;
+			trimesh::vec3 n = v01 TRICROSS v02;
+			trimesh::normalize(n);
+			face_normal[i] = n.z < -0.01;
+		}
+
+		std::vector<std::pair<int, int>> harf_edges;
+		for (int i = 0; i < face_size; i++)
+		{
+			if (!face_normal[i]) continue;
+			const cxutil::MeshFace& face = faces[i];
+			for (int j = 0; j < 3; j++)
+			{
+				if (face.connected_face_index[j] == -1 || !face_normal[face.connected_face_index[j]])
+				{
+					harf_edges.push_back(std::make_pair(face.vertex_index[j], face.vertex_index[(j + 1) % 3]));
+				}
+			}
+		}
+
+		std::vector< std::vector<int>> polys_record;
+		while (!harf_edges.empty())
+		{
+			std::vector<int> poly_idx_record;
+			poly_idx_record.reserve(harf_edges.size() * 2);;
+			poly_idx_record.push_back(harf_edges[0].first);
+			poly_idx_record.push_back(harf_edges[0].second);
+			harf_edges[0] = std::make_pair(-1, -1);
+			while (1)
+			{
+				int next_idx = find_connet(harf_edges, poly_idx_record.back());
+				if (next_idx == -1 || next_idx == poly_idx_record[0])
+				{
+					break;
+				}
+				poly_idx_record.push_back(next_idx);
+			}
+			polys_record.push_back(poly_idx_record);
+			std::vector<std::pair<int, int>> harf_edges_end;
+			harf_edges_end.reserve(harf_edges.size());
+			for (const std::pair<int, int>& harf_edge : harf_edges)
+			{
+				if (harf_edge != std::make_pair(-1, -1))
+					harf_edges_end.push_back(harf_edge);
+			}
+			harf_edges.swap(harf_edges_end);
+		}
+
+		ClipperLib::Paths paths;
+		for (std::vector<int> poly_idx_record : polys_record)
+		{
+			ClipperLib::Path poly;
+			for (int idx : poly_idx_record)
+			{
+				trimesh::vec3 pt_rot = (*rotation) * meshSrc->vertices[idx];
+				poly.push_back(ClipperLib::IntPoint(pt_rot.x * SCALE, pt_rot.y * SCALE));
+			}
+			if (!ClipperLib::Orientation(poly))
+				ClipperLib::ReversePath(poly);
+			paths.push_back(poly);
+		}
+
+		ClipperLib::Path path_max_area;
+		double max_area = 0;
+		int max_idx = -1;
+		for (int i = 0; i < paths.size(); i++)
+		{
+			const ClipperLib::Path& path = paths[i];
+			double area = ClipperLib::Area(path);
+			if (area > max_area)
+			{
+				max_idx = i;
+				max_area = area;
+			}
+		}
+		if (max_idx > -1)
+			path_max_area.swap(paths[max_idx]);
+
+		ClipperLib::Paths result_paths;
+		result_paths.push_back(path_max_area);
+		for (const ClipperLib::Path& path : paths)
+		{
+			bool inMaxPolygon = true;
+			for (const ClipperLib::IntPoint pt: path)
+			{
+				if (!ClipperLib::PointInPolygon(pt, path_max_area))
+				{
+					inMaxPolygon = false;
+					break;
+				}
+			}
+			if (!inMaxPolygon)
+			{
+				result_paths.push_back(path);
+			}
+		}
+
+		paths.clear();
+		ClipperLib::Clipper clipper;
+		clipper.AddPaths(result_paths, ClipperLib::ptSubject, true);
+		clipper.Execute(ClipperLib::ctUnion, paths, ClipperLib::pftNonZero, ClipperLib::pftNonZero);
+
+		ClipperLib::Path polys_point;
+		for (int i = 0; i < paths.size(); i++)
+		{
+			ClipperLib::Path& path = paths[i];
+			addPoint(path, SCALE);
+			if (!polys_point.empty())
+			{
+				ClipperLib::Path line;
+				line.push_back(getMidPoint(paths[i - 1]));
+				line.push_back(getMidPoint(path));
+				addPoint(line, SCALE, true);
+				polys_point.insert(polys_point.end(), line.begin(), line.end());
+			}
+			polys_point.insert(polys_point.end(), path.begin(), path.end());
+		}
+
+		if (paths.size() > 1)
+		{
+			polys_point = PolygonPro::polygonConcaveHull(polys_point);
+		}	
+
+		concave.clear();
+		for (const ClipperLib::IntPoint& v : polys_point)
+		{
+			concave.push_back(trimesh::vec3(v.X / SCALE * scale.x, v.Y / SCALE * scale.y, 0.0f));
+		}
+	}
+
+	////cxutil::SliceHelper helper;
+	////helper.prepare(mesh.get());
+	////helper.generateConcave(concave, &rotation, scale);
 }
