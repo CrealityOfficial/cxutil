@@ -23,6 +23,7 @@ namespace cxutil
 		void prepare(MeshObject* mesh);
 		void prepare(trimesh::TriMesh* _mesh);
 		void getMeshFace();
+		std::vector<std::vector<std::pair<uint32_t, bool>>> generateVertexConnectVertexData();
 		void generateConcave(std::vector<trimesh::vec3>& concave, const trimesh::quaternion* rotation, const trimesh::vec3 scale);
 		std::vector<Point2>* getFaceRanges();
 		void sliceOneLayer(int z,
