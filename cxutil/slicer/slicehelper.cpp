@@ -268,11 +268,13 @@ namespace cxutil
 		}
 	}
 
-	std::vector<std::vector<std::pair < uint32_t, bool>>> SliceHelper::generateVertexConnectVertexData()
+	//std::pair < uint32_t, int>, first表示连接点id, 
+	//second表示半边方向，second = 0表示无半边连接，second = 1表示当前点为半边终点，second = 2表示当前点为半边起始点
+	std::vector<std::vector<std::pair < uint32_t, int>>> SliceHelper::generateVertexConnectVertexData()
 	{
-		auto checkExit = [](const std::vector<std::pair<uint32_t, bool>>& connet_vertex, int vex_idx)
+		auto checkExit = [](const std::vector<std::pair<uint32_t, int>>& connet_vertex, int vex_idx)
 		{
-			for (std::pair<uint32_t, bool> data : connet_vertex)
+			for (std::pair<uint32_t, int> data : connet_vertex)
 			{
 				if (data.first == vex_idx)
 					return true;
@@ -281,10 +283,10 @@ namespace cxutil
 		};
 
 		int vertex_size = vertexConnectFaceData.size();
-		std::vector<std::vector<std::pair<uint32_t, bool>>> vertexConnectVertexData(vertex_size);
+		std::vector<std::vector<std::pair<uint32_t, int>>> vertexConnectVertexData(vertex_size);
 		for (int i = 0; i < vertex_size; i++)
 		{
-			std::vector<std::pair<uint32_t, bool>>& connet_vertex = vertexConnectVertexData[i];
+			std::vector<std::pair<uint32_t, int>>& connet_vertex = vertexConnectVertexData[i];
 			const std::vector<uint32_t>& connet_faces = vertexConnectFaceData[i];
 			for (int j = 0; j < connet_faces.size(); j++)
 			{
@@ -294,7 +296,7 @@ namespace cxutil
 					int vex_idx = face.vertex_index[k];
 					if (vex_idx == i || checkExit(connet_vertex, vex_idx))
 						continue;
-					connet_vertex.push_back(std::make_pair(vex_idx, false));
+					connet_vertex.push_back(std::make_pair(vex_idx, 0));
 				}
 			}
 		}
@@ -345,36 +347,101 @@ namespace cxutil
 			return mid_point;
 		};
 
-		auto checkNoConnetion = [](const std::vector<std::pair<uint32_t, bool>>& connet_data)
+		auto checkNoConnetion = [](const std::vector<std::pair<uint32_t, int>>& connet_data)
 		{
-			for (const std::pair<uint32_t, bool>& connet : connet_data)
+			for (const std::pair<uint32_t, int>& connet : connet_data)
 			{
-				if (connet.second)
+				if (connet.second == 0)
 					return false;
 			}
 			return true;
 		};
 
-		auto find_connet = [&](std::vector<std::vector<std::pair<uint32_t, bool>>>& vertexConnectVertexData, int cur_idx)
+		auto getAngleLeft = [](const trimesh::point & a, const trimesh::point& b, const trimesh::point& c)
 		{
-			int connet_idx = -1;
-			std::vector<std::pair<uint32_t, bool>>& vertex_connet_data = vertexConnectVertexData[cur_idx];
+			const trimesh::point ba = a - b;
+			const trimesh::point bc = c - b;
+			const coord_t dott = dot(ba, bc); // dot product
+			const coord_t det = ba.x * bc.y - ba.y * bc.x; // determinant
+			if (det == 0)
+			{
+				if (
+					(ba.x != 0 && (ba.x > 0) == (bc.x > 0))
+					|| (ba.x == 0 && (ba.y > 0) == (bc.y > 0))
+					)
+				{
+					return 0.; // pointy bit
+				}
+				else
+				{
+					return M_PI; // straight bit
+				}
+			}
+			const double angle = -atan2(det, dott); // from -pi to pi
+			if (angle >= 0)
+			{
+				return angle;
+			}
+			else
+			{
+				return M_PI * 2 + angle;
+			}
+		};
+
+		auto find_connet = [&](std::vector<std::vector<std::pair<uint32_t, int>>>& vertexConnectVertexData, int cur_idx, int pre_point_idx)
+		{
+			int connet_idx = -1, first_connet_idx = -1, min_angle_idx = -1, find_i = -1;
+			double min_angle = 2 * M_PI;
+			std::vector<std::pair<uint32_t, int>>& vertex_connet_data = vertexConnectVertexData[cur_idx];
 			for (int i = 0; i < vertex_connet_data.size(); i++)
 			{
-				if (vertex_connet_data[i].second)
+				if (vertex_connet_data[i].second > 0)
 				{
-					connet_idx = vertex_connet_data[i].first;
-					vertex_connet_data[i].second = false;
-					std::vector<std::pair<uint32_t, bool>>& vertex_connet_data_n = vertexConnectVertexData[connet_idx];
-					for (int j = 0; j < vertex_connet_data_n.size(); j++)
+					if (first_connet_idx == -1)
 					{
-						if (vertex_connet_data_n[j].first == cur_idx)
+						first_connet_idx = vertex_connet_data[i].first;
+					}
+					if (vertex_connet_data[i].second == 2 )
+					{
+						if (pre_point_idx > -1)
 						{
-							vertex_connet_data_n[j].second = false;
+							double angle = getAngleLeft(meshSrc->vertices[pre_point_idx], meshSrc->vertices[pre_point_idx], meshSrc->vertices[vertex_connet_data[i].first]);
+							if (angle < min_angle)
+							{
+								min_angle_idx = vertex_connet_data[i].first;
+								find_i = i;
+							}
+						}
+						else
+						{
+							connet_idx = vertex_connet_data[i].first;
+							vertex_connet_data[i].second = 0;
+							std::vector<std::pair<uint32_t, int>>& vertex_connet_data_n = vertexConnectVertexData[connet_idx];
+							for (int j = 0; j < vertex_connet_data_n.size(); j++)
+							{
+								if (vertex_connet_data_n[j].first == cur_idx)
+								{
+									vertex_connet_data_n[j].second = 0;
+									break;
+								}
+							}
 							break;
 						}
 					}
-					break;
+				}
+			}
+			if (min_angle_idx > -1)
+			{
+				connet_idx = min_angle_idx;
+				vertex_connet_data[find_i].second = 0;
+				std::vector<std::pair<uint32_t, int>>& vertex_connet_data_n = vertexConnectVertexData[connet_idx];
+				for (int j = 0; j < vertex_connet_data_n.size(); j++)
+				{
+					if (vertex_connet_data_n[j].first == cur_idx)
+					{
+						vertex_connet_data_n[j].second = 0;
+						break;
+					}
 				}
 			}
 			return connet_idx;
@@ -396,7 +463,7 @@ namespace cxutil
 			trimesh::normalize(n);
 			face_normal[i] = n.z < 0;
 		}
-		std::vector<std::vector<std::pair<uint32_t, bool>>> vertexConnectVertexData = generateVertexConnectVertexData();
+		std::vector<std::vector<std::pair<uint32_t, int>>> vertexConnectVertexData = generateVertexConnectVertexData();
 
 		int vertex_size = vertexConnectVertexData.size();
 		for (int i = 0; i < face_size; i++)
@@ -409,21 +476,21 @@ namespace cxutil
 				{
 					int current_idx = face.vertex_index[j];
 					int next_idx = face.vertex_index[(j + 1) % 3];
-					std::vector<std::pair<uint32_t, bool>>& vertexData = vertexConnectVertexData[current_idx];
+					std::vector<std::pair<uint32_t, int>>& vertexData = vertexConnectVertexData[current_idx];
 					for (int k = 0; k < vertexData.size(); k++)
 					{
 						if (vertexData[k].first == next_idx)
 						{
-							vertexData[k].second = true;
+							vertexData[k].second = 2;
 							break;
 						}
 					}
-					std::vector<std::pair<uint32_t, bool>>& vertexData_n = vertexConnectVertexData[next_idx];
+					std::vector<std::pair<uint32_t, int>>& vertexData_n = vertexConnectVertexData[next_idx];
 					for (int k = 0; k < vertexData_n.size(); k++)
 					{
 						if (vertexData_n[k].first == current_idx)
 						{
-							vertexData_n[k].second = true;
+							vertexData_n[k].second = 1;
 							break;
 						}							
 					}
@@ -439,12 +506,20 @@ namespace cxutil
 				continue;
 			}
 			std::vector<int> poly_idx_record;
-			poly_idx_record.reserve(vertex_size);;
-			poly_idx_record.push_back(i);
+			poly_idx_record.reserve(vertex_size);;	
 			int current_idx = i;
+			int pre_point_idx = -1;
 			while (1)
 			{
-				int next_idx = find_connet(vertexConnectVertexData, current_idx);
+				if (poly_idx_record.empty())
+				{
+					poly_idx_record.push_back(i);
+				}
+				else
+				{
+					pre_point_idx = poly_idx_record.back();
+				}
+				int next_idx = find_connet(vertexConnectVertexData, current_idx, pre_point_idx);
 				if (next_idx == -1 || next_idx == i)
 				{
 					break;
