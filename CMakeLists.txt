@@ -4,11 +4,11 @@ __cc_find(Clipper)
 __cc_find(RapidJson)
 
 __assert_target(clipper)
-__assert_parameter(RAPIDJSON_INCLUDE_DIRS)
+#__assert_parameter(RAPIDJSON_INCLUDE_DIRS)
 
-set(LIBS clipper trimesh2 stringutil)
+set(LIBS clipper trimesh2 stringutil rapidjson)
 set(DEFS _CRT_SECURE_NO_WARNINGS NOMINMAX)
-set(INCS ${RAPIDJSON_INCLUDE_DIRS})
+set(INCS )
 __add_real_target(cxutil lib SOURCE ${SRC}
 							 LIB ${LIBS}
 							 DEF ${DEFS}
