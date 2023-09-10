@@ -8,7 +8,7 @@ __assert_target(clipper)
 __assert_target(trimesh2)
 __assert_target(rapidjson)
 
-set(ILIBS clipper trimesh2 crcommon)
+set(ILIBS clipper trimesh2)
 if(TARGET rapidjson)
 	list(APPEND ILIBS rapidjson)
 endif()
