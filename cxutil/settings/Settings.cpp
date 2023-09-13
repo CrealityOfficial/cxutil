@@ -24,10 +24,23 @@
 
 #include "cxutil/util/logoutput.h"
 #include "cxutil/util/string.h" //For Escaped.
-#include"stringutil/util.h"
 
 namespace cxutil
 {
+    std::string trimHeadTail(const std::string& s)
+    {
+        std::string str = s;
+        size_t n = str.find_last_not_of(" \r\n\t");
+        if (n != std::string::npos) {
+            str.erase(n + 1, str.size() - n);
+        }
+        n = str.find_first_not_of(" \r\n\t");
+        if (n != std::string::npos) {
+            str.erase(0, n);
+        }
+        return str;
+    }
+
     Settings::Settings()
         :extruders(nullptr)
     {
@@ -43,8 +56,8 @@ namespace cxutil
 
     void Settings::add(const std::string& key, const std::string value)
     {
-        stringutil::trimHeadTail(key);
-        stringutil::trimHeadTail(value);
+        trimHeadTail(key);
+        trimHeadTail(value);
         if (settings.find(key) != settings.end()) //Already exists.
         {
             settings[key] = value;
@@ -58,7 +71,7 @@ namespace cxutil
     template<> std::string Settings::get<std::string>(const std::string& key) const
     {
         //If this settings base has a setting value for it, look that up.
-        stringutil::trimHeadTail(key);
+        trimHeadTail(key);
         if (settings.find(key) != settings.end())
         {
             return settings.at(key);
