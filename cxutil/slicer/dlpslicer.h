@@ -3,6 +3,7 @@
 #include "cxutil/input/dlpdata.h"
 #include "cxutil/input/dlpinput.h"
 #include "cxutil/slicer/slicehelper.h"
+#include "cxutil/math/polygon.h"
 
 namespace ccglobal
 {

@@ -1268,6 +1268,21 @@ namespace cxutil
 
     void savePolygons(const Polygons& polygons, std::ofstream& out);
     void loadPolygons(Polygons& polygons, std::ifstream& in);
+
+	struct DLPLayer
+	{
+		ClipperLib::cInt printZ;     //!< The height at which this layer needs to be printed. Can differ from sliceZ due to the raft.
+		cxutil::Polygons polygons;
+	};
+
+	class DLPDataImpl
+	{
+	public:
+        DLPDataImpl();
+        ~DLPDataImpl();
+
+		std::vector<DLPLayer> layersData;
+	};
 }//namespace cxutil
 
 #endif//CX_UTILS_POLYGON_H

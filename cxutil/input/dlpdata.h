@@ -1,27 +1,47 @@
 #ifndef _CXSW_DLPDATA_1593762618888_H
 #define _CXSW_DLPDATA_1593762618888_H
-#include "clipper/clipper.hpp"
-#include "cxutil/math/polygon.h"
+#include "trimesh2/Vec.h"
+#include <vector>
 
 namespace cxutil
 {
-	struct DLPLayer
+	typedef std::vector<trimesh::dvec2> DLPPoly;
+	typedef std::vector<DLPPoly> DLPPolys;
+
+	typedef std::vector<std::vector<trimesh::ivec2>> UmDLPPolys;
+
+	struct LayerDetailInfo
 	{
-		ClipperLib::cInt printZ;     //!< The height at which this layer needs to be printed. Can differ from sliceZ due to the raft.
-		cxutil::Polygons polygons;
+		double maxArea = 0.0;    //um * 2
+		double totalArea = 0.0;  //um * 2
+		double maxDistances = 0.0;  //um
 	};
 
+	struct SliceInfo
+	{
+		double volume = 0.0;   // mm * 3
+		std::vector<LayerDetailInfo> details;
+	};
+
+	class DLPDataImpl;
 	class DLPData
 	{
+		friend class DLPSlicer;
 	public:
 		DLPData();
 		virtual ~DLPData();
 
 		int layers() const;
-		ClipperLib::PolyTree* layerData(int layer) const;
 		bool isValid() const;
+		void traitPolys(int layer, DLPPolys& polys) const;
+		void traitUmPolys(int layer, UmDLPPolys& polys) const;
+		std::vector<std::vector<trimesh::vec2>> traitPolys(int layer) const;
 
-		std::vector<DLPLayer> layersData;
+		void calculateVolumeAreas(SliceInfo& info) const;
+		//ClipperLib::PolyTree* layerData(int layer) const;
+
+	protected:
+		DLPDataImpl* impl;
 	};
 }
 

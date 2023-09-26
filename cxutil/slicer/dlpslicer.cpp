@@ -37,14 +37,14 @@ namespace cxutil
 		if (layerCount <= 0)
 			return false;
 
-		data.layersData.resize(layerCount);
+		data.impl->layersData.resize(layerCount);
 		for (SlicedMesh& slicedMesh : result.slicedMeshes)
 		{
 #pragma omp parallel for
 			for (int layer_nr = 0; layer_nr < static_cast<int>(layerCount); layer_nr++)
 			{
 				SlicedMeshLayer& layer = slicedMesh.m_layers.at(layer_nr);
-				DLPLayer& dlpplayer = data.layersData.at(layer_nr);
+				DLPLayer& dlpplayer = data.impl->layersData.at(layer_nr);
 				dlpplayer.printZ = layer.z;
 				dlpplayer.polygons = dlpplayer.polygons.unionPolygons(layer.polygons);
 			}

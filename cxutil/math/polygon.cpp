@@ -1416,4 +1416,14 @@ namespace cxutil
                 templateLoad(polygons.paths.at(i), in);
         }
     }
+
+    DLPDataImpl::DLPDataImpl()
+    {
+
+    }
+
+    DLPDataImpl::~DLPDataImpl()
+    {
+
+    }
 }//namespace cxutil
